@@ -1,0 +1,15 @@
+// Artifacts
+.*
+!*.gitignore
+
+// Emacs artifacts
+*~
+\#*\#
+*_flymake.*
+
+// Golang artifacts
+.vendor
+
+// App artifacts
+dist
+certs
