@@ -14,14 +14,24 @@ See below for [why Standard ML](#why-standard-ml).
 ## Overview
 
 Modules (WIP):
+* archive
+  * tar
+  * zip
 * compress
   * gzip
-  * zip
 * container
   * map
   * set
+* crypto
+  * hmac
+  * sha256
 * database
 * encoding
+  * base64
+  * json
+  * html
+  * utf8
+  * xml
 * log
 * math
 * misc
