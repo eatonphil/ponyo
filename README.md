@@ -1,6 +1,6 @@
 # Ponyo
 
-Ponyo is a high-level comphrensive library for Standard ML. It is the first
+Ponyo is a comprehensive high-level library for Standard ML. It is the first
 such implementation in Standard ML and addresses some of the gaps found in
 a standard that has seen little revision in almost 20 years. In particular,
 the needs of PL researchers and the average programmer interested in ML
