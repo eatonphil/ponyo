@@ -2,7 +2,7 @@
 
 Ponyo is a comprehensive high-level library for Standard ML. It is inspired
 by [POCO](http://pocoproject.org/), the [Go standard library](https://golang.org/pkg/),
-and the (Python standard library](https://docs.python.org/3/library/). It is the first
+and the [Python standard library](https://docs.python.org/3/library/). It is the first
 such library in Standard ML and addresses some of the gaps found in
 a standard that has seen little revision in almost 20 years.
 
