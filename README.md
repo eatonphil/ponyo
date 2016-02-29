@@ -36,11 +36,11 @@ Modules (WIP):
 * math
 * misc
 * net
-  * http
+  * [http](https://github.com/eatonphil/ponyo/blob/master/src/net/http/http.sml)
   * smtp
 * os
 * sml
-* string
+* [string](https://github.com/eatonphil/ponyo/blob/master/src/string/string.sml)
   * regex
   * template
 * test
