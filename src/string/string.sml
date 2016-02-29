@@ -1,134 +1,153 @@
 structure BasisString = String
 
-structure String =
+structure String = 
 struct
-    val op+ = BasisString.^
+    exception IndexError of string * int
 
-    fun all (source: string) (test: char => bool) : bool =
-        Vector.all test source
-
-    fun alli (source: string) (test: (char * int) => bool) : bool =
-        Vector.foldli (fn (i: int, a: char, b: bool) : bool = test (a, i) and b) true source
+    fun all (source: string) (test: char -> bool) : bool =
+        List.all test (explode (source))
 
     (* -capitalize: converts the first letter in the string to uppercase *)
-    fun capitalize (source: string) : string =
-        let
-            val head :: tail = explode (s);
-        in
-            BasisString.implode (Char.toUpper (head) :: tail)
-	end
+    and capitalize (source: string) : string =
+	case explode (source) of
+	    [] => ""
+	  | head :: tail => implode (Char.toUpper (head) :: tail)
 
     (* -charAt: gets the character at an index of a string *)
-    fun charAt (source: string, index: int) : char =
-        List.nth (explode (source), index)
+    and charAt (source: string, index: int) : char =
+        if index < 0 orelse index > length (source)
+	    then raise IndexError (source, index)
+	else List.nth (explode source, index)
 
     (* -explode: converts a string to a char list *)
-    fun explode (source: string) : char list = BasisString.explode
+    and explode (source: string) : char list = BasisString.explode (source)
 
-    (* -indexOfFrom: finds the index of the pattern literal in the source
-     * string starting at a given point
+    (* -fromChar: converts the char to a string *)
+    and fromChar (source: char) : string = BasisString.str (source)
+
+    (* -hasPrefix: *)
+    and hasPrefix (source: string, prefix: string) : bool =
+        BasisString.isPrefix prefix source
+
+    and hasSubstring (source: string, substring: string) : bool =
+        BasisString.isSubstring substring source
+
+    and hasSuffix (source: string, suffix: string) : bool =
+        BasisString.isSuffix suffix source
+
+    (* -implode: converts a char list to a string *)
+    and implode (sourceList: char list) : string = BasisString.implode (sourceList)
+
+    (* -indexOfFrom: Finds the first index of the pattern literal in the source
+     * string starting at a given point. Returns -1 if the pattern is
+     * longer than the source, the start is after the end of the source,
+     * or the pattern has not been found.
      *)
-    fun indexOfFrom (source: string, pattern: string, start: int) : int =
-        if not hasSubstring (source, pattern) or
-	   length (pattern) > length (source)
-	   start > length (source) then -1
-	else let
-	    val match = ref 0;
+    and indexOfFrom (source: string, pattern: string, start: int) : int =
+        if not (hasSubstring (source, pattern)) orelse
+	   length (pattern) > length (source) andalso
+	   start > length (source) then ~1
+	else if length (pattern) = 0 then 0
+	else
+	    let
+                fun isMatch (i: int, j: int) : bool =
+		    if j = length (pattern)
+		        then true
+		    else if charAt (source, i) = charAt (pattern, j)
+		        then isMatch (i + 1, j + 1)
+		    else false
 
-            fun isMatch (i: int) : bool =
-                let
-		    val doesMatch = ref false;
-		    fun allMatch (_, j: int) : () =
-		        charAt (source, j + i) = charAt (pattern j)
-		in
-		    alli source allMatch
-		end;
-
-	    fun iterate (i: int, _) : () =
-		if isMatch (i) then (match := i; ()) else ()
-	in
-	    Vector.appi iterate source
-	end
+	        fun find (i: int) : int =
+	            if isMatch (i, 0)
+		        then i
+		    else if i < length (source) - length (pattern)
+		        then find (i + 1)
+		    else ~1
+	    in
+	        find (0)
+	    end
 
     (* -indexOf: finds the first index of the pattern literal in the source
      * string
      *)
-    fun indexOf (source: string, pattern: string) : int =
-    	indexOfFrom (source, pattern, 0)               
+    and indexOf (source: string, pattern: string) : int =
+    	indexOfFrom (source, pattern, 0)
 
-    (* -fromChar: converts the char to a string *)
-    fun fromChar (source: char) : string = BasisString.str (from)
+    and isAlphaNum (source: string) : bool =
+        all source Char.isAlphaNum
 
-    (* -length: gets the length of the string*)
-    fun length (source: string) : int = BasisString.size (source)
+    and isChar (source: string) : bool =
+        length (source) = 1
 
-    (* -map: converts the source string to another string  *)
-    fun map (source: string) (func: char => char) : string =
-        BasisString.map func source
+    and isDigit (source: string) : bool =
+    	all source Char.isDigit
 
-    (* -hasPrefix: *)
-    fun hasPrefix (source: string, prefix: string) : bool =
-        BasisString.isPrefix prefix source
+    and isLower (source: string) : bool =
+        all source Char.isLower
 
-    fun hasSubstring (source: string, substring: string) : bool =
-        BasisString.isSubstring substring suffix
-
-    fun hasSuffix (source: string, suffix: string) : bool =
-        BasisString.isSuffix suffix source
-
-    fun implode (source: char list) : string = BasisString.implode
-
-    fun isAlphaNum (source: string) : bool =
-        all (fn (c: char) : bool = Char.isAlphaNum c) source
-
-    fun isDigit (source: string) : bool =
-    	all (fn (c: char) : bool = Char.isDigit c) source
-
-    fun isLower (source: string) : bool =
-        all (fn (c: char) : bool = Char.isLower c) source
-
-    fun isUpper (source: string) : bool =
-        all (fn (c: char) : bool = Char.isUpper c) source
+    and isUpper (source: string) : bool =
+        all source Char.isUpper
 
     (* -join: concatenate a list of strings *)
-    fun join (sources: string list, glue: string) =
-        Vector.foldl (fn (a: string, b: string) : string = a ^ glue ^ b) sources
+    and join (sources: string list, glue: string) =
+    	BasisString.concatWith glue sources
+
+        (* -length: gets the length of the string*)
+    and length (source: string) : int = BasisString.size (source)
+
+    (* -map: converts the source string to another string  *)
+    and map (source: string) (func: char -> char) : string =
+        BasisString.map func source
 
     (* TODO: implement *)
-    fun replace (source: string, match: string, replacement: string) : string = source
+    and replace (source: string, match: string, replacement: string) : string = source
 
-    fun reverse (source: string) : string =
-        let
-            fun doReverse (s: string, r: string) : string =
-	        if length (s) = 0 then r
-		else let val (first :: rest) = explode (s) in
-		    doReverse (implode (rest), BasisString.str (r) ^ first)
-		end
-        in
-	    doReverse (source, "")
-	end
+    and reverse (source: string) : string =
+    	implode (rev (explode source))
 
-    fun split (source: string, delimiter: string) : string list =
+    and substring (source: string, start: int, stop: int) : string =
+        Substring.string (Substring.substring (source, start, stop))
+
+    and substringToEnd (source: string, start: int) : string =
+        Substring.string (Substring.extract (source, start, NONE))
+
+    and split (source: string, delimiter: string) : string list =
         if isChar (delimiter) then
 	    let
 	        val delimChar = toChar (delimiter);
-	        val comp = fn (c: char) : bool = c = delimChar
+	        fun comp (c: char) : bool = (c = delimChar)
 	    in
-	        BasisString.fields comp source
+	        BasisString.tokens comp source
 	    end
 	else
-	    
+	    let
+	        fun split (s: string, i: int) : string * string =
+		    let val (hd, tl) = Substring.splitAt (Substring.full s, i) in
+		        (Substring.string hd, Substring.string tl)
+		    end
 
-    fun toChar (source: string) : char = charAt (source, 0)
+	        fun doSplit (s: string, sl: string list) : string list =
+		    case indexOf (s, delimiter) of
+		        ~1 => rev (if s = "" then sl else s :: sl)
+		      | 0 => doSplit (substringToEnd (s, 1), sl)
+		      | i => let
+		              val (hd, tl) = split (s, i);
+			      val tlWithoutDelim = substringToEnd (tl, length (delimiter))
+			  in
+		              doSplit (tlWithoutDelim, hd :: sl)
+			  end
+	    in
+	        doSplit (source, [])
+            end
 
-    fun isChar (source: string) : bool = length (source) = 1
+    and toChar (source: string) : char = charAt (source, 0)
 
-    fun toLower (source: string) : string =
-        map (fn (c: char) : char = Char.toUpper c) source
+    and toLower (source: string) : string =
+        map source Char.toLower
 
-    fun toTitle (source: string) : string =
-        join (List.map capitalize split (source, " "))
+    and toTitle (source: string) : string =
+        join ((List.map capitalize (split (source, " "))), " ")
 
-    fun toUpper (source: string) : string =
-        map (fn (c: char) : char = Char.toLower c) source
+    and toUpper (source: string) : string =
+        map source Char.toUpper
 end
