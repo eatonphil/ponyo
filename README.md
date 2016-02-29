@@ -1,14 +1,14 @@
 # Ponyo
 
-Ponyo is a comprehensive high-level library for Standard ML. It is the first
+Ponyo is a comprehensive high-level library for Standard ML. It is inspired
+by [POCO](http://pocoproject.org/), the [Go standard library](https://golang.org/pkg/),
+and the (Python standard library](https://docs.python.org/3/library/). It is the first
 such library in Standard ML and addresses some of the gaps found in
-a standard that has seen little revision in almost 20 years. In particular,
-the needs of PL researchers and the average programmer interested in ML
+a standard that has seen little revision in almost 20 years.
+
+In particular, the needs of PL researchers and the average programmer interested in ML
 are different. Ponyo's take on a comprehensive library will be geared toward
 use on the server as a safe scripting language and for server-side web development.
-
-Ponyo is inspired by [POCO](http://pocoproject.org/), the [Go standard library](https://golang.org/pkg/), and the (Python standard library](https://docs.python.org/3/library/).
-
 See below for [why Standard ML](#why-standard-ml).
 
 ## Overview
