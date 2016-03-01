@@ -6,6 +6,8 @@ struct
 
     exception IndexError of string * int
 
+    val WS = [" ", "\t", "\r", "\n", "\v", "\f"]
+    
     fun all (source: string) (test: char -> bool) : bool =
         List.all test (explode (source))
 
@@ -209,6 +211,9 @@ struct
 	    else
 		source
 	end
+    
+    and stripWhitespace (source: string) : string =
+        stripAll (source, WS)
 
     and substring (source: string, start: int, stop: int) : string =
         Substring.string (Substring.substring (source, start, stop))

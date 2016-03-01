@@ -19,12 +19,13 @@ Modules (WIP):
   * zip
 * compress
   * gzip
+  * deflate
 * container
+  * tree
+    * [BinarySearchTree](https://github.com/eatonphil/ponyo/blob/master/src/container/tree/binarysearch.sml)
+    * [RedBlackTree](https://github.com/eatonphil/ponyo/blob/master/src/container/tree/redblack.sml)
   * map
   * set
-* crypto
-  * hmac
-  * sha256
 * database
 * encoding
   * base64
@@ -34,6 +35,7 @@ Modules (WIP):
   * xml
 * log
 * math
+* mime
 * misc
 * net
   * [http](https://github.com/eatonphil/ponyo/blob/master/src/net/http/http.sml)
@@ -54,10 +56,10 @@ it is one of the simplest languages in the ML family (among OCaml and Haskell).
 It is also one of the few in this family with a definition and certified compilation.
 
 For the working programmer, Standard ML can be thought of as sitting between Java or
-Go and Python or Bash. It is appealing coming from Python or Bash with its succinct
-syntax, immutability (by default), and compile-time type-checking. It is appealing
-coming from Java or Go with its higher-order functions, pattern matching and
-algebraic datatypes.
+Go and Python or Bash. It is appealing coming from Python or Bash with its threading
+support, immutability (by default), and compile-time type-checking. It is appealing
+coming from Java or Go with its succinct syntax, higher-order functions, pattern
+matching and algebraic datatypes.
 
 ## License
 
