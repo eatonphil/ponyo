@@ -11,6 +11,26 @@ are different. Ponyo's take on a comprehensive library will be geared toward
 use on the server as a safe scripting language and for server-side web development.
 See below for [why Standard ML](#why-standard-ml).
 
+## Example
+
+```sml
+(* This simple program makes an HTTP GET request against http://api.ipify.org/
+ * and prints the response.
+ *)
+
+structure client = Http.Client
+structure request = Http.Request
+strucutre method = Http.Method
+
+fun main () =
+    let
+        val req = request.new (method.Get, "api.ipify.org", "")
+        val rsp = client.act (req)
+    in
+        print (#body response)
+    end
+```
+
 ## Overview
 
 Modules (WIP):
