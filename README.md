@@ -6,10 +6,14 @@ and the [Python standard library](https://docs.python.org/3/library/). It is the
 such library in Standard ML and addresses some of the gaps found in
 a standard that has seen little revision in almost 20 years.
 
-In particular, the needs of PL researchers and the average programmer interested in ML
-are different. Ponyo's take on a comprehensive library will be geared toward
-use on the server as a safe scripting language and for server-side web development.
-See below for [why Standard ML](#why-standard-ml).
+In particular, there are discrepancies between the needs of PL researchers and the
+average programmer interested in ML. Ponyo is geared toward use on the server as a
+safe scripting language and for server-side web development. See below for
+[why Standard ML](#why-standard-ml).
+
+Additionally, Ponyo brings a commitment to thorough, high-quality documentation. Work on
+Ponyo documentation necessarily includes documentation of Ponyo itself and more complete
+documentation of the Standard ML basis library.
 
 ## Example
 
