@@ -2,6 +2,8 @@ structure BasisString = String
 
 structure String = 
 struct
+    type t = string
+
     exception IndexError of string * int
 
     fun all (source: string) (test: char -> bool) : bool =
@@ -19,6 +21,8 @@ struct
 	    then raise IndexError (source, index)
 	else
 	    List.nth (explode source, index)
+
+    and compare (vals: string * string) : order = BasisString.compare (vals)
 
     (* -count: The number of times a substring occurs in the string.
      *

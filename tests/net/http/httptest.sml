@@ -1,18 +1,14 @@
-val req : Http.Request.t = {
-    method   = Http.Method.Get,
-    domain   = "api.ipify.org",
-    path     = "/",
-    port     = 80,
-    headers  = [Http.Header.Host "api.ipify.org"],
-    body     = ""
-}
+infix 6 >=>;
+fun f >=> g = fn x => g (f (x))
 
 fun main () =
     let
-        val rsp = Http.Client.act (req)
+        val req = (Http.Method.Get, "http://api.ipify.org", "")
+        val rsp = (Http.Request.new >=> Http.Client.act) req
+	val headers = Http.Headers.toList (#headers rsp)
     in
-        map (fn h => PolyML.print (Http.Header.marshal (h))) (#headers rsp);
-	PolyML.print (#version rsp);
+        map (Header.marshall >=> PolyML.print) headers;
+        PolyML.print (#version rsp);
 	PolyML.print (#status rsp);
 	PolyML.print (#reason rsp);
         print (#body rsp);

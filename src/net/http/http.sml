@@ -1,4 +1,4 @@
-structure HttpMethod =
+structure Method =
 struct
     datatype t =
         Connect
@@ -34,7 +34,7 @@ struct
       | Unknown v => String.toUpper(v)
 end
 
-structure HttpHeader =
+structure Header =
 struct
     exception HeaderMalformed of string
 
@@ -51,114 +51,149 @@ struct
       | Vary            of string
       | Unknown         of string * string
 
-    fun toString v = case v of
-        Accept          v      => "Accept"
-      | ContentLength   v      => "Content-Length"
-      | ContentEncoding v      => "Content-Encoding"
-      | ContentType     v      => "Content-Type"
-      | Date            v      => "Date"
-      | Expires         v      => "Expires"
-      | Host            v      => "Host"
-      | Referrer        v      => "Referer" (* Famous spelling error. *)
-      | UserAgent       v      => "User-Agent"
-      | Vary            v      => "Vary"
-      | Unknown         (f, _) => f
-
     val LWS = [" ", "\t"]
 
-    fun unmarshal (line: string) : t =
+    fun toKv (h: t) : string * string = case h of
+        Accept          v      => ("Accept", v)
+      | ContentLength   v      => ("Content-Length", Int.toString (v))
+      | ContentEncoding v      => ("Content-Encoding", v)
+      | ContentType     v      => ("Content-Type", v)
+      | Date            v      => ("Date", v)
+      | Expires         v      => ("Expires", v)
+      | Host            v      => ("Host", v)
+      | Referrer        v      => ("Referer", v) (* Famous spelling error. *)
+      | UserAgent       v      => ("User-Agent", v)
+      | Vary            v      => ("Vary", v)
+      | Unknown         (f, v) => (f, v)
+
+    fun fromKv (h: string, v: string) : t = case String.toLower (h) of
+        "accept"           => Accept (v)
+      | "content-length"   => ContentLength (valOf (Int.fromString (v)))
+      | "content-encoding" => ContentEncoding (v)
+      | "date"             => Date (v)
+      | "expires"          => Expires (v)
+      | "host"             => Host (v)
+      | "referer"          => Referrer (v)
+      | "user-agent"       => UserAgent (v)
+      | "vary"             => Vary (v)
+      | _                  => Unknown (h, v)
+
+    fun toString (h: t) =
+        let val (s, _) = toKv (h) in s end
+
+    fun unmarshall (line: string) : t =
         case String.splitN (line, ":", 1) of
 	    [] => raise HeaderMalformed ("no header present: " ^ line)
 	  | badValue :: [] => raise HeaderMalformed (line)
 	  | field :: (value :: _) => let
 	          val cleanValue = String.stripAll (value, LWS)
-		  val cleanField = String.toLower (field)
 	      in
-	          case field of
-		      "accept"           => Accept (cleanValue)
-		    | "content-length"   => ContentLength (valOf (Int.fromString (cleanValue)))
-		    | "content-encoding" => ContentEncoding (cleanValue)
-		    | "content-type"     => ContentType (cleanValue)
-		    | "date"             => Date (cleanValue)
-		    | "expires"          => Expires (cleanValue)
-		    | "host"             => Host (cleanValue)
-		    | "referer"          => Referrer (cleanValue) (* Famous spelling error. *)
-		    | "user-agent"       => UserAgent (cleanValue)
-		    | "vary"             => Vary (cleanValue)
-		    | unknown            => Unknown (field, cleanValue)
+	          fromKv (field, cleanValue)
 	      end
 
-    fun marshal (v: t) : string =
+    fun marshall (v: t) : string =
         let
-	    val value = case v of
-                Accept          v      => v
-	      | ContentLength   v      => Int.toString (v)
-	      | ContentEncoding v      => v
-	      | ContentType     v      => v
-	      | Date            v      => v
-	      | Expires         v      => v
-	      | Host            v      => v
-	      | Referrer        v      => v
-	      | UserAgent       v      => v
-	      | Vary            v      => v
-	      | Unknown         (_, v) => v
-
-            val key = toString (v)
+	    val (h, v) = toKv (v)
 	in
-	    key ^ ": " ^ String.stripAll (value, LWS) 
+	    h ^ ": " ^ String.stripAll (v, LWS) 
 	end
 end
 
-structure HttpHeaders =
+infix 6 >>= >=>;
+
+fun a >>= f = case a of
+    NONE => NONE
+  | SOME a => SOME (f a)
+
+(* Inspired by Haskell reverse function composition: ">.>". *)
+fun f >=> g = fn x => g (f x)
+
+structure Headers =
 struct
-    type t = HttpHeader.t list
+    structure HeadersBst = BinarySearchTree(String);
+
+    open HeadersBst;
+
+    fun get (hs: string HeadersBst.t) (h: string) : Header.t option =
+        HeadersBst.get hs h >>= (fn v => Header.fromKv (h, v))
+
+    fun toList (hs: string HeadersBst.t) : Header.t list =
+	(HeadersBst.toList >=> map Header.fromKv) hs
 end
 
-structure HttpRequest =
+(* TODO: This should be moved out of net/http. Requests are not just http. *)
+structure Request =
 struct
-    type t = {method  : HttpMethod.t,
+    type t = {method  : Method.t,
 	      domain  : string,
 	      path    : string,
 	      port    : int,
-	      headers : HttpHeaders.t,
+	      headers : string Headers.t,
 	      body    : string}
+
+    fun new (method: Method.t, uri: string, body: string) : t =
+        let
+	    val uriSplit = String.split (uri, "/")
+	    val hasScheme = String.hasSubstring (uri, "://")
+	    val domainIndex = if hasScheme then 1 else 0
+	    val domain = List.nth (uriSplit, domainIndex)
+	    val pathIndex = if length (uriSplit) > domainIndex + 1 then domainIndex + 1 else ~1
+	    val path = if pathIndex < 0 then "/" else List.nth (uriSplit, pathIndex)
+
+	    fun toHeaders (hs): string Headers.t =
+	        case hs of
+		    [] => Headers.empty
+		  | hd :: tl => Headers.insert (toHeaders tl) (Header.toKv hd)
+        in
+	    {
+	        method  = method,
+		port    = 80,
+		body    = body,
+		domain  = domain,
+		path    = path,
+		headers = toHeaders [Header.ContentLength (String.length body),
+		                     Header.Host (domain)]
+	    }
+	end
 
     fun marshal (request: t) : string =
         let
-	    val method = HttpMethod.toString (#method request)
+	    val method = Method.toString (#method request)
 	    val path = #path request
 	    val intro = method ^ " " ^ path ^ " HTTP/1.1\r\n"
-	    val headers = List.foldl (fn (a, b) => a ^ "\r\n" ^ b) "" (List.map HttpHeader.marshal (#headers request))
+	    val marshalled = (Headers.toList >=> map Header.marshall) (#headers request)
+	    val headers = foldl (fn (a, b) => String.join ([a, b], "\r\n")) "" marshalled
 	    val body = #body request
 	in
 	    intro ^ headers ^ "\r\n\r\n" ^ body
         end
 
-    fun write (socket, request) =
+    fun write (socket, request) : unit =
         let
-	    val bytes = Byte.stringToBytes (marshal (request))
-	    val bytesLen = Word8Vector.length bytes
+	    val bytes = (marshal >=> Byte.stringToBytes) request
+	    val bytesLen = Word8Vector.length (bytes)
 	    val toWrite = 4096
 	    val written = ref 0
 	    fun min (a, b) = if a < b then a else b
 	in
 	    while (!written < bytesLen) do
 	        let
-		    val currentBytes = Word8VectorSlice.slice (bytes, !written, SOME (min (toWrite, bytesLen - !written)))
+		    val theEnd = SOME (min (toWrite, bytesLen - !written))
+		    val currentBytes = Word8VectorSlice.slice (bytes, !written, theEnd)
 		in
 	            written := !written + (Socket.sendVec (socket, currentBytes))
 		end
         end
 end
 
-structure HttpResponse =
+structure Response =
 struct
     exception MalformedResponse of string
 
     type complete = {version : string,
                      status  : int,
 		     reason  : string,
-                     headers : HttpHeaders.t,
+                     headers : string Headers.t,
 	             body    : string}
 
     type incomplete = {response        : complete,
@@ -171,7 +206,7 @@ struct
      *  If there is not a full line to parse, it will store the current
      *  line and return. It attempts to parse as many lines as it can.
      *)
-    fun parse (response: incomplete, stream: string) : incomplete =
+    fun parse (response as {response=rspBody, ...}: incomplete, stream: string) : incomplete =
         let
 	    val stream = (#store response) ^ stream;
 
@@ -182,23 +217,23 @@ struct
 		          then raise MalformedResponse (line)
 	              else
 		          (List.nth (list, 0),
-			   valOf (Int.fromString (List.nth (list, 1))),
+			   (List.nth >=> Int.fromString >=> valOf) (list, 1),
 			   List.nth (list, 2))
 		          
 
             (* -parseHeaderLine: Parses a header line and returns the header. *)
-            fun parseHeaderLine (line: string) : HttpHeader.t option =
+            fun parseHeaderLine (line: string) : Header.t option =
 	        case String.split (line, ":") of
 		      [] => NONE
 		    | [badValue] => NONE
-		    | header :: field => SOME (HttpHeader.unmarshal (line))
+		    | header :: field => SOME (Header.unmarshall (line))
 
-	    and doParse (stream: string, response: incomplete) : incomplete =
+	    and doParse (stream: string, response as {response=rspBody, ...}: incomplete) : incomplete =
 	        case String.indexOf (stream, "\r\n") of
 		    (* No complete line to read yet. *)
-		      ~1 => {
+		      ~1 => { 
 		            headersComplete = false,
-			    response        = #response response,
+			    response        = rspBody,
 			    store           = stream
 		        }
 	            (* Line was just read, a second \r\n is here, so body must be beginning. *)
@@ -206,10 +241,10 @@ struct
                             headersComplete = true,
 			    store           = "",
 			    response        = {
-			        version = #version (#response response),
-				status  = #status (#response response),
-			        reason  = #reason (#response response),
-                                headers = #headers (#response response),
+			        version = #version rspBody, 
+				status  = #status rspBody,
+			        reason  = #reason rspBody,
+                                headers = #headers rspBody,
 				body    = String.substringToEnd(stream, 2)
                             }
                         }
@@ -221,7 +256,7 @@ struct
 	                      | [stream] => (stream, "") (* Likewise shouldn't be possible. *)
 		              | line :: (stream :: _) => (line, stream)
 
-		    	    val response = if #status (#response response) = 0
+		    	    val response = if #status rspBody = 0
 			            then let val (v, s, r) = parseRequestLine (line) in {
 					headersComplete = false,
 					store           = "",
@@ -229,7 +264,7 @@ struct
 					    version = v,
 					    status  = s,
 					    reason  = r,
-					    headers = [],
+					    headers = Headers.empty,
 					    body    = ""
 					}
                                     } end
@@ -241,10 +276,10 @@ struct
 				           headersComplete = false,
 					   store           = "",
 					   response        = {
-					       version     = #version (#response response),
-					       status      = #status (#response response),
-					       reason      = #reason (#response response),
-					       headers     = header :: #headers (#response response),
+					       version     = #version rspBody,
+					       status      = #status rspBody,
+					       reason      = #reason rspBody,
+					       headers     = Headers.insert (#headers rspBody) (Header.toKv (header)),
 					       body        = ""
 					   }
                                        }
@@ -257,11 +292,11 @@ struct
 		    headersComplete = true,
 		    store           = "",
 		    response        = {
-			version = #version (#response response),
-		        status  = #status (#response response),
-		        reason  = #reason (#response response),
-		        headers = #headers (#response response),
-		        body    = #body (#response response) ^ stream
+			version = #version rspBody,
+		        status  = #status rspBody,
+		        reason  = #reason rspBody,
+		        headers = #headers rspBody,
+		        body    = #body rspBody ^ stream
 	            }
 		}
 	    else
@@ -271,57 +306,70 @@ struct
     fun read (socket) =
         let
 	    val toRead = 4096
-	    val read = ref 0
-	    val rsp = ref ""
-	    val response : incomplete ref = ref {
+	    val response : incomplete = {
                 headersComplete = false,
 		store           = "",
 		response        = {
 		    version = "",
 		    status  = 0,
 		    reason  = "",
-                    headers = [],
+                    headers = Headers.empty,
 		    body    = ""
                 }
             }
-	in
-            while (!read > 0 orelse !rsp = "") do
+
+            fun doRead (response: incomplete) : incomplete =
 	        let
-		    val bytes = Socket.recvVec (socket, 4096)
+		    val bytes = Socket.recvVec (socket, toRead)
 		    val len = Word8Vector.length bytes
+		    val read = Byte.bytesToString (bytes)
+                    val response = parse (response, read)
+
+                    val rspBody = (#response response)
+		    val cl = Header.toString (Header.ContentLength 0)
+		    val clValue = Headers.get (#headers rspBody) cl
+		    val clPresent = clValue <> NONE
+		    fun getCl () : int = case valOf (clValue) of
+		        Header.ContentLength i => i
+		      | _ => 0
+
+                    val bodyLength = String.length (#body rspBody)
+		    val readMore =
+		        if not (#headersComplete response) then true
+			else if clPresent andalso getCl () > bodyLength then true
+			else false
 		in
-		    read := (if len < toRead then 0 else 1);
-		    rsp := !rsp ^ Byte.bytesToString (bytes);
-		    if !rsp <> "" then response := parse (!response, !rsp) else ()
+		    if readMore then doRead (response) else response
 		end;
-	    #response (!response)
+	in
+	    #response (doRead (response))
         end
 end
 
-structure HttpServer =
+structure Server =
 struct
 end
 
-structure HttpClient =
+structure Client =
 struct
-    exception E of string
+    exception InvalidHost of string
 
-    fun act (request: HttpRequest.t) : HttpResponse.t =
+    fun act (request: Request.t) : Response.t =
     	let
 	    val domain = #domain request
 	    val socket = INetSock.TCP.socket ()
 	    val address =
 	        let
-		    val entry = case NetHostDB.getByName domain of
-		        NONE => raise E "invalid domain"
+		    val entry = case NetHostDB.getByName (domain) of
+		        NONE => raise InvalidHost (domain)
 		      | SOME entry => entry
 		in
-		    INetSock.toAddr (NetHostDB.addr entry, #port request)
+		    INetSock.toAddr (NetHostDB.addr (entry), #port request)
 		end;
 
             val _ = Socket.connect (socket, address)
-	    val _ = HttpRequest.write (socket, request)
-	    val rsp = HttpResponse.read (socket)
+	    val _ = Request.write (socket, request)
+	    val rsp = Response.read (socket)
 	in
 	    rsp
         end
@@ -329,15 +377,17 @@ end
 
 structure Http =
 struct
-    structure Request = HttpRequest
+    structure Request = Request
 
-    structure Method = HttpMethod
+    structure Method = Method
 
-    structure Header = HttpHeader
+    structure Header = Header
 
-    structure Response = HttpResponse
+    structure Headers = Headers
 
-    structure Client = HttpClient
+    structure Response = Response
 
-    structure Server = HttpServer
+    structure Client = Client
+
+    structure Server = Server
 end
