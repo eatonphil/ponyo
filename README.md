@@ -14,13 +14,14 @@ See below for [why Standard ML](#why-standard-ml).
 ## Example
 
 ```sml
-(* This simple program makes an HTTP GET request against http://api.ipify.org/
+(*
+ * This simple program makes an HTTP GET request against http://api.ipify.org/
  * and prints the response.
  *)
 
 structure client = Http.Client
 structure request = Http.Request
-strucutre method = Http.Method
+structure method = Http.Method
 
 fun main () =
     let
