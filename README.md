@@ -39,39 +39,12 @@ fun main () =
 ## Overview
 
 Modules (WIP):
-* archive
-  * tar
-  * zip
-* compress
-  * gzip
-  * deflate
-* container
-  * tree
-    * [BinarySearchTree](https://github.com/eatonphil/ponyo/blob/master/src/container/tree/binarysearch.sml)
-    * [RedBlackTree](https://github.com/eatonphil/ponyo/blob/master/src/container/tree/redblack.sml)
-  * map
-  * set
-* database
-* encoding
-  * base64
-  * json
-  * html
-  * utf8
-  * xml
-* log
-* math
-* mime
-* misc
-* net
-  * [http](https://github.com/eatonphil/ponyo/blob/master/src/net/http/http.sml)
-  * smtp
-* os
-* sml
-* [string](https://github.com/eatonphil/ponyo/blob/master/src/string/string.sml)
-  * regex
-  * template
-* test
-* time
+* Container
+  * Tree
+    * [BinarySearchTree](https://github.com/eatonphil/ponyo/blob/master/ponyo/Container/Tree/BinarySearchTree.sml)
+* Net
+  * [Http](https://github.com/eatonphil/ponyo/tree/master/ponyo/Net/Http)
+* [String](https://github.com/eatonphil/ponyo/blob/master/ponyo/String/StringExport.sml)
 
 ## Why Standard ML
 
