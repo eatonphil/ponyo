@@ -1,6 +1,8 @@
 structure String = Ponyo.String
 
-fun main () = let in
+fun main () =
+    let in
+        PolyML.print (String.substring ("foobar", 0, 3));
         PolyML.print (String.indexOf ("foobar", "bar"));
 	PolyML.print (String.indexOf ("/www.google.com/", "/"));
 	map PolyML.print (String.split ("Header: foo", ":"));
