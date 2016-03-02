@@ -13,7 +13,7 @@ safe scripting language and for server-side web development. See below for
 
 Additionally, Ponyo brings a commitment to thorough, high-quality documentation. Work on
 Ponyo documentation necessarily includes documentation of Ponyo itself and more complete
-documentation of the Standard ML basis library.
+documentation of the Standard ML basis library as well.
 
 ## Example
 
