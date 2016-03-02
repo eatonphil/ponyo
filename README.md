@@ -38,7 +38,7 @@ fun main () =
 
 ## Overview
 
-Modules (WIP):
+Modules (WIP, see [ROADMAP](https://github.com/eatonphil/ponyo/blob/master/ROADMAP.md)):
 * Container
   * Tree
     * [BinarySearchTree](https://github.com/eatonphil/ponyo/blob/master/ponyo/Container/Tree/BinarySearchTree.sml)
