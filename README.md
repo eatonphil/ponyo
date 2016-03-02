@@ -23,9 +23,9 @@ documentation of the Standard ML basis library.
  * and prints the response.
  *)
 
-structure client = Http.Client
-structure request = Http.Request
-structure method = Http.Method
+structure client = Ponyo.Net.Http.Client
+structure request = Ponyo.Net.Http.Request
+structure method = Ponyo.Net.Http.Method
 
 fun main () =
     let
