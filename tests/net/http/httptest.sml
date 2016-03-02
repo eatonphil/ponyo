@@ -1,3 +1,5 @@
+structure Http = Ponyo.Net.Http;
+
 infix 6 >=>;
 fun f >=> g = fn x => g (f (x))
 

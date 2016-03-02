@@ -16,7 +16,9 @@ sig
     val compare : t * t -> order
 end
 
-functor BinarySearchTree (O: Ord) : BST where type elt = O.t =
+structure BinarySearchTree = struct end;
+
+functor Bst (O: Ord) : BST where type elt = O.t =
 struct
     type elt = O.t
 

@@ -1,6 +1,4 @@
-structure BasisString = String
-
-structure String = 
+structure StringExport = 
 struct
     type t = string
 
@@ -24,7 +22,7 @@ struct
 	else
 	    List.nth (explode source, index)
 
-    and compare (vals: string * string) : order = BasisString.compare (vals)
+    and compare (vals: string * string) : order = Basis.String.compare (vals)
 
     (* -count: The number of times a substring occurs in the string.
      *
@@ -55,23 +53,23 @@ struct
      *      explode ("foo") = [#"f", #"o", #"o"]
      *      explode ("") = []
      *)
-    and explode (source: string) : char list = BasisString.explode (source)
+    and explode (source: string) : char list = Basis.String.explode (source)
 
     (* -fromChar: converts the char to a string *)
-    and fromChar (source: char) : string = BasisString.str (source)
+    and fromChar (source: char) : string = Basis.String.str (source)
 
     (* -hasPrefix: *)
     and hasPrefix (source: string, prefix: string) : bool =
-        BasisString.isPrefix prefix source
+        Basis.String.isPrefix prefix source
 
     and hasSubstring (source: string, substring: string) : bool =
-        BasisString.isSubstring substring source
+        Basis.String.isSubstring substring source
 
     and hasSuffix (source: string, suffix: string) : bool =
-        BasisString.isSuffix suffix source
+        Basis.String.isSuffix suffix source
 
     (* -implode: converts a char list to a string *)
-    and implode (sourceList: char list) : string = BasisString.implode (sourceList)
+    and implode (sourceList: char list) : string = Basis.String.implode (sourceList)
 
     (* -indexOfFrom: Finds the first index of the pattern literal in the source
      * string starting at a given point. Returns -1 if the pattern is
@@ -125,14 +123,14 @@ struct
 
     (* -join: concatenate a list of strings *)
     and join (sources: string list, glue: string) =
-    	BasisString.concatWith glue sources
+    	Basis.String.concatWith glue sources
 
         (* -length: gets the length of the string*)
-    and length (source: string) : int = BasisString.size (source)
+    and length (source: string) : int = Basis.String.size (source)
 
     (* -map: converts the source string to another string  *)
     and map (source: string) (func: char -> char) : string =
-        BasisString.map func source
+        Basis.String.map func source
 
     (* TODO: implement *)
     and replace (source: string, match: string, replacement: string) : string = source

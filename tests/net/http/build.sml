@@ -1,4 +1,7 @@
-PolyML.make "src/string/string.sml";
-PolyML.make "src/container/tree/binarysearch.sml";
-PolyML.make "src/net/http/http.sml";
+structure Basis =
+struct
+    structure String = String
+end;
+
+PolyML.make "ponyo";
 use "tests/net/http/httptest.sml"
