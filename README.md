@@ -42,7 +42,7 @@ Modules (WIP, see [ROADMAP](https://github.com/eatonphil/ponyo/blob/master/ROADM
 * Container
   * Tree
     * [BinarySearchTree](https://github.com/eatonphil/ponyo/blob/master/ponyo/Container/Tree/BinarySearchTree.sml)
-* [Format]()https://github.com/eatonphil/ponyo/blob/master/ponyo/Format/FormatExport.sml)
+* [Format](https://github.com/eatonphil/ponyo/blob/master/ponyo/Format/FormatExport.sml)
 * Net
   * [Http](https://github.com/eatonphil/ponyo/tree/master/ponyo/Net/Http)
 * [String](https://github.com/eatonphil/ponyo/blob/master/ponyo/String/StringExport.sml)
