@@ -1,6 +1,7 @@
 structure Ponyo =
 struct
-    structure Container = Container
     structure String = String
+    structure Format = Format
+    structure Container = Container
     structure Net = Net
 end
