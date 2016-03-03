@@ -19,6 +19,12 @@ struct
 
     type t = complete
 
+    fun version (request: t) = #version request
+    fun status (request: t) = #status request
+    fun reason (request: t) = #reason request
+    fun headers (request: t) = #headers request
+    fun body (request: t) = #body request
+
     fun new (body: string) : t =
         {
             version = "HTTP/1.1",

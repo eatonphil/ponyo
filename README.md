@@ -23,16 +23,18 @@ documentation of the Standard ML basis library as well.
  * and prints the response.
  *)
 
-structure client = Ponyo.Net.Http.Client
-structure request = Ponyo.Net.Http.Request
-structure method = Ponyo.Net.Http.Method
+structure Client = Ponyo.Net.Http.Client
+structure Request = Ponyo.Net.Http.Request
+structure Method = Ponyo.Net.Http.Method
+
+structure Format = Ponyo.Format
 
 fun main () =
     let
-        val req = request.new (method.Get, "api.ipify.org", "")
-        val rsp = client.act (req)
+        val req = Request.new (Method.Get, "", "")
+        val rsp = Client.act ("api.ipify.org", req)
     in
-        print (#body response)
+        Format.println [Response.body rsp]
     end
 ```
 
