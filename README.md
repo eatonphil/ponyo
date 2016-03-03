@@ -18,13 +18,27 @@ documentation of the Standard ML basis library as well.
 Finally, there are only immediate plans to support [Poly/ML](https://github.com/polyml/polyml)
 as the Standard ML implementation of choice.
 
+### Notes
+
+Do not expect a stable API for a while. This library is very exciting but it
+has a (very) long way to go.
+
+Documentation is of the highest priority. If you come to this page, please
+do not share this repo arbitrarily until we get to the point where the documentation
+is good enough for beginners to jump in.
+
 ## Examples
+
+Here are some of the most basic things you can do with Ponyo.
 
 ### Server
 
 ```sml
 (*
  * This simple program serves HTTP requests at localhost:9339.
+ * This example can be built by running:
+ *
+ * $ polyc tests/net/http/server/build.sml # must be in root of ponyo git repo
  *)
 
 structure Server = Ponyo.Net.Http.Server
@@ -45,7 +59,9 @@ fun main () =
 ```sml
 (*
  * This simple program makes an HTTP GET request against http://api.ipify.org/
- * and prints the response.
+ * and prints the response. This example can be built by running:
+ *
+ * $ polyc tests/net/http/client/build.sml # must be in root of ponyo git repo
  *)
 
 structure Client = Ponyo.Net.Http.Client
