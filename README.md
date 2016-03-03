@@ -18,7 +18,9 @@ documentation of the Standard ML basis library as well.
 Finally, there are only immediate plans to support [Poly/ML](https://github.com/polyml/polyml)
 as the Standard ML implementation of choice.
 
-## Example 1
+## Examples
+
+### Server
 
 ```sml
 (*
@@ -31,14 +33,14 @@ structure Format = Ponyo.Format
 fun main () =
     Server.listenAndServe ("", 9339, (fn (req) =>
         let
-	    val path = Request.path req
-	in
-           Response.new (Format.sprintf "Hello world at %s!" [path])
-	end
+            val path = Request.path req
+        in
+            Response.new (Format.sprintf "Hello world at %s!" [path])
+        end
     ))
 ```
 
-## Example 2
+### Client
 
 ```sml
 (*
