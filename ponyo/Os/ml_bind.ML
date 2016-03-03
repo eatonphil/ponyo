@@ -1,4 +1,4 @@
 structure Os =
 struct
-    structure Path = Path
+    structure File = File
 end

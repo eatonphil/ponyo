@@ -57,13 +57,16 @@ struct
 		    0 => fmt
 		| i => mkFmt (i - 1, fmt ^ (if i < len then " " else "") ^ fmtVar)
 
-	    val fmt = if len = 0 then "" else mkFmt (len - 1, fmtVar) ^ "\n"
+	    val fmt = (if len = 0 then "" else mkFmt (len - 1, fmtVar)) ^ "\n"
 	in
 	    sprintf fmt args
 	end
 
     fun println (args: string list) : unit =
-	print (sprintln args)
+	let in
+	    print (sprintln args);
+	    TextIO.flushOut (TextIO.stdOut)
+	end
 
     end
 end

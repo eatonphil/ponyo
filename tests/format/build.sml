@@ -1,7 +1,2 @@
-structure Basis =
-struct
-    structure String = String
-end;
-
-PolyML.make "ponyo";
+PolyML.make "build.sml";
 use "tests/format/formattest.sml"

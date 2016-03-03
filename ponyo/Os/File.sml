@@ -1,54 +1,83 @@
-signature FILE
-struct
-    type mode
+signature FILE =
+sig
+    exception NotReader
+    exception NotWriter
+
+    datatype mode = Read | Write | Append
     type t
 
     val close : t -> unit
-    val open : string * string -> t
+    val use : string * mode -> t
     val read : t -> string list
-    val readFile : string -> string list
+    val readFrom : string -> string list
     val write : t * string -> unit
+    val writeTo : string * string -> unit
 end
 
 structure File : FILE =
 struct
+    exception NotReader
+    exception NotWriter
+
     datatype mode = Read | Write | Append
+
+    type instream = TextIO.instream
+    type outstream = TextIO.outstream
 
     datatype t = Writer of outstream | Reader of instream
 
-    fun open (path: string, mode: mode) : t =
+    (* -use: Opens a file for use in one of three modes: Read, Write,
+     *  and Append.
+     *)
+    fun use (path: string, mode: mode) : t =
         case mode of
-	    Read => TextIO.openIn (path)
-	  | Write => TextIO.openOut (path)
-	  | Append => TextIO.openAppend (path)
+            Read => Reader (TextIO.openIn path)
+	  | Write => Writer (TextIO.openOut path)
+          | Append => Writer (TextIO.openAppend path)
 
-    fun close (file: t) : unit =
-        
+    (* -close: Closes an open file. *)
+    fun close (Writer file) : unit = TextIO.closeOut (file: TextIO.outstream)
+      | close (Reader file) : unit = TextIO.closeIn (file: instream)
 
-    fun read (Writer file) : string list =
+    (* -read: Reads all lines of a file and returns a list of the lines. *)
+    fun read (Reader file) : string list =
         let
-	    fun doRead (f: instream, lines: string list) : string list =
-	        case TextIO.inputLine (f) of
-		    "" => List.rev (lines)
-		  | line => doRead (f, line :: lines)
+            fun doRead (f: instream, lines: string list) : string list =
+                case TextIO.inputLine (f) of
+                    NONE => List.rev (lines)
+                  | SOME line => doRead (f, line :: lines)
 	in
 	    doRead (file, [])
 	end
-      | read (Reader file) : string list =
-        raise 
+      | read (Writer file) = raise NotReader
 
-    fun readFile (path: string) : string list =
+    (* -readFrom: Opens the file at the path and returns all lines
+     *  from the file.
+     *)
+    fun readFrom (path: string) : string list =
         let
-	    val file = TextIO.openIn (path)
+	    val file = use (path, Read)
+	    val lines = read (file)
 	in
-	    read (file);
-	    close (file)
+	    close (file);
+	    lines
 	end
 
+    (* -write: Writes output to the file. *)
     fun write (Writer file, output: string) : unit =
-        let
-	    val vec : vector = Byte.stringToBytes (output)
-	in
-            TextIO.output (file, vec)
+        let in
+            TextIO.output (file, output)
         end
+      | write (Reader file, _) = raise NotWriter
+
+    (* -writeTo: Opens the file at the path and writes the output
+     *  to the file.
+     *)
+    fun writeTo (path: string, output: string) : unit =
+        let
+	    val file = use (path, Write)
+	in
+	    write (file, output);
+	    close (file)
+	end
 end

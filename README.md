@@ -45,6 +45,8 @@ Modules (WIP, see [ROADMAP](https://github.com/eatonphil/ponyo/blob/master/ROADM
 * [Format](https://github.com/eatonphil/ponyo/blob/master/ponyo/Format/FormatExport.sml)
 * Net
   * [Http](https://github.com/eatonphil/ponyo/tree/master/ponyo/Net/Http)
+* Os
+  * [File](https://github.com/eatonphil/ponyo/blob/master/ponyo/Os/File.sml)
 * [String](https://github.com/eatonphil/ponyo/blob/master/ponyo/String/StringExport.sml)
 
 ## Why Standard ML
