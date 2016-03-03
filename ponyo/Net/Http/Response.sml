@@ -1,6 +1,9 @@
 structure Response =
 struct
-    local structure String = StringExport in
+    local
+        structure String = StringExport
+        structure Format = FormatExport
+    in
 
     exception MalformedResponse of string
 
@@ -16,147 +19,52 @@ struct
 
     type t = complete
 
-    (* -parse: Takes a stream of strings and parses it line-by-line.
-     *  If there is not a full line to parse, it will store the current
-     *  line and return. It attempts to parse as many lines as it can.
-     *)
-    fun parse (response as {response=rspBody, ...}: incomplete, stream: string) : incomplete =
+    fun new (body: string) : t =
+        {
+            version = "HTTP/1.1",
+            status  = 200,
+            reason  = "OK",
+            headers = Headers.insert Headers.empty (Header.toKv (Header.ContentLength (String.length body))),
+            body    = body
+        }
+
+    fun parseFirstLine (line: string, response: Connection.t) : t =
+        case String.split (line, " ") of
+            [] =>  raise MalformedResponse (line)
+          | list => if length (list) <> 3
+              then raise MalformedResponse (line)
+              else {
+                  version = List.nth (list, 0),
+                  status  = valOf (Int.fromString (List.nth (list, 1))),
+                  reason  = List.nth (list, 2),
+                  headers = #headers response,
+                  body    = #body response
+              }
+
+    fun read (conn) : t =
         let
-	    val stream = (#store response) ^ stream;
-
-            fun parseRequestLine (line: string) : (string * int * string) =
-	        case String.split (line, " ") of
-		    [] =>  raise MalformedResponse (line)
-		  | list => if length (list) <> 3
-		          then raise MalformedResponse (line)
-	              else
-		          (List.nth (list, 0),
-			   valOf (Int.fromString (List.nth (list, 1))),
-			   List.nth (list, 2))
-		          
-
-            (* -parseHeaderLine: Parses a header line and returns the header. *)
-            fun parseHeaderLine (line: string) : Header.t option =
-	        case String.split (line, ":") of
-		      [] => NONE
-		    | [badValue] => NONE
-		    | header :: field => SOME (Header.unmarshall (line))
-
-	    and doParse (stream: string, response as {response=rspBody, ...}: incomplete) : incomplete =
-	        case String.indexOf (stream, "\r\n") of
-		    (* No complete line to read yet. *)
-		      ~1 => { 
-		            headersComplete = false,
-			    response        = rspBody,
-			    store           = stream
-		        }
-	            (* Line was just read, a second \r\n is here, so body must be beginning. *)
-		    | 0 => {
-                            headersComplete = true,
-			    store           = "",
-			    response        = {
-			        version = #version rspBody, 
-				status  = #status rspBody,
-			        reason  = #reason rspBody,
-                                headers = #headers rspBody,
-				body    = String.substringToEnd(stream, 2)
-                            }
-                        }
-	            (* Line can be read. *)
-		    | j =>
-		        let
-		            val (line, stream) = case String.splitN (stream, "\r\n", 1) of
-		            	[] => (stream, "") (* This case shouldn't be possible. *)
-	                      | [stream] => (stream, "") (* Likewise shouldn't be possible. *)
-		              | line :: (stream :: _) => (line, stream)
-
-		    	    val response = if #status rspBody = 0
-			            then let val (v, s, r) = parseRequestLine (line) in {
-					headersComplete = false,
-					store           = "",
-					response        = {
-					    version = v,
-					    status  = s,
-					    reason  = r,
-					    headers = Headers.empty,
-					    body    = ""
-					}
-                                    } end
-			       else
-			           case parseHeaderLine (line) of
-				       (* Ignore any bad headers. *)
-				       NONE => response
-				     | SOME header => {
-				           headersComplete = false,
-					   store           = "",
-					   response        = {
-					       version     = #version rspBody,
-					       status      = #status rspBody,
-					       reason      = #reason rspBody,
-					       headers     = Headers.insert (#headers rspBody) (Header.toKv (header)),
-					       body        = ""
-					   }
-                                       }
-			in
-			    doParse (stream, response)
-			end
+            val response = Connection.read (conn)
         in
-	    if #headersComplete response
-		then {
-		    headersComplete = true,
-		    store           = "",
-		    response        = {
-			version = #version rspBody,
-		        status  = #status rspBody,
-		        reason  = #reason rspBody,
-		        headers = #headers rspBody,
-		        body    = #body rspBody ^ stream
-	            }
-		}
-	    else
-	        doParse (stream, response)
-	end
-
-    fun read (socket) =
-        let
-	    val toRead = 4096
-	    val response : incomplete = {
-                headersComplete = false,
-		store           = "",
-		response        = {
-		    version = "",
-		    status  = 0,
-		    reason  = "",
-                    headers = Headers.empty,
-		    body    = ""
-                }
-            }
-
-            fun doRead (response: incomplete) : incomplete =
-	        let
-		    val bytes = Socket.recvVec (socket, toRead)
-		    val len = Word8Vector.length bytes
-		    val read = Byte.bytesToString (bytes)
-                    val response = parse (response, read)
-
-                    val rspBody = (#response response)
-		    val cl = Header.toString (Header.ContentLength 0)
-		    val clValue = Headers.get (#headers rspBody) cl
-		    val clPresent = clValue <> NONE
-		    fun getCl () : int = case valOf (clValue) of
-		        Header.ContentLength i => i
-		      | _ => 0
-
-                    val bodyLength = String.length (#body rspBody)
-		    val readMore =
-		        if not (#headersComplete response) then true
-			else if clPresent andalso getCl () > bodyLength then true
-			else false
-		in
-		    if readMore then doRead (response) else response
-		end;
-	in
-	    #response (doRead (response))
+            parseFirstLine (#firstLine response, response)
         end
+
+    fun marshall (response: t) =
+        let
+            val version = #version response
+            val status = Format.int (#status response)
+            val reason = #reason response
+            val intro = Format.sprintf "% % %\r\n" [version, status, reason]
+            val marshalled = map Header.marshall (Headers.toList (#headers response))
+            val headers = if length marshalled > 1
+                    then foldl (fn (a, b) => String.join ([a, b], "\r\n")) "" marshalled
+                else hd marshalled
+            val body = #body response
+        in
+            intro ^ headers ^ "\r\n\r\n" ^ body
+        end
+
+    fun write (conn, response: t) : unit =
+        Connection.write (conn, marshall response)
+
     end
 end

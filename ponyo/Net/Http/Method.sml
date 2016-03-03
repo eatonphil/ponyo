@@ -22,7 +22,7 @@ struct
       | "POST"    => Post
       | "PUT"     => Put
       | "TRACE"   => Trace
-      | _         => Unknown (v)
+      | u         => Unknown (u)
 
     fun toString v = case v of
         Connect   => "CONNECT"

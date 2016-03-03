@@ -3,22 +3,23 @@ structure Request =
 struct
     local structure String = StringExport in
 
+    exception MalformedRequest of string
+
     type t = {method  : Method.t,
-	      domain  : string,
 	      path    : string,
-	      port    : int,
+              version : string,
 	      headers : string Headers.t,
 	      body    : string}
 
-    fun new (method: Method.t, uri: string, body: string) : t =
-        let
-	    val uriSplit = String.split (uri, "/")
-	    val hasScheme = String.hasSubstring (uri, "://")
-	    val domainIndex = if hasScheme then 1 else 0
-	    val domain = List.nth (uriSplit, domainIndex)
-	    val pathIndex = if length (uriSplit) > domainIndex + 1 then domainIndex + 1 else ~1
-	    val path = if pathIndex < 0 then "/" else List.nth (uriSplit, pathIndex)
+    fun method (request: t) = #method request
+    fun path (request: t) = #path request
+    fun version (request: t) = #version request
+    fun headers (request: t) = #headers request
+    fun body (request: t) = #body request
 
+    fun new (method: Method.t, path: string, body: string) : t =
+        let
+            val path = if String.hasPrefix (path, "/") then path else "/" ^ path
 	    fun toHeaders (hs): string Headers.t =
 	        case hs of
 		    [] => Headers.empty
@@ -26,14 +27,32 @@ struct
         in
 	    {
 	        method  = method,
-		port    = 80,
-		body    = body,
-		domain  = domain,
 		path    = path,
-		headers = toHeaders [Header.ContentLength (String.length body),
-		                     Header.Host (domain)]
+                version = "HTTP/1.1",
+		headers = toHeaders [Header.ContentLength (String.length body)],
+		body    = body
 	    }
 	end
+
+    fun parseFirstLine (line: string, request: Connection.t) : t =
+        case String.split (line, " ") of
+            [] => raise MalformedRequest (line)
+          | list => if length (list) <> 3
+                  then raise MalformedRequest (line)
+              else {
+                  method  = Method.fromString (List.nth (list, 0)),
+                  path    = List.nth (list, 1),
+                  version = List.nth (list, 2),
+                  headers = #headers request,
+                  body    = #body request
+              }
+
+    fun read (conn) : t =
+        let
+            val request = Connection.read (conn)
+        in
+            parseFirstLine (#firstLine request, request)
+        end
 
     fun marshall (request: t) : string =
         let
@@ -47,22 +66,8 @@ struct
 	    intro ^ headers ^ "\r\n\r\n" ^ body
         end
 
-    fun write (socket, request) : unit =
-        let
-	    val bytes = Byte.stringToBytes (marshall request)
-	    val bytesLen = Word8Vector.length (bytes)
-	    val toWrite = 4096
-	    val written = ref 0
-	    fun min (a, b) = if a < b then a else b
-	in
-	    while (!written < bytesLen) do
-	        let
-		    val theEnd = SOME (min (toWrite, bytesLen - !written))
-		    val currentBytes = Word8VectorSlice.slice (bytes, !written, theEnd)
-		in
-	            written := !written + (Socket.sendVec (socket, currentBytes))
-		end
-        end
+    fun write (conn, request) : unit =
+        Connection.write (conn, marshall request)
 
     end
 end

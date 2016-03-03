@@ -10,5 +10,6 @@ fun main () =
 	PolyML.print (String.stripAll ("\t    Header \t ", [" ", "\t"]));
 	PolyML.print (String.count ("///https://www.google.com//", "//"));
         map PolyML.print (String.split ("https://www.google.com/", "//"));
+        PolyML.print (String.join (["1", "2"], "b"));
         ()
     end

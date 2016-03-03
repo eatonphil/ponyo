@@ -5,8 +5,8 @@ fun f >=> g = fn x => g (f (x))
 
 fun main () =
     let
-        val req = (Http.Method.Get, "http://api.ipify.org", "")
-        val rsp = (Http.Request.new >=> Http.Client.act) req
+        val req = Request.new (Http.Method.Get, "", "")
+        val rsp = Http.Client.act ("api.ipify.org", req)
 	val headers = Http.Headers.toList (#headers rsp)
     in
         map (Header.marshall >=> PolyML.print) headers;

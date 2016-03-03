@@ -6,4 +6,5 @@ struct
     structure Request = Request
     structure Response = Response
     structure Client = Client
+    structure Server = Server
 end

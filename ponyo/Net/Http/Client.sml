@@ -2,9 +2,16 @@ structure Client =
 struct
     exception InvalidHost of string
 
-    fun act (request: Request.t) : Response.t =
+    fun act (domain: string, request: Request.t) : Response.t =
     	let
-	    val domain = #domain request
+            val host = Header.toKv (Header.Host domain)
+            val request = {
+                method  = #method request,
+                path    = #path request,
+                version = #version request,
+                headers = Headers.insert (#headers request) host,
+                body    = #body request
+            }
 	    val socket = INetSock.TCP.socket ()
 	    val address =
 	        let
@@ -12,13 +19,11 @@ struct
 		        NONE => raise InvalidHost (domain)
 		      | SOME entry => entry
 		in
-		    INetSock.toAddr (NetHostDB.addr (entry), #port request)
-		end;
-
-            val _ = Socket.connect (socket, address)
-	    val _ = Request.write (socket, request)
-	    val rsp = Response.read (socket)
-	in
-	    rsp
+		    INetSock.toAddr (NetHostDB.addr (entry), 80)
+		end
+        in
+            Socket.connect (socket, address);
+	    Request.write (socket, request);
+	    Response.read (socket)
         end
 end
