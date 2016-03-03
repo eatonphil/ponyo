@@ -2,20 +2,18 @@ structure FormatExport =
 struct
     local structure String = StringExport in
 
-    type t = {str: unit -> string}
+    type t = unit -> string
 
     val formatVariable : string ref = ref "%"
 
-    fun make (fmt: unit -> string) : t =
-	{str=fmt}
+    fun int (i: int) () = Int.toString (i)
+    fun real (r: real) () = Real.toString (r)
+    fun str (s: string) () = s
+    fun char (c: char) () = Char.toString (c)
+    fun list (l: t list) () =
+        "[" ^ (String.join (map (fn (a: t) => a ()) l, ", ")) ^ "]"
 
-    fun int (i: int) : t =
-	make (fn () => Int.toString (i))
-
-    fun str (s: string) : t =
-	make (fn () => s)
-
-    val last = make (fn () => "")
+    fun last () = ""
 
     val null = {1=last}
 
@@ -37,7 +35,7 @@ struct
 		let
 		    val (replacement, accessors) = case accessors of
 		        [] => (formatVariable, [])
-		      | hd :: tl => (#str ((hd record): t) (), tl)
+		      | hd :: tl => ((hd record) (), tl)
 
                     val offset = index + String.length (formatVariable)
 		in
