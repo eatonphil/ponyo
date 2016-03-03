@@ -2,22 +2,16 @@ structure FormatExport =
 struct
     local structure String = StringExport in
 
-    type t = unit -> string
-
     val formatVariable : string ref = ref "%"
 
-    fun int (i: int) () = Int.toString (i)
-    fun real (r: real) () = Real.toString (r)
-    fun str (s: string) () = s
-    fun char (c: char) () = Char.toString (c)
-    fun list (l: t list) () =
-        "[" ^ (String.join (map (fn (a: t) => a ()) l, ", ")) ^ "]"
+    fun int (i: int) = Int.toString (i)
+    fun real (r: real) = Real.toString (r)
+    fun str (s: string) = "\" ^ s ^ \""
+    fun char (c: char) = Char.toString (c)
+    fun list (l: string list) =
+        "[" ^ (String.join (l, ", ")) ^ "]"
 
-    fun last () = ""
-
-    val null = {1=last}
-
-    fun sprintf (fmt: string) record accessors : string =
+    fun sprintf (fmt: string) (args : string list) : string =
 	let
 	    val formatVariable = !formatVariable
 
@@ -25,39 +19,39 @@ struct
 		String.length (fmt) > index + 1 andalso
 		String.hasPrefix (String.substringToEnd (fmt, index + 1), formatVariable)
 
-	    fun sprintfNext (index: int, accessors) : string =
-		sprintf (String.substringToEnd (fmt, index)) record accessors
+	    fun sprintfNext (index: int, args) : string =
+		sprintf (String.substringToEnd (fmt, index)) args
 
 	    fun escapedLength (start: int) : int =
 		start + 2 * (String.length formatVariable)
 
 	    fun replaceAndContinue (index: int) : string =
 		let
-		    val (replacement, accessors) = case accessors of
+		    val (replacement, args) = case args of
 		        [] => (formatVariable, [])
-		      | hd :: tl => ((hd record) (), tl)
+		      | hd :: tl => (hd, tl)
 
                     val offset = index + String.length (formatVariable)
 		in
-		    replacement ^ sprintfNext (offset, accessors)
+		    replacement ^ sprintfNext (offset, args)
 		end
 	in
 	    case String.indexOf (fmt, formatVariable) of
 	        ~1 => fmt
 	       | i => String.substring (fmt, 0, i) ^
 	           (if isEscape (i)
-		        then formatVariable ^ sprintfNext (escapedLength (i), accessors)
+		        then formatVariable ^ sprintfNext (escapedLength (i), args)
                     else
 		        replaceAndContinue (i))
 	end
 
-    fun printf (fmt: string) record accessors : unit =
-	print (sprintf fmt record accessors)
+    fun printf (fmt: string) (args: string list) : unit =
+	print (sprintf fmt args)
 
-    fun sprintln record accessors : string =
+    fun sprintln (args: string list) : string =
 	let
 	    val fmtVar = !formatVariable
-	    val len = length accessors
+	    val len = length args
 	    fun mkFmt (i: int, fmt: string) =
 		case i of
 		    0 => fmt
@@ -65,11 +59,11 @@ struct
 
 	    val fmt = if len = 0 then "" else mkFmt (len - 1, fmtVar) ^ "\n"
 	in
-	    sprintf fmt record accessors
+	    sprintf fmt args
 	end
 
-    fun println record accessors : unit =
-	print (sprintln record accessors)
+    fun println (args: string list) : unit =
+	print (sprintln args)
 
     end
 end
