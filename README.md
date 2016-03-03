@@ -31,7 +31,7 @@ is good enough for beginners to jump in.
 
 Here are some of the most basic things you can do with Ponyo.
 
-### Server
+### HTTP Server
 
 ```sml
 (*
@@ -54,7 +54,7 @@ fun main () =
     ))
 ```
 
-### Client
+### HTTP Client
 
 ```sml
 (*
