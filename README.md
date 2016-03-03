@@ -15,7 +15,30 @@ Additionally, Ponyo brings a commitment to thorough, high-quality documentation.
 Ponyo documentation necessarily includes documentation of Ponyo itself and more complete
 documentation of the Standard ML basis library as well.
 
-## Example
+Finally, there are only immediate plans to support [Poly/ML](https://github.com/polyml/polyml)
+as the Standard ML implementation of choice.
+
+## Example 1
+
+```sml
+(*
+ * This simple program serves HTTP requests at localhost:9339.
+ *)
+
+structure Server = Ponyo.Net.Http.Server
+structure Format = Ponyo.Format
+
+fun main () =
+    Server.listenAndServe ("", 9339, (fn (req) =>
+        let
+	    val path = Request.path req
+	in
+           Response.new (Format.sprintf "Hello world at %s!" [path])
+	end
+    ))
+```
+
+## Example 2
 
 ```sml
 (*
@@ -37,6 +60,7 @@ fun main () =
         Format.println [Response.body rsp]
     end
 ```
+
 
 ## Overview
 
