@@ -7,9 +7,6 @@
 \#*\#
 *_flymake.*
 
-// Golang artifacts
-.vendor
-
 // App artifacts
 dist
 certs
