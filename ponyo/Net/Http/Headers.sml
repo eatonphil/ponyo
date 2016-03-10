@@ -9,7 +9,7 @@ struct
 	  | SOME a => SOME (f a)
     in
 
-    structure HeadersBst = Bst(String);
+    structure HeadersBst = Ponyo_Container_BinarySearchTree(String);
 
     open HeadersBst;
 

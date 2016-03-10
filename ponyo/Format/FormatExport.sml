@@ -11,6 +11,13 @@ struct
     fun list (l: string list) =
         "[" ^ (String.join (l, ", ")) ^ "]"
 
+    (* -sprintf: Returns a formatted string based on the given format
+     *  string and the arguments replacing the format variable.
+     *
+     *  Ex:
+     *      sprintf "%: %" ["12/2/24", "ERROR"] = "12/2/24: ERROR"
+     *      sprintf "% + % = %" [int 1, int 2, int (1 + 2)] = "1 + 2 = 3"
+     *)
     fun sprintf (fmt: string) (args : string list) : string =
 	let
 	    val formatVariable = !formatVariable
@@ -45,9 +52,15 @@ struct
 		        replaceAndContinue (i))
 	end
 
+    (* -printf: Prints the formatted string to stdout. *)
     fun printf (fmt: string) (args: string list) : unit =
 	print (sprintf fmt args)
 
+    (* -sprintln: Returns the default formatted string followed by a newline.
+     *
+     *  Ex:
+     *      sprintln ["1", int 1] = "1 1\n"
+     *)
     fun sprintln (args: string list) : string =
 	let
 	    val fmtVar = !formatVariable
@@ -62,6 +75,9 @@ struct
 	    sprintf fmt args
 	end
 
+    (* -println Prints the formatted string to stdout with a newline and a
+     *  flush.
+     *)
     fun println (args: string list) : unit =
 	let in
 	    print (sprintln args);

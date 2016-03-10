@@ -1,4 +1,4 @@
-signature BST =
+signature BINARYSEARCHTREE =
 sig
     type elt
     type 'a t
@@ -18,14 +18,18 @@ end
 
 structure BinarySearchTree = struct end;
 
-functor Bst (O: Ord) : BST where type elt = O.t =
+functor Ponyo_Container_BinarySearchTree (O: Ord) : BINARYSEARCHTREE where type elt = O.t =
 struct
     type elt = O.t
 
     datatype 'a t = Leaf | Node of 'a t * elt * 'a * 'a t
 
+    (* -empty: Returns a new empty tree. *)
     val empty : 'a t = Leaf
 
+    (* -insert: Creates a new tree from the original with the given
+     *  key-val pair.
+     *)
     fun insert (bst: 'a t) (newKey: elt, newVal: 'a) : 'a t =
     	case bst of
 	    Leaf => Node (Leaf, newKey, newVal, Leaf)
@@ -37,6 +41,9 @@ struct
 	            | GREATER => Node (l, k, v, insert r (newKey, newVal))
 	      end
 
+    (* -get: Searches the tree for the key and returns the value if it
+     *  exists.
+     *)
     fun get (bst: 'a t) (theKey: elt) : 'a option =
         case bst of
 	    Leaf => NONE
@@ -48,6 +55,9 @@ struct
 		    | GREATER => get r theKey
               end
 
+    (* -toList: Runs the search tree from left to right and returns the
+     *  tree as an ordered list.
+     *)
     fun toList (bst: 'a t) : (elt * 'a) list =
         case bst of
 	    Leaf => []

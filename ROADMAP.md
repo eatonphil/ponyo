@@ -8,6 +8,8 @@ Modules (WIP):
   * deflate
 * container
   * tree
+    * radix tree
+    * red black tree
   * map
   * set
 * database
@@ -21,8 +23,8 @@ Modules (WIP):
 * math
 * mime
 * net
-  * http
   * smtp
+  * imap
 * os
 * string
   * regex
