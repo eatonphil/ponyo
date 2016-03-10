@@ -70,6 +70,11 @@ fun main () =
     end
 ```
 
+## Getting started
+
+See the tests directory (which is really more of just examples at this point). Tutorials
+and practical applications built on Ponyo are the next step.
+
 ## Overview
 
 Modules (WIP, see [ROADMAP](https://github.com/eatonphil/ponyo/blob/master/ROADMAP.md)):
