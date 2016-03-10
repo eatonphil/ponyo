@@ -18,15 +18,6 @@ documentation of the Standard ML basis library as well.
 Finally, there are only immediate plans to support [Poly/ML](https://github.com/polyml/polyml)
 as the Standard ML implementation of choice.
 
-### Notes
-
-Do not expect a stable API for a while. This library is very exciting but it
-has a (very) long way to go.
-
-Documentation is of the highest priority. If you come to this page, please
-do not share this repo arbitrarily until we get to the point where the documentation
-is good enough for beginners to jump in.
-
 ## Examples
 
 Here are some of the most basic things you can do with Ponyo.
@@ -79,11 +70,11 @@ fun main () =
     end
 ```
 
-
 ## Overview
 
 Modules (WIP, see [ROADMAP](https://github.com/eatonphil/ponyo/blob/master/ROADMAP.md)):
 * Container
+  * [List](https://github.com/eatonphil/ponyo/blob/master/ponyo/Container/List.sml)
   * Tree
     * [BinarySearchTree](https://github.com/eatonphil/ponyo/blob/master/ponyo/Container/Tree/BinarySearchTree.sml)
 * [Format](https://github.com/eatonphil/ponyo/blob/master/ponyo/Format/FormatExport.sml)
@@ -92,6 +83,19 @@ Modules (WIP, see [ROADMAP](https://github.com/eatonphil/ponyo/blob/master/ROADM
 * Os
   * [File](https://github.com/eatonphil/ponyo/blob/master/ponyo/Os/File.sml)
 * [String](https://github.com/eatonphil/ponyo/blob/master/ponyo/String/StringExport.sml)
+
+## Direction
+
+For the time being, documentation will be within the source itself. However,
+a self-hosted site is in the pipeline and will help to increase legibility. One
+of the most important tools in this goal is a documentation generator for
+Standard ML source code.
+
+Do not expect a stable API for a while. This library is exciting but it has a (very)
+long way to go. Speed will also come in time. Today, a useful library with good
+documentation is the priority.
+
+For specific goals regarding modules, see the [roadmap](https://github.com/eatonphil/ponyo/blob/master/ROADMAP.md).
 
 ## Why Standard ML
 
