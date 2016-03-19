@@ -1,85 +1,28 @@
 # Ponyo
 
-Ponyo is a comprehensive high-level library for Standard ML. It is inspired
+Ponyo is a comprehensive high-level library and toolkit for Standard ML. It is inspired
 by [POCO](http://pocoproject.org/), the [Go standard library](https://golang.org/pkg/),
-and the [Python standard library](https://docs.python.org/3/library/). It is the first
-such library in Standard ML and addresses some of the gaps found in
-a standard that has seen little revision in almost 20 years.
+and the [Python standard library](https://docs.python.org/3/library/). While
+the Standard ML basis library is (perhaps) surprisingly solid, there are
+still a number of gaps between it and the Standard ML ecosystem in general.
 
 In particular, there are discrepancies between the needs of PL researchers and the
 average programmer interested in ML. Ponyo is geared toward use on the server as a
-safe scripting language and for server-side web development. See below for
-[why Standard ML](#why-standard-ml).
+safe scripting language and for server-side web development. As such, Ponyo
+provides additional tools to ease development - including build and documentation
+generation tools.
 
-Additionally, Ponyo brings a commitment to thorough, high-quality documentation. Work on
-Ponyo documentation necessarily includes documentation of Ponyo itself and more complete
-documentation of the Standard ML basis library as well.
-
-Finally, there are only immediate plans to support [Poly/ML](https://github.com/polyml/polyml)
-as the Standard ML implementation of choice.
-
-## Examples
-
-Here are some of the most basic things you can do with Ponyo.
-
-### HTTP Server
-
-```sml
-(*
- * This simple program serves HTTP requests at localhost:9339.
- * This example can be built by running:
- *
- * $ polyc tests/net/http/server/build.sml # must be in root of ponyo git repo
- *)
-
-structure Server = Ponyo.Net.Http.Server
-structure Format = Ponyo.Format
-
-fun main () =
-    Server.listenAndServe ("", 9339, (fn (req) =>
-        let
-            val path = Request.path req
-        in
-            Response.new (Format.sprintf "Hello world at %s!" [path])
-        end
-    ))
-```
-
-### HTTP Client
-
-```sml
-(*
- * This simple program makes an HTTP GET request against http://api.ipify.org/
- * and prints the response. This example can be built by running:
- *
- * $ polyc tests/net/http/client/build.sml # must be in root of ponyo git repo
- *)
-
-structure Client = Ponyo.Net.Http.Client
-structure Request = Ponyo.Net.Http.Request
-structure Method = Ponyo.Net.Http.Method
-
-structure Format = Ponyo.Format
-
-fun main () =
-    let
-        val req = Request.new (Method.Get, "", "")
-        val rsp = Client.act ("api.ipify.org", req)
-    in
-        Format.println [Response.body rsp]
-    end
-```
-
-## Getting started
-
-See the tests directory (which is really more of just examples at this point). Tutorials
-and practical applications built on Ponyo are the next step.
+Ponyo is intended to work on [Poly/ML](https://github.com/polyml/polyml) and Unix
+systems. See below for [why Standard ML](#why-standard-ml).
 
 ## Overview
 
+Tools:
+* ponyo-doc: documentation generation
+* ponyo-build: built tool
+
 Modules (WIP, see [ROADMAP](https://github.com/eatonphil/ponyo/blob/master/ROADMAP.md)):
 * Container
-  * [List](https://github.com/eatonphil/ponyo/blob/master/ponyo/Container/List.sml)
   * Tree
     * [BinarySearchTree](https://github.com/eatonphil/ponyo/blob/master/ponyo/Container/Tree/BinarySearchTree.sml)
 * [Format](https://github.com/eatonphil/ponyo/blob/master/ponyo/Format/FormatExport.sml)
@@ -87,20 +30,8 @@ Modules (WIP, see [ROADMAP](https://github.com/eatonphil/ponyo/blob/master/ROADM
   * [Http](https://github.com/eatonphil/ponyo/tree/master/ponyo/Net/Http)
 * Os
   * [File](https://github.com/eatonphil/ponyo/blob/master/ponyo/Os/File.sml)
+  * [Cli](https://github.com/eatonphil/ponyo/blob/master/ponyo/Os/Cli/CliExport.sml)
 * [String](https://github.com/eatonphil/ponyo/blob/master/ponyo/String/StringExport.sml)
-
-## Direction
-
-For the time being, documentation will be within the source itself. However,
-a self-hosted site is in the pipeline and will help to increase legibility. One
-of the most important tools in this goal is a documentation generator for
-Standard ML source code.
-
-Do not expect a stable API for a while. This library is exciting but it has a (very)
-long way to go. Speed will also come in time. Today, a useful library with good
-documentation is the priority.
-
-For specific goals regarding modules, see the [roadmap](https://github.com/eatonphil/ponyo/blob/master/ROADMAP.md).
 
 ## Why Standard ML
 
