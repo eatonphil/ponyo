@@ -12,7 +12,8 @@ struct
             val response = router (request);
         in
             Format.println [Request.marshall request];
-            Response.write (conn, response)
+            Response.write (conn, response);
+            Socket.close (conn)
         end
 
     fun serve (sock, router: router) : unit =
@@ -47,6 +48,7 @@ struct
             Socket.listen (sock, !MAX_CONN);
             Socket.Ctl.setREUSEADDR (sock, true);
             serve (sock, router);
+            Socket.close (sock);
             ()
         end
 
