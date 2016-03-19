@@ -23,7 +23,7 @@ systems. See below for [why Standard ML](#why-standard-ml).
 Ponyo is a work in progress. For a roadmap of modules, see ROADMAP.md
 
 * ponyo-doc: generates HTML from signatures (currently)
-  * As the Standard ML parser matures, it will not need to parse signatures
+  * as the Standard ML parser matures, it will not need to parse signatures
 * ponyo-build: high-level tool for building (Ponyo) projects
 * containers
   * binary search tree
