@@ -6,11 +6,14 @@ and the [Python standard library](https://docs.python.org/3/library/). While
 the Standard ML basis library is (perhaps) surprisingly solid, there are
 still a number of gaps to fill there and in the Standard ML ecosystem in general.
 
-In particular, there are discrepancies between the needs of PL researchers and the
-average programmer interested in ML. Ponyo is geared toward use on the server as a
-safe scripting language and for server-side web development. As such, Ponyo
-provides additional tools to ease development - including build and documentation
-generation tools.
+Ponyo is geared toward use on the server as a safe scripting language and for
+server-side web development. As such, Ponyo provides additional tools to ease
+development - including build and documentation generation tools. Ponyo
+(the library and tooling) is intended to be useful both as a whole and piece by piece.
+For instance, the documentation generator can be used to generate documentation
+for any Standard ML project. The build tool can be used to manage any Poly/ML
+compilation. And the Standard ML parser can be used as a compiler frontend.
+Down the line, Ponyo could include code generation tools for LLVM, BEAM, or the JVM.
 
 Ponyo is intended to work on [Poly/ML](https://github.com/polyml/polyml) and Unix
 systems. See below for [why Standard ML](#why-standard-ml).
@@ -19,8 +22,9 @@ systems. See below for [why Standard ML](#why-standard-ml).
 
 Ponyo is a work in progress. For a roadmap of modules, see ROADMAP.md
 
-* ponyo-doc - documentation generator
-* ponyo-build - build tool
+* ponyo-doc: generates HTML from signatures (currently)
+  * As the Standard ML parser matures, it will not need to parse signatures
+* ponyo-build: high-level tool for building (Ponyo) projects
 * containers
   * binary search tree
 * HTTP client and server
