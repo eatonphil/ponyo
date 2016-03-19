@@ -4,9 +4,6 @@ structure Parser = Ponyo.Sml.Parser
 structure Cli = Ponyo.Os.Cli
 structure Format = Ponyo.Format
 
-fun generateDocumentation (inDir: string, outDir: string) : unit =
-    ()
-
 structure Main =
 struct
     val directoryFlag = Cli.Flag.Anon "directory"
@@ -31,7 +28,10 @@ struct
 
     fun main () =
         let
-            val args = Cli.getArgs (spec) handle Fail s => (PolyML.print (s); [])
+            val args = Cli.getArgs (spec) handle
+                Fail reason =>
+                    (Format.printf "ERROR: %\n\n" [reason]; Cli.doHelp (spec); [])
+
             fun getAnon (flag) = Cli.getAnon (args, flag)
             fun getNamed (flag) = Cli.getNamed (args, flag)
 

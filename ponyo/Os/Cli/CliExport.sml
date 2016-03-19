@@ -35,13 +35,15 @@ struct
                   | spec as (name as (short, long), argType, desc) :: specs =>
                 genNamedHelp (specs, (case argType of
                     Arg.Optional (_, default) =>
-                        (Format.sprintf "[-%, --%=\"default\"]" [short, long],
+                        (if default <> "" andalso default <> "false"
+                            then Format.sprintf "[-%=\"%\"]" [short, default]
+                         else Format.sprintf "[-%]" [short],
                          Format.sprintf "-%, --%\t%" [short, long, desc])
                   | Arg.Basic _ =>
-                        (Format.sprintf "[-%, --%]" [short, long],
+                        (Format.sprintf "[-%]" [short],
                          Format.sprintf "-%, --%\t%" [short, long, desc])
                   | Arg.List (Arg.Basic (_)) =>
-                        (Format.sprintf "[-%, --%]..." [short, long],
+                        (Format.sprintf "[-%]..." [short],
                          Format.sprintf "-%, --%\t%" [short, long, desc])
                   | _ => raise Fail "Named argument error.") :: usage)
 
