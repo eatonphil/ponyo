@@ -5,4 +5,5 @@ struct
     structure Container = Container
     structure Net = Net
     structure Os = Os
+    structure Sml = Sml
 end

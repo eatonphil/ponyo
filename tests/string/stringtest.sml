@@ -15,5 +15,6 @@ fun main () =
         print "\n\n";
         map PolyML.print (String.split ("structure F : S =", "structure"));
         PolyML.print (String.join (["1", "2"], "b"));
+        PolyML.print (String.replace ("foo\nbar", "\n", " "));
         ()
     end
