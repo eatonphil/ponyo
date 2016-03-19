@@ -1,0 +1,68 @@
+/* https://coolors.co/app/2f1847-624763-c62e65-f9b3d1-d63af9 */
+
+.container-small {
+    max-width: 600px;
+}
+
+pre,
+pre code,
+.hljs {
+    max-width: 600px;
+    background: white !important;
+}
+
+.nav {
+    display: inline-block;
+}
+
+.nav a {
+    padding: 0 10px;
+}
+
+.nav:first-of-type a {
+    padding-left: 0;
+}
+
+body > header {
+    background: #c62e65;
+    padding: 15px 0;
+}
+
+body > header .nav a {
+    color: white;
+}
+
+body > .header2 {
+    background: #2f1847;
+    padding: 50px 0;
+    color: white;
+}
+
+body > .header2 h1 {
+    margin-top: 0;
+}
+
+body > .header2 a {
+    color: white;
+    text-decoration: underline;
+}
+
+body > .header2 iframe {
+    margin-top: 15px;
+}
+
+.page {
+    padding: 50px 0;
+}
+
+.page:nth-child(even) {
+    background: #eee;
+    border: 1px solid #ccc;
+    border-left: 0;
+    border-right: 0;
+}
+
+footer {
+    border-top: 1px solid #ccc;
+    padding: 50px 0;
+}

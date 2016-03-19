@@ -28,7 +28,7 @@ struct
                 Fail reason =>
                     (Format.printf "ERROR: %\n\n" [reason]; Cli.doHelp (spec); [])
             val [cmd] = Cli.getAnon (args, commandFlag)
-            val rest = Cli.getRest (args)
+            val rest = tl (CommandLine.arguments ())
         in
             case cmd of
                 "doc" => ponyo (cmd, rest)

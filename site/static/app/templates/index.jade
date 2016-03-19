@@ -1,0 +1,93 @@
+extends ./tmpl/base.jade
+
+block append css
+    link(rel="stylesheet", href="/css/vendor/highlightjs/default.css")
+
+block body
+    .header2
+        .container
+            h1 Ponyo
+            h3 Library and toolkit for Standard ML
+            nav
+                .nav
+                    a(href="#about") About
+                .nav
+                    a(href="#hello-world") Hello world!
+                .nav
+                    a(href="#installation") Installation
+            iframe(src="https://ghbtns.com/github-btn.html?user=eatonphil&repo=ponyo&type=star&count=true&size=large", frameborder="0", scrolling="0", width="160px", height="30px")
+
+    .page#about
+        .container
+            .container-small
+                h2 About
+                p.
+                    Ponyo is a modern, high-level, comprehensive library for Standard ML.
+                    It is also a set of tools for working with Standard ML projects.
+                p.
+                    Ponyo is a work in progress, so keep tuned for <a href="/news">news</a>!
+                    To follow the Standard ML community in general, check out
+                    <a href="https://reddit.com/r/sml">/r/sml</a>. Additionally, the /r/sml
+                    <a href="https://www.reddit.com/r/sml/wiki">wiki</a> is a great source
+                    of information for getting started in Standard ML.
+                p Features:
+                ul
+                    li HTTP server/client
+                    li Cli tools
+                    li Standard ML parser/lexer
+                    li Build tool
+                    li Documentation generator
+                    li Much more on the <a href="https://github.com/eatonphil/ponyo/blob/master/ROADMAP.md">roadmap</a>
+
+    .page#hello-world
+        .container
+            .container-small
+                h2 Hello world!
+
+                pre
+                    code(class="ocaml").
+                        structure Format = Ponyo.Format
+
+                        fun main () =
+                            Format.printf "Hello %!\n" ["world"]
+
+                pre
+                    code(class="bash").
+                        $ ponyo make helloworld.sml -o helloworld
+                        $ ./helloworld
+
+                p.
+                    For more examples, check out the Ponyo
+                    <a href="https://github.com/eatonphil/ponyo/tree/master/tool/ponyo">tool</a>
+                    directory, the <a href="https://github.com/eatonphil/ponyo/tree/master/tests">"tests"</a>
+                    directory, and the <a href="https://github.com/eatonphil/ponyo/tree/master/site">source</a>
+                    for this site.
+
+    .page#installation
+        .container
+            .container-small
+                h2 Installation
+
+                p.
+                    Ponyo is a Standard ML library. The Standard ML implementation of choice
+                    is <a href="https://github.com/polyml/polyml">Poly/ML</a>. See the Poly/ML
+                    Github page for installation instructions.
+
+                p After Poly/ML has been installed, build Ponyo from git:
+                pre
+                    code(class="bash").
+                        $ git clone https://github.com/eatonphil/ponyo && cd ponyo
+                        $ make
+                p Finally, add the following lines to your ~/.profile:
+                pre
+                    code(class="bash").
+                        # Ponyo path settings.
+                        export PONYO_ROOT="<path-to-git-repo>"
+                        export PATH=$PATH:$PONYO_ROOT/bin
+                p.
+                    Note: Many of the Ponyo tools will not work with other implementations or
+                    on Windows.
+
+block append js
+    script(src="/js/vendor/highlightjs/highlight.pack.js")
+    script hljs.initHighlightingOnLoad();

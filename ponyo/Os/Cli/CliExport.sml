@@ -231,8 +231,5 @@ struct
     fun getNamed (args: args list, flag: Flag.named) : string list =
         getArg (args, Flag.N flag)
 
-    fun getRest (args: args list) : string list =
-        []
-
     end
 end
