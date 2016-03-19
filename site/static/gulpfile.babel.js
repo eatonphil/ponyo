@@ -7,7 +7,7 @@ import webpack from "webpack";
 let dist = "../dist";
 
 gulp.task("templates", () => {
-    gulp.src("./app/templates/*.jade")
+    gulp.src("./app/templates/**/*.jade")
 	.pipe(jade())
 	.pipe(gulp.dest(`${dist}/templates`));
 });

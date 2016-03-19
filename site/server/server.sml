@@ -17,5 +17,6 @@ fun main () =
           | "/documentation" => serveFile "./dist/templates/documentation.html"
           | "/tutorials" => serveFile "./dist/templates/tutorials.html"
           | "/news" => serveFile "./dist/templates/news.html"
+          | "/news/ponyo-for-standard-ml" => serveFile "./dist/templates/news/ponyo-for-standard-ml.html"
           | _ => Response.new ("404 not found")
     ))

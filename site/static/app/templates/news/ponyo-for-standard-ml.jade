@@ -1,0 +1,73 @@
+extends ../tmpl/base.jade
+
+block body
+    .container
+        .container-small
+            header
+                h2 Ponyo for Standard ML
+                h4 March 19, 2016 by Phil Eaton
+            article
+                p.
+                    When you look at the language ecosystem today, you have
+                    many camps: verbose and fast (Java, Go, C++), slow and confined (by GILs)
+                    (Python, Ruby). Then there are the languages who are fast, concise,
+                    but incredibly complex (Haskell, Scala). And Lisp sits somewhere between
+                    all of them. Standard ML is a different beast. I like to think of it
+                    as the C of strongly-typed, garbage-collected languages. But unlike
+                    C, it has been (almost) solely an academic language with little
+                    emphasis on use by "average" developers.
+                p.
+                    I first began exploring (not Standard ML, but) OCaml in college
+                    after hearing a talk by Jane Street, and I loved it.
+                    I was driven to study web servers and as a result, wrote
+                    <a href="https://github.com/eatonphil/owebl">OWebl</a>.
+                    OWebl was a great experience that taught me a lot about the web,
+                    OCaml, and the OCaml ecosystem/community. Ultimately, I decided
+                    OCaml wasn't the right place for me, so I continued on my journey
+                    to the frontier.
+                p.
+                    Standard ML is the direct descendant of ML: forefather of
+                    OCaml, Haskell, Scala, and many others. As the name indicates,
+                    the languages is defined by a standard - last revised in 1997.
+                    Standard ML has spawned many implementations with various intents
+                    targeting various backends. It is due to the standard, however,
+                    that Standard ML remains one of the simplest languages in the
+                    ML family. This makes it an incredible language for teaching
+                    and learning. Standard ML has (perhaps) many limitations, but
+                    these limitations also serve as a learning tool. Studying
+                    Standard ML has personally been a key guide in discovering the
+                    reasoning and design behind more complex languages in the
+                    ML family.
+                p.
+                    In addition to the simplicity of the language, the garbage
+                    collector and compile-time type-checking; one of the oldest,
+                    most stable, and continually developed implementations has first-class
+                    support for POSIX-style threading: <a href="https://github.com/polyml/polyml">Poly/ML</a>.
+                    Furthermore, Poly/ML compiles quickly and produces performant
+                    binaries. These combinations are what sold me on Poly/ML
+                    (and, by extension, Standard ML).
+                p.
+                    However, you still have to deal with a 20 year-old standard library with
+                    mostly terrible documentation and little tooling. This is why
+                    Ponyo exists. My goal behind Ponyo is not just to provide a
+                    fast, high-level library and toolkit to simplify the process
+                    of developing Standard ML applications, but to improve existing
+                    documentation and tutorials and contribute many more.
+                p.
+                    Ponyo is in very early stages. But I'd like to keep you updated
+                    on my work - for your sake and mine. It has finally gotten
+                    to the point where this actually something to share, and that
+                    is exciting. Today, Ponyo has an HTTP/1.1 server and client.
+                    (This site is running on it.) It has a file library, a string
+                    library, a cli library, and a Standard ML parser capable of
+                    parsing basic signatures. Ponyo has a build tool to simplify
+                    the process of compiling Poly/ML-based Standard ML programs,
+                    and the documentation generator turning Standard ML signatures
+                    into HTML pages is my top priority.
+                p.
+                    If you'd like to get involved in Ponyo, please check out the
+                    roadmap and todo in the Github <a href="https://github.com/eatonphil/ponyo">repo</a>.
+                    If you'd like additional information to get started in Standard
+                    ML, check out the /r/sml <a href="https://www.reddit.com/r/sml/wiki">wiki</a>.
+                    I'll try to post on my progress each week. So until then,
+                    happy compiling!

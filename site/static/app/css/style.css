@@ -19,6 +19,12 @@ pre code,
     padding: 0 10px;
 }
 
+p,
+li {
+    font-size: 16px;
+    line-height: 30px;
+}
+
 .nav:first-of-type a {
     padding-left: 0;
 }
