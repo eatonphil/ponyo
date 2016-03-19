@@ -4,7 +4,7 @@ Ponyo is a comprehensive high-level library and toolkit for Standard ML. It is i
 by [POCO](http://pocoproject.org/), the [Go standard library](https://golang.org/pkg/),
 and the [Python standard library](https://docs.python.org/3/library/). While
 the Standard ML basis library is (perhaps) surprisingly solid, there are
-still a number of gaps between it and the Standard ML ecosystem in general.
+still a number of gaps to fill there and in the Standard ML ecosystem in general.
 
 In particular, there are discrepancies between the needs of PL researchers and the
 average programmer interested in ML. Ponyo is geared toward use on the server as a
@@ -15,13 +15,21 @@ generation tools.
 Ponyo is intended to work on [Poly/ML](https://github.com/polyml/polyml) and Unix
 systems. See below for [why Standard ML](#why-standard-ml).
 
-## Overview
+## Features
 
-Tools:
-* ponyo-doc: documentation generation
-* ponyo-build: built tool
+Ponyo is a work in progress. For a roadmap of modules, see ROADMAP.md
 
-Modules (WIP, see [ROADMAP](https://github.com/eatonphil/ponyo/blob/master/ROADMAP.md)):
+* ponyo-doc - documentation generator
+* ponyo-build - build tool
+* containers
+  * binary search tree
+* HTTP client and server
+* Standard ML parser
+  * AST export
+* and much more!
+
+## Modules overview
+
 * Container
   * Tree
     * [BinarySearchTree](https://github.com/eatonphil/ponyo/blob/master/ponyo/Container/Tree/BinarySearchTree.sml)
@@ -31,6 +39,9 @@ Modules (WIP, see [ROADMAP](https://github.com/eatonphil/ponyo/blob/master/ROADM
 * Os
   * [File](https://github.com/eatonphil/ponyo/blob/master/ponyo/Os/File.sml)
   * [Cli](https://github.com/eatonphil/ponyo/blob/master/ponyo/Os/Cli/CliExport.sml)
+* Sml
+  * [Lexer](https://github.com/eatonphil/ponyo/blob/master/ponyo/Sml/Lexer.sml)
+  * [Parser](https://github.com/eatonphil/ponyo/blob/master/ponyo/Sml/Parser.sml)
 * [String](https://github.com/eatonphil/ponyo/blob/master/ponyo/String/StringExport.sml)
 
 ## Why Standard ML
