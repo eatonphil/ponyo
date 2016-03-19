@@ -13,7 +13,8 @@ development - including build and documentation generation tools. Ponyo
 For instance, the documentation generator can be used to generate documentation
 for any Standard ML project. The build tool can be used to manage any Poly/ML
 compilation. And the Standard ML parser can be used as a compiler frontend.
-Down the line, Ponyo could include code generation tools for LLVM, BEAM, or the JVM.
+(Down the line, it would be awesome to package code-generating backends
+for LLVM, BEAM, or the JVM.)
 
 Ponyo is intended to work on [Poly/ML](https://github.com/polyml/polyml) and Unix
 systems. See below for [why Standard ML](#why-standard-ml).
