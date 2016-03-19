@@ -25,7 +25,7 @@ Ponyo is a work in progress. For a roadmap of modules, see ROADMAP.md
 
 * ponyo-doc: generates HTML from signatures (currently)
   * as the Standard ML parser matures, it will not need to parse signatures
-* ponyo-build: high-level tool for building (Ponyo) projects
+* ponyo-make: high-level tool for building (Ponyo) projects
 * containers
   * binary search tree
 * HTTP client and server
