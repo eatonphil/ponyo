@@ -73,17 +73,19 @@ block body
                     is <a href="https://github.com/polyml/polyml">Poly/ML</a>. See the Poly/ML
                     Github page for installation instructions.
 
-                p After Poly/ML has been installed, build Ponyo from git:
-                pre
-                    code(class="bash").
-                        $ git clone https://github.com/eatonphil/ponyo && cd ponyo
-                        $ make
-                p Finally, add the following lines to your ~/.profile:
+                p After Poly/ML has been installed, add the following lines to your ~/.profile:
                 pre
                     code(class="bash").
                         # Ponyo path settings.
                         export PONYO_ROOT="<path-to-git-repo>"
                         export PATH=$PATH:$PONYO_ROOT/bin
+
+                p Then, build Ponyo from git:
+                pre
+                    code(class="bash").
+                        $ git clone https://github.com/eatonphil/ponyo && cd ponyo
+                        $ make
+
                 p.
                     Note: Many of the Ponyo tools will not work with other implementations or
                     on Windows.
