@@ -2,6 +2,7 @@ structure Basis = struct
     structure String = String
     structure List = List
     structure Os = OS
+    structure Posix = Posix
 end;
 
 fun cleanPath (path: string, right: bool) : string =

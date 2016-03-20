@@ -14,7 +14,7 @@ struct
         let
             open Cli
 
-            val commandDesc = "options: make | doc | help | version"
+            val commandDesc = "options: make | top | doc | help | version"
         in
             ("ponyo",
              "Ponyo is a tool for working with Standard ML programs.",
@@ -31,11 +31,12 @@ struct
             val rest = tl (CommandLine.arguments ())
         in
             case cmd of
-                "doc" => ponyo (cmd, rest)
-              | "make" => ponyo (cmd, rest)
-              | "help" => Cli.doHelp (spec)
+                "doc"     => ponyo (cmd, rest)
+              | "make"    => ponyo (cmd, rest)
+              | "top"     => ponyo (cmd, rest)
+              | "help"    => Cli.doHelp (spec)
               | "version" => Format.println ["ponyo version ponyo-0.1"]
-              | _ => ()  
+              | _ => (Format.printf "ERROR: Bad command [%].\n\n" [cmd]; Cli.doHelp (spec))
         end
 end
 
