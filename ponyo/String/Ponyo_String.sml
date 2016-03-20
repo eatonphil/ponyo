@@ -1,4 +1,4 @@
-structure StringExport : STRING_EXPORT = 
+structure Ponyo_String :> PONYO_STRING = 
 struct
     type t = string
 

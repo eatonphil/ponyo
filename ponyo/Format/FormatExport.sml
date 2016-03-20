@@ -1,6 +1,6 @@
 structure FormatExport =
 struct
-    local structure String = StringExport in
+    local structure String = Ponyo_String in
 
     val formatVariable : string ref = ref "%"
 

@@ -1,6 +1,6 @@
 structure Method =
 struct
-    local structure String = StringExport in
+    local structure String = Ponyo_String in
 
     datatype t =
         Connect

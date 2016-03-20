@@ -1,6 +1,6 @@
-structure PathExport =
+structure Ponyo_Os_Path =
 struct
-    local structure String = StringExport in
+    local structure String = Ponyo_String in
 
     fun join (paths: string list) =
         case paths of

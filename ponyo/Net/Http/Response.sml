@@ -1,7 +1,7 @@
 structure Response =
 struct
     local
-        structure String = StringExport
+        structure String = Ponyo_String
         structure Format = FormatExport
     in
 

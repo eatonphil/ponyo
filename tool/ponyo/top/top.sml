@@ -1,6 +1,8 @@
 structure Format = Ponyo.Format
-structure Os = Ponyo.Os
+
 structure Cli = Ponyo.Os.Cli
+structure FileSystem = Ponyo.Os.FileSystem
+structure Path = Ponyo.Os.Path
 
 fun exec (program: string, args: string list) : unit =
     (Format.println [program ^ " " ^ String.join(args, " ")];
@@ -34,10 +36,10 @@ struct
                      (Format.printf "ERROR: %\n\n" [reason]; Cli.doHelp (spec); [])
             val [polyPath] = Cli.getNamed (args, polyFlag)
 
-            val ponyoLib = Os.Path.join ([getPonyoRoot (), "build.sml"])
+            val ponyoLib = Path.join ([getPonyoRoot (), "build.sml"])
             val polyExecutable =
-                if Os.Path.FilePath.exists (polyPath) then polyPath
-                else case Os.Path.FilePath.which "poly" of
+                if FileSystem.exists (polyPath) then polyPath
+                else case FileSystem.which "poly" of
                     NONE => (Format.println ["poly must be present in PATH"]; "")
                   | SOME path => path
 

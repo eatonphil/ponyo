@@ -1,6 +1,6 @@
 structure Header =
 struct
-    local structure String = StringExport in
+    local structure String = Ponyo_String in
 
     exception HeaderMalformed of string
 

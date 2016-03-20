@@ -1,4 +1,4 @@
-signature FILE =
+signature PONYO_OS_FILESYSTEM_FILE =
 sig
     exception NotReader
     exception NotWriter
@@ -14,7 +14,7 @@ sig
     val writeTo : string * string -> unit
 end
 
-structure File : FILE =
+structure Ponyo_Os_FileSystem_File : PONYO_OS_FILESYSTEM_FILE =
 struct
     exception NotReader
     exception NotWriter

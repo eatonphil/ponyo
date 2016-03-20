@@ -1,4 +1,4 @@
-signature STRING_EXPORT =
+signature PONYO_STRING =
 sig
     type t = string
 

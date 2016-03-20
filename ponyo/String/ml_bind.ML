@@ -1,1 +1,1 @@
-structure String = StringExport
+structure String = Ponyo_String

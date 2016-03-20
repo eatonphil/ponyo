@@ -13,7 +13,7 @@ struct
     type readerTokenOpt = reader * Token.t option
 
     local
-        structure String = StringExport
+        structure String = Ponyo_String
 
         infix 6 >>=;
         fun (reader, string) >>= f : readerTokenOpt =

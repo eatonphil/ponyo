@@ -1,12 +1,15 @@
-structure FilePath =
+structure Ponyo_Os_FileSystem =
 struct
     local
         structure FileSys = Basis.Os.FileSys
 
-        structure String = StringExport
-        structure Path = PathExport
+        structure String = Ponyo_String
+        structure Path = Ponyo_Os_Path
     in
 
+    (* -expand: expands paths beginning with a tilde if the 
+     *  current HOME is set.
+     *)
     fun expand (path: string) =
         if not (String.hasPrefix (path, "~/")) then path
         else case Basis.Os.Process.getEnv "HOME" of

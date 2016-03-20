@@ -1,7 +1,7 @@
 (* TODO: This should be moved out of net/http. Requests are not just http. *)
 structure Request =
 struct
-    local structure String = StringExport in
+    local structure String = Ponyo_String in
 
     exception MalformedRequest of string
 

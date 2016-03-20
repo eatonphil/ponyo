@@ -1,4 +1,4 @@
-structure Flag :
+structure Ponyo_Os_Cli_Flag :
 sig
     type anon
     type named

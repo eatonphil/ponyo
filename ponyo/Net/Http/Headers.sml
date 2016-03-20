@@ -1,7 +1,7 @@
 structure Headers =
 struct
     local
-        structure String = StringExport
+        structure String = Ponyo_String
 	infix 6 >>=;
 
 	fun a >>= f = case a of

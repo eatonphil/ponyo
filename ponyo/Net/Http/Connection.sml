@@ -1,6 +1,6 @@
 structure Connection =
 struct
-    local structure String = StringExport in
+    local structure String = Ponyo_String in
 
     type complete = {firstLine : string,
                      headers   : string Headers.t,

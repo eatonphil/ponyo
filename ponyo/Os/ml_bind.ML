@@ -1,6 +1,6 @@
 structure Os =
 struct
     structure Cli = Cli
-    structure Path = Path
-    structure File = File
+    structure Path = Ponyo_Os_Path
+    structure FileSystem = FileSystem
 end

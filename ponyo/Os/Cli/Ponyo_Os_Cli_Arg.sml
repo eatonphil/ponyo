@@ -1,4 +1,4 @@
-structure Arg =
+structure Ponyo_Os_Cli_Arg =
 struct
     datatype t =
         Basic of string * (string -> bool)
