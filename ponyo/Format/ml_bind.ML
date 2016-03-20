@@ -1,1 +1,1 @@
-structure Format = FormatExport
+structure Format = Ponyo_Format

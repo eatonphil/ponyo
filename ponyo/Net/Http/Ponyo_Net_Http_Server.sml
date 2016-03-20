@@ -1,6 +1,11 @@
-structure Server =
+structure Ponyo_Net_Http_Server =
 struct
-    local structure Format = FormatExport in
+    local
+        structure Format = Ponyo_Format
+
+        structure Request  = Ponyo_Net_Http_Request
+        structure Response = Ponyo_Net_Http_Response
+    in
 
     type router = Request.t -> Response.t
 

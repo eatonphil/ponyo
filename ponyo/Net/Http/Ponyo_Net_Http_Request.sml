@@ -1,7 +1,13 @@
-(* TODO: This should be moved out of net/http. Requests are not just http. *)
-structure Request =
+structure Ponyo_Net_Http_Request =
 struct
-    local structure String = Ponyo_String in
+    local
+        structure String = Ponyo_String
+
+        structure Method     = Ponyo_Net_Http_Method
+        structure Header     = Ponyo_Net_Http_Header
+        structure Headers    = Ponyo_Net_Http_Headers
+        structure Connection = Ponyo_Net_Http_Connection
+    in
 
     exception MalformedRequest of string
 

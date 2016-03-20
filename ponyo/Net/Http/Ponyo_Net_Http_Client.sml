@@ -1,5 +1,12 @@
-structure Client =
+structure Ponyo_Net_Http_Client =
 struct
+    local
+        structure Header   = Ponyo_Net_Http_Header
+        structure Headers  = Ponyo_Net_Http_Headers
+        structure Response = Ponyo_Net_Http_Response
+        structure Request  = Ponyo_Net_Http_Request
+    in
+
     exception InvalidHost of string
 
     fun act (domain: string, request: Request.t) : Response.t =
@@ -26,4 +33,6 @@ struct
 	    Request.write (socket, request);
 	    Response.read (socket)
         end
+
+    end
 end

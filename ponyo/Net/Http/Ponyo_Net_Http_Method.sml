@@ -1,4 +1,4 @@
-structure Method =
+structure Ponyo_Net_Http_Method =
 struct
     local structure String = Ponyo_String in
 

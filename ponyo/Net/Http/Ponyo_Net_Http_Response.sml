@@ -1,8 +1,12 @@
-structure Response =
+structure Ponyo_Net_Http_Response =
 struct
     local
         structure String = Ponyo_String
-        structure Format = FormatExport
+        structure Format = Ponyo_Format
+
+        structure Header     = Ponyo_Net_Http_Header
+        structure Headers    = Ponyo_Net_Http_Headers
+        structure Connection = Ponyo_Net_Http_Connection
     in
 
     exception MalformedResponse of string

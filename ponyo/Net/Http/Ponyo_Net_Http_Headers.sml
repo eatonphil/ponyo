@@ -1,7 +1,10 @@
-structure Headers =
+structure Ponyo_Net_Http_Headers =
 struct
     local
         structure String = Ponyo_String
+
+        structure Header = Ponyo_Net_Http_Header
+
 	infix 6 >>=;
 
 	fun a >>= f = case a of

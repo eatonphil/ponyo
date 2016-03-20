@@ -1,4 +1,4 @@
-structure Header =
+structure Ponyo_Net_Http_Header =
 struct
     local structure String = Ponyo_String in
 

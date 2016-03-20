@@ -1,4 +1,4 @@
-structure FormatExport =
+structure Ponyo_Format =
 struct
     local structure String = Ponyo_String in
 

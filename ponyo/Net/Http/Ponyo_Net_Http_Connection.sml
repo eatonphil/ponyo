@@ -1,6 +1,11 @@
-structure Connection =
+structure Ponyo_Net_Http_Connection =
 struct
-    local structure String = Ponyo_String in
+    local
+        structure String = Ponyo_String
+
+        structure Header  = Ponyo_Net_Http_Header
+        structure Headers = Ponyo_Net_Http_Headers
+    in
 
     type complete = {firstLine : string,
                      headers   : string Headers.t,
