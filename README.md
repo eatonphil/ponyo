@@ -38,16 +38,16 @@ Ponyo is a work in progress. For a roadmap of modules, see ROADMAP.md
 * Container
   * Tree
     * [BinarySearchTree](https://github.com/eatonphil/ponyo/blob/master/ponyo/Container/Tree/BinarySearchTree.sml)
-* [Format](https://github.com/eatonphil/ponyo/blob/master/ponyo/Format/FormatExport.sml)
+* [Format](https://github.com/eatonphil/ponyo/blob/master/ponyo/Format/Ponyo_Format.sml)
 * Net
   * [Http](https://github.com/eatonphil/ponyo/tree/master/ponyo/Net/Http)
 * Os
-  * [File](https://github.com/eatonphil/ponyo/blob/master/ponyo/Os/File.sml)
-  * [Cli](https://github.com/eatonphil/ponyo/blob/master/ponyo/Os/Cli/CliExport.sml)
+  * [File](https://github.com/eatonphil/ponyo/blob/master/ponyo/Os/FileSystem/Ponyo_Os_FileSystem_File.sml)
+  * [Cli](https://github.com/eatonphil/ponyo/blob/master/ponyo/Os/Cli/Ponyo_Os_Cli.sml)
 * Sml
   * [Lexer](https://github.com/eatonphil/ponyo/blob/master/ponyo/Sml/Lexer.sml)
   * [Parser](https://github.com/eatonphil/ponyo/blob/master/ponyo/Sml/Parser.sml)
-* [String](https://github.com/eatonphil/ponyo/blob/master/ponyo/String/StringExport.sml)
+* [String](https://github.com/eatonphil/ponyo/blob/master/ponyo/String/Ponyo_String.sml)
 
 ## Why Standard ML
 
