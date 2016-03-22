@@ -1,26 +1,21 @@
 structure Ponyo_Net_Http_Headers =
 struct
     local
+        structure Option = Ponyo_Option
         structure String = Ponyo_String
-
         structure Header = Ponyo_Net_Http_Header
-
-	infix 6 >>=;
-
-	fun a >>= f = case a of
-	    NONE => NONE
-	  | SOME a => SOME (f a)
     in
 
-    structure HeadersBst = Ponyo_Container_BinarySearchTree(String);
+    structure Headers = Ponyo_Container_Map(String);
 
-    open HeadersBst;
+    open Headers;
 
-    fun get (hs: string HeadersBst.t) (h: string) : Header.t option =
-	HeadersBst.get hs h >>= (fn v => Header.fromKv (h, v))
+    fun get (headers: string Headers.t) (name: string) : Header.t option =
+        Option.>>= ((Headers.get headers name),
+                    (fn (value) => Header.fromKv (name, value)))
 
-    fun toList (hs: string HeadersBst.t) : Header.t list =
-        map Header.fromKv (HeadersBst.toList hs)
+    fun toList (headers: string Headers.t) : Header.t list =
+        map Header.fromKv (Headers.toList headers)
 
     end
 end
