@@ -11,6 +11,9 @@ struct
         in
             path
         end
+
+    fun directory (path: string) : string =
+        Basis.Os.Path.dir (path)
  
     fun extension (path: string) : string =
         case Basis.Os.Path.ext (clean path) of

@@ -7,6 +7,15 @@ struct
         structure Path = Ponyo_Os_Path
     in
 
+    (* -exists: returns true if the path given is a valid file, directory,
+     *  or symbolic link.
+     *)
+    fun exists (path: string) : bool =
+        FileSys.isDir (path) orelse
+          FileSys.isLink (path) orelse
+          FileSys.fileSize (path) > ~1 handle
+            Basis.Os.SysErr _ => false
+
     (* -expand: expands paths beginning with a tilde if the 
      *  current HOME is set.
      *)
@@ -15,6 +24,14 @@ struct
         else case Basis.Os.Process.getEnv "HOME" of
             SOME home => Path.join [home, String.substringToEnd (path, 2)]
           | NONE => path
+
+    fun makeDirectory (path: string) : unit =
+        let
+            val directory = Path.directory (path) 
+        in
+            if not (exists directory) then makeDirectory (directory) else ();
+            Basis.Os.FileSys.mkDir (path)
+        end
 
     fun walk (root: string, walkFun: string -> unit) : unit =
         let
@@ -29,7 +46,8 @@ struct
                     walkFun (withRoot path);
                     if FileSys.isDir (withRoot path)
                         then walk (withRoot path, walkFun)
-                    else walkRoot (rootDir)
+                    else ();
+                    walkRoot (rootDir)
                 end
         in
             if FileSys.isDir (root)
@@ -37,15 +55,6 @@ struct
                    Basis.Os.SysErr _ => ()
             else ()
         end
-
-    (* -exists: returns true if the path given is a valid file, directory,
-     *  or symbolic link.
-     *)
-    fun exists (path: string) : bool =
-        FileSys.isDir (path) orelse
-          FileSys.isLink (path) orelse
-          FileSys.fileSize (path) > ~1 handle
-            Basis.Os.SysErr _ => false
 
     fun which (executable: string) : string option =
         let

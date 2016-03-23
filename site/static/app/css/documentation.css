@@ -1,0 +1,34 @@
+.ponyo-signature  {
+    max-width: 600px;
+}
+
+.ponyo-signature h2 {}
+
+.ponyo-value {
+    margin: 10px 0;
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.ponyo-value-signature {
+    background: #eee;
+    font-size: large;
+    padding: 10px;
+}
+
+.ponyo-value-name {
+    font-weight: bold;
+    padding: 0 10px;
+}
+
+.ponyo-value-name-label-colon {
+    padding-right: 10px;
+}
+
+.ponyo-value-type {
+    color: blue;
+}
+
+.ponyo-value-description {
+    padding: 15px 0;
+}

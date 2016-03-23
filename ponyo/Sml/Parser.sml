@@ -19,6 +19,7 @@ struct
         val Structure  = Symbol "structure"
         val Fun        = Symbol "fun"
         val Val        = Symbol "val"
+        val Type       = Symbol "type"
         end
     end
 
@@ -91,6 +92,13 @@ struct
         readSymbol (reader, [Symbol.Equal]) >>= (fn (reader, _) =>
         parseStrLit (reader) >>= (fn (reader, ast) =>
         (reader, SOME (Ast.Structure (structureName, ast)))))))
+
+    and parseTypeDec (reader: reader) : reader * Ast.t option =
+        readSymbol (reader, [Symbol.Type]) >>= (fn (reader, _) =>
+        readIdent (reader) >>= (fn (reader, typeName) =>
+        readSymbol (reader, [Symbol.Equal]) >>= (fn (reader, _) =>
+        parseType (reader) >>= (fn (reader, ast) =>
+        (reader, SOME (Ast.TypeDec (typeName, ast)))))))
 
     and parseExp (reader: reader) : reader * Ast.t option =
         readToken (reader) >>= (fn (reader as {tokens, store}, token) =>
@@ -234,8 +242,8 @@ struct
                 ("signature", parseSigDec),
                 ("structure", parseStrDec),
                 ("function", parseFunDec),
-                ("value", parseValDec)(*,
-                ("type", parseTypeDec),
+                ("value", parseValDec),
+                ("type", parseTypeDec)(*,
                 ("exception", parseExcDec)*)
             ]
 

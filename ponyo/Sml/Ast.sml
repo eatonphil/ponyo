@@ -26,6 +26,7 @@ struct
       | ValueDec        of Token.t * t
       | Expression      of e
       | Type            of ty
+      | TypeDec         of Token.t * t
 
     fun insert (ast: t, child: t) : t =
         case ast of
@@ -35,17 +36,29 @@ struct
           | _ => raise Fail "Unexpected parent type."
 
     fun tyToString (ty: ty) : string =
-        case ty of
-            IdentType ident => Token.toString ident
-          | ProductType tys => "(" ^ (String.join (map tyToString tys, " * ")) ^ ")"
-          | FunctionType (inTy, outTy) => Format.sprintf "% -> %" (map tyToString [inTy, outTy])
-          | ConstructedType (tys, ty) => (
-              case tys of
-                  [ty] => tyToString ty
-                | _    => String.join (map tyToString tys, ", ")
-          ) ^ " " ^ (tyToString ty)
-          | NoType => "unknown"
-          | _ => " "
+        let
+            fun parenWrap (ty: string, depth: int) : string =
+                if depth < 2 then ty
+                else String.join (["(", ty, ")"], "")
+
+            and childrenToString (children: ty list, depth: int) : string list =
+                map (fn ty => doTyToString (ty, depth + 1)) children
+
+            and doTyToString (ty: ty, depth: int) =
+                case ty of
+                    IdentType ident => Token.toString ident
+                  | ProductType tys => parenWrap (String.join (childrenToString (tys, depth), " * "), depth)
+                  | FunctionType (inTy, outTy) => parenWrap (Format.sprintf "% -> %" (childrenToString ([inTy, outTy], depth)), depth)
+                  | ConstructedType (tys, ty) => (
+                      case tys of
+                          [ty] => tyToString ty
+                        | _    => String.join (map tyToString tys, ", ")
+                  ) ^ " " ^ (tyToString ty)
+                  | NoType => "unknown"
+                  | _ => " "
+        in
+            doTyToString (ty, 0)
+        end
 
     fun print (ast: t) =
         case ast of
@@ -62,6 +75,8 @@ struct
                                               [Token.toString name, tyToString ty]; ())
           | Function (name, (Type ty), value) => (Format.printf "Parsed function: % of %"
                                                   [Token.toString name, tyToString ty]; print value)
+          | TypeDec (name, (Type ty)) => (Format.printf "Parsed type-dec: % of %\n"
+                                          [Token.toString name, tyToString ty]; ())
           | Expression (e) => (case e of
               StringExp e => Format.printf "Parsed literal: \"%\"\n" [Token.toString e]
             | NumberExp e => Format.printf "Parsed literal: %\n" [Token.toString e]

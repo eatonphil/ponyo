@@ -58,7 +58,9 @@ struct
                 then (Lexer.debug := true; Parser.debug := true)
             else ();
             
-            generateDocumentation (directory, pageTemplate, outDir)
+            generateDocumentation (directory, pageTemplate, outDir) handle
+                Fail reason => Format.println [reason]
+              | _ => Format.println ["Error."]
         end
 end
 

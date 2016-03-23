@@ -73,7 +73,7 @@ fun parseFile (path: string) : Ast.t * comment StringMap.t =
             Fail reason => (Format.println [reason]; [])
 
         val ast = Parser.parse (tokens) handle
-            Fail reason => (Format.println [reason]; Ast.Root [])
+            Fail reason => (Format.printf "FAILURE [%]: %\n" [path, reason]; Ast.Root [])
 
         val commentsByName = parseComments (tokens)
     in
@@ -129,7 +129,15 @@ fun generatePage (sigAst: Ast.t, comments: comment StringMap.t) : string =
     end
 
 fun writePage (path: string, page: string, body: string) : unit =
-    File.writeTo (path, Format.sprintf page [Path.base (Path.file path), body])
+    let
+        val page = Format.sprintf page [Path.base (Path.file path), body]
+        val pageDir = Path.directory (path)
+    in
+        if FileSystem.exists (pageDir)
+            then ()
+        else FileSystem.makeDirectory (pageDir);
+        File.writeTo (path, page)
+    end
 
 fun generateHtml (outDir: string, page: string, asts: (Ast.t * comment StringMap.t) StringMap.t) : unit =
     let
@@ -153,10 +161,11 @@ fun generateDocumentation (inDir: string, page: string, outDir: string) : unit =
         val asts : (Ast.t * (comment StringMap.t)) StringMap.t ref = ref StringMap.empty
         fun parseSignature (path: string) : unit =
             case Path.extension (path) of
-                "ML" => asts := StringMap.insert
-                    (!asts)
-                    (String.substringToEnd (path, String.length inDir),
-                     parseFile (path))
+                "ML" => if Path.file (path) = "ml_bind.ML" then ()
+                    else asts := StringMap.insert
+                        (!asts)
+                        (String.substringToEnd (path, String.length inDir),
+                         parseFile (path))
               | _ => ()
     in
         FileSystem.walk (inDir, parseSignature);
