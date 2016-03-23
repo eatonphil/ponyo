@@ -5,4 +5,7 @@
 * ensure tail-call recursion is used everywhere
 * build out test suite
   * setup automated testing on repo
-
+* add min/max functions to list
+* fix list sortBy stub
+* ponyo-make doesn't fail correctly
+  * fail in Makefile doesn't trigger end of build attempts

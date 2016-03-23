@@ -9,3 +9,10 @@ sig
     val toList : 'a t -> (elt * 'a) list
     val fromList : (elt * 'a) list -> 'a t
 end
+
+signature PONYO_CONTAINER_TREE_BINARYSEARCH_DOMAIN =
+sig
+    type t
+
+    val compare : t * t -> order
+end

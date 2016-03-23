@@ -14,15 +14,13 @@ struct
 
     local
         structure String = Ponyo_String
+        structure StringList = Ponyo_Container_List (String)
 
         infix 6 >>=;
         fun (reader, string) >>= f : readerTokenOpt =
             case string of
                 NONE        => (reader, NONE)
-            | SOME string => f (reader, string)
-
-        fun sListContains (sList: string list, search: string) : bool =
-            foldl (fn (s, contains) => contains orelse s = search) false sList
+              | SOME string => f (reader, string)
 
         fun sListLongest (sList: string list) : string =
             foldl (fn (s, longest) => if (String.length longest) > (String.length s)
@@ -61,8 +59,7 @@ struct
         "then", "type", "val", "with", "withtype", "while",
         "(", ")", "[", "]", "{",
         "}", ",", ":", ";", "...",
-        "_", "|", "=", "=>", "->",
-        "#"
+        "_", "|", "=", "=>", "->", "#"
     ]
 
     val debug = ref false
@@ -103,7 +100,7 @@ struct
             readChars (reader, Char.contains "~.Ee0123456789abcdef") >>=
             (fn (reader as {stream, store}, number) =>
                 if isNumber (number) then (reader, SOME (Token.Number number))
-                else ({stream=stream, store=String.reverse(number) ^ store}, NONE))
+                else ({stream=stream, store=number ^ store}, NONE))
         end
 
     fun readString (reader: reader) : readerTokenOpt =
@@ -168,9 +165,9 @@ struct
         in
             readChars (reader, isSymbol) >>=
             (fn (reader1 as {stream, store=store}, ident) =>
-                if sListContains (reservedWords, !seen)
+                if StringList.contains (reservedWords, !seen)
                     then ({stream=stream, store=""}, SOME (Token.Symbol (!seen)))
-                else if sListContains (reservedWords, ident)
+                else if StringList.contains (reservedWords, ident)
                     then ({stream=stream, store=store}, SOME (Token.Symbol ident))
                 else ({stream=stream, store=ident ^ store}, NONE))
         end

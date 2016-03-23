@@ -24,6 +24,8 @@ struct
 
     type tokens = Token.t list
 
+    structure TokenList = Ponyo_Container_List(Token)
+
     type reader = {
         tokens : tokens,
         store  : tokens
@@ -47,9 +49,9 @@ struct
             hd :: tl => ({tokens=tl, store=[]}, SOME hd)
           | []       => ({tokens=[], store=[]}, NONE)
 
-    fun readSymbol (reader: reader, token: Token.t) : reader * Token.t option =
+    fun readSymbol (reader: reader, tokens: Token.t list) : reader * Token.t option =
         readToken (reader) >>= (fn (reader, readToken) =>
-        if token = readToken then (reader, SOME token)
+        if TokenList.contains (tokens, readToken) then (reader, SOME readToken)
         else ({tokens=(#tokens reader), store=readToken :: (#store reader)}, NONE))
 
     fun readIdent (reader: reader) : reader * Token.t option =
@@ -59,34 +61,34 @@ struct
           | t                 => ({tokens=(#tokens reader), store=t :: (#store reader)}, NONE))
 
     fun parseSigLit (reader: reader) : reader * Ast.t option =
-        readSymbol (reader, Symbol.Sig) >>= (fn (reader, _) =>
+        readSymbol (reader, [Symbol.Sig]) >>= (fn (reader, _) =>
         parseBody (reader, Ast.SignatureBody [], true) >>= (fn (reader, body) =>
-        readSymbol (reader, Symbol.End) >>= (fn (reader, _) =>
+        readSymbol (reader, [Symbol.End]) >>= (fn (reader, _) =>
         (reader, SOME body))))
 
     and parseSigDec (reader: reader) : reader * Ast.t option =
-        readSymbol (reader, Symbol.Signature) >>= (fn (reader, _) =>
+        readSymbol (reader, [Symbol.Signature]) >>= (fn (reader, _) =>
         readIdent (reader) >>= (fn (reader, signatureName) =>
-        readSymbol (reader, Symbol.Equal) >>= (fn (reader, _) =>
+        readSymbol (reader, [Symbol.Equal]) >>= (fn (reader, _) =>
         parseSigLit (reader) >>= (fn (reader, sigAst) =>
         (reader, SOME (Ast.Signature (signatureName, sigAst)))))))
 
     and parseStrLit (reader: reader) : reader * Ast.t option =
-        readSymbol (reader, Symbol.Struct) >>= (fn (reader, _) =>
+        readSymbol (reader, [Symbol.Struct]) >>= (fn (reader, _) =>
         let
             val (reader, body) =
                 case parseBody (reader, Ast.StructureBody [], false) of
                     (reader, NONE)     => (reader, SOME (Ast.StructureBody []))
                   | (reader, SOME ast) => (reader, SOME ast)
         in
-            readSymbol (reader, Symbol.End) >>= (fn (reader, _) =>
+            readSymbol (reader, [Symbol.End]) >>= (fn (reader, _) =>
             (reader, body))
         end)
 
     and parseStrDec (reader: reader) : reader * Ast.t option =
-        readSymbol (reader, Symbol.Structure) >>= (fn (reader, _) =>
+        readSymbol (reader, [Symbol.Structure]) >>= (fn (reader, _) =>
         readIdent (reader) >>= (fn (reader, structureName) =>
-        readSymbol (reader, Symbol.Equal) >>= (fn (reader, _) =>
+        readSymbol (reader, [Symbol.Equal]) >>= (fn (reader, _) =>
         parseStrLit (reader) >>= (fn (reader, ast) =>
         (reader, SOME (Ast.Structure (structureName, ast)))))))
 
@@ -100,10 +102,12 @@ struct
 
     and parseType (reader: reader) : reader * Ast.t option =
         let
+            
+
             fun parseList (reader: reader) : reader * Ast.ty list =
                 case parseType (reader) of
                     (reader, SOME (Ast.Type ty)) =>
-                    (case readSymbol (reader, Symbol.Comma) of
+                    (case readSymbol (reader, [Symbol.Comma]) of
                         (reader, NONE) => (reader, [ty])
                       | (reader, _) =>
                     case parseList (reader) of
@@ -121,9 +125,9 @@ struct
                               | [ty] => ty
                               | tys  => Ast.ConstructedType (tys, Ast.NoType)
                         in
-                            case readSymbol (reader, Symbol.RightParen) of
-                                (reader, NONE) => raise Fail "Expected closing paren."
-                              | (reader, _)    => (reader, ty)
+                            case readSymbol (reader, [Symbol.RightParen]) of
+                                (reader, SOME _) => (reader, ty)
+                              | _ => raise Fail "Expected closing paren."
                         end
                     | (reader, SOME (Token.Symbol "{")) =>
                         let
@@ -138,9 +142,9 @@ struct
 
             and parseProduct (reader: reader): reader * Ast.ty list =
                 let val (reader, basicType) = parseBasic (reader) in
-                    case readSymbol (reader, Symbol.Asterisk) of
+                    case readSymbol (reader, [Symbol.Asterisk]) of
                         (reader, NONE) => (reader, [basicType])
-                      | (reader, _)   =>
+                      | (reader, _) =>
                             let val (reader, types) = parseProduct (reader) in
                                 (reader, basicType :: types)
                             end
@@ -180,7 +184,7 @@ struct
                 Ast.Type ty => ty
               | _ => raise Fail "Expected type ast."
             in
-                case readSymbol (reader, Symbol.Arrow) of
+                case readSymbol (reader, [Symbol.Arrow]) of
                     (reader, NONE) => (reader, SOME (Ast.Type inputAst))
                   | (reader, SOME _) =>
                     let
@@ -188,23 +192,24 @@ struct
                     in
                         case outputAst of
                             SOME (Ast.Type outputAst) =>
-                            (reader, SOME (Ast.Type (Ast.FunctionType (inputAst, outputAst))))
-                            | _ => (raise Fail "Expected type after ->."; (reader, NONE))
+                                (reader, SOME (Ast.Type
+                                               (Ast.FunctionType (inputAst, outputAst))))
+                          | _ => (raise Fail "Expected type after ->."; (reader, NONE))
                     end
             end))
         end
 
     and parseOptType (reader: reader) : reader * Ast.t option =
-        case readSymbol (reader, Symbol.Colon) of
+        case readSymbol (reader, [Symbol.Colon]) of
             (reader, NONE) => (reader, SOME (Ast.Type (Ast.NoType)))
           | (reader, _)    => parseType (reader)
 
     and parseOptExp (reader: reader) : reader * Ast.t option =
-        readSymbol (reader, Symbol.Equal) >>= (fn (reader, _) =>
+        readSymbol (reader, [Symbol.Equal]) >>= (fn (reader, _) =>
         parseExp (reader))
 
     and parseFunDec (reader: reader) : reader * Ast.t option =
-        readSymbol (reader, Symbol.Fun) >>= (fn (reader, _) =>
+        readSymbol (reader, [Symbol.Fun]) >>= (fn (reader, _) =>
         readIdent (reader) >>= (fn (reader, functionName) =>
         parseOptType (reader) >>= (fn (reader, typeAst) =>
         case parseOptExp (reader) of
@@ -214,7 +219,7 @@ struct
               (reader, SOME (Ast.Function (functionName, typeAst, expAst))))))
 
     and parseValDec (reader: reader) : reader * Ast.t option =
-        readSymbol (reader, Symbol.Val) >>= (fn (reader, _) =>
+        readSymbol (reader, [Symbol.Val]) >>= (fn (reader, _) =>
         readIdent (reader) >>= (fn (reader, valueName) =>
         parseOptType (reader) >>= (fn (reader, typeAst) =>
         case parseOptExp (reader) of

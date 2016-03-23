@@ -56,8 +56,8 @@ struct
                 let
                     val hs = ref (Format.sprintf "Usage:\n\n\t %" [name])
                 in
-                    hs := (if namedSpecHelp <> "" then !hs ^ " " ^ namedSpecHelp else !hs);
                     hs := (if anonSpecHelp <> "" then !hs ^ " " ^ anonSpecHelp else !hs);
+                    hs := (if namedSpecHelp <> "" then !hs ^ " " ^ namedSpecHelp else !hs);
                     hs := (!hs ^ "\n");
                     hs := (if desc <> "" then desc ^ "\n\n" ^ !hs else !hs);
                     hs := (if anonSpecUsage <> "" orelse namedSpecUsage <> ""

@@ -18,9 +18,18 @@ struct
 	    [] => ""
 	  | head :: tail => implode (Char.toUpper (head) :: tail)
 
-    (* -charAt: Gets the character at the index of the string. *)
+    (* -charAt: Gets the character at the index of the string. If the
+     *  index is negative, it will add the index to the length of the
+     *  string and call charAt for the new index.
+     *
+     *  Ex:
+     *        charAt ("foo", 0) = #"f"
+     *        charAt ("hub", ~1) = #"b"
+     *        charAt ("bar", ~7) = #"r"
+     *)
     and charAt (source: string, index: int) : char =
-        if index < 0 orelse index > length (source)
+        if index < 0 then charAt (source, length source + index)
+        else if index > length (source)
 	    then raise IndexError (source, index)
 	else
 	    List.nth (explode source, index)

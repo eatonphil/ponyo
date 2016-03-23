@@ -1,4 +1,4 @@
-structure File = Ponyo.Os.File
+structure File = Ponyo.Os.FileSystem.File
 structure Format = Ponyo.Format
 
 structure Ast = Ponyo.Sml.Ast
@@ -10,13 +10,14 @@ fun parse (path: string) : Ast.t =
         val file = String.join (File.readFrom path, "")
         val file = String.replace (file, "\n", " ")
         val stream = TextIO.openString (file)
-        fun lex () = Lexer.lex (fn () => TextIO.input1 stream)
+        val tokens = Lexer.lex (fn () => TextIO.input1 stream) handle
+            Fail s => (Format.println [s]; [])
     in
-        Parser.parse (lex () handle Fail s => (Format.println [s]; []))
-        handle Fail s => (Format.println [s]; Ast.Root [])
+        Parser.parse (tokens) handle
+            Fail s => (Format.println [s]; Ast.Root [])
     end
 
 fun main () = (
-    Ast.print (parse "tests/sml/parser/test.sml");
+    Ast.print (parse "test/Sml/parser/test.sml");
     ()
 )
