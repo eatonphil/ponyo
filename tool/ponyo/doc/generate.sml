@@ -118,10 +118,10 @@ fun generatePage (sigAst: Ast.t, comments: comment StringMap.t) : string =
             Ast.Root (children) =>
               String.join (map (fn child => generatePage (child, comments)) children, "")
           | Ast.Signature (name, body) =>
-              Format.sprintf ("<div class='ponyo-signature'>" ^
+              Format.sprintf ("<div class='ponyo-signature' id='%'>" ^
                                   "<h2>% Signature</h2>" ^
                                   "<div class='ponyo-signature-body'>%</div>" ^
-                              "</div>") [Token.toString name, generatePage (body, comments)]
+                              "</div>") [Token.toString name, Token.toString name, generatePage (body, comments)]
           | Ast.SignatureBody (children) =>
               String.join (map (fn child => generatePage (child, comments)) children, "")
           | Ast.ValueDec (name, (Ast.Type ty)) => generateValue (name, ty)

@@ -20,6 +20,8 @@ struct
         val Fun        = Symbol "fun"
         val Val        = Symbol "val"
         val Type       = Symbol "type"
+        val EqType     = Symbol "eqtype"
+        val Exception  = Symbol "exception"
         end
     end
 
@@ -92,13 +94,6 @@ struct
         readSymbol (reader, [Symbol.Equal]) >>= (fn (reader, _) =>
         parseStrLit (reader) >>= (fn (reader, ast) =>
         (reader, SOME (Ast.Structure (structureName, ast)))))))
-
-    and parseTypeDec (reader: reader) : reader * Ast.t option =
-        readSymbol (reader, [Symbol.Type]) >>= (fn (reader, _) =>
-        readIdent (reader) >>= (fn (reader, typeName) =>
-        readSymbol (reader, [Symbol.Equal]) >>= (fn (reader, _) =>
-        parseType (reader) >>= (fn (reader, ast) =>
-        (reader, SOME (Ast.TypeDec (typeName, ast)))))))
 
     and parseExp (reader: reader) : reader * Ast.t option =
         readToken (reader) >>= (fn (reader as {tokens, store}, token) =>
@@ -236,6 +231,31 @@ struct
           | (reader, SOME expAst) =>
               (reader, SOME (Ast.Value (valueName, typeAst, expAst))))))
 
+    and parseTypeDec (reader: reader) : reader * Ast.t option =
+        readSymbol (reader, [Symbol.Type]) >>= (fn (reader, _) =>
+        readIdent (reader) >>= (fn (reader, typeName) =>
+        case readSymbol (reader, [Symbol.Equal]) of
+            (reader, NONE) =>
+              (reader, SOME (Ast.TypeDec (typeName, Ast.Type Ast.NoType)))
+          | (reader, SOME _) =>
+        parseType (reader) >>= (fn (reader, ast) =>
+        (reader, SOME (Ast.TypeDec (typeName, ast))))))
+
+    and parseEqTypeDec (reader: reader) : reader * Ast.t option =
+        readSymbol (reader, [Symbol.EqType]) >>= (fn (reader, _) =>
+        readIdent (reader) >>= (fn (reader, typeName) =>
+        (reader, SOME (Ast.EqTypeDec typeName))))
+
+    and parseExcDec (reader: reader) : reader * Ast.t option =
+        readSymbol (reader, [Symbol.Exception]) >>= (fn (reader, _) =>
+        readIdent (reader) >>= (fn (reader, excName) =>
+        case readSymbol (reader, [Symbol.Equal]) of
+            (reader, NONE) =>
+              (reader, SOME (Ast.ExcDec (excName, Ast.Type Ast.NoType)))
+          | (reader, SOME _) =>
+        parseType (reader) >>= (fn (reader, typeAst) =>
+        (reader, SOME (Ast.ExcDec (excName, typeAst))))))
+
     and parseBody (reader: reader, ast: Ast.t, isSig: bool) : reader * Ast.t option =
         let
             val parsers = [
@@ -243,8 +263,9 @@ struct
                 ("structure", parseStrDec),
                 ("function", parseFunDec),
                 ("value", parseValDec),
-                ("type", parseTypeDec)(*,
-                ("exception", parseExcDec)*)
+                ("type", parseTypeDec),
+                ("eqtype", parseEqTypeDec),
+                ("exception", parseExcDec)
             ]
 
             fun doParse ((parseType, parse), (reader, ast)) : reader * Ast.t option =

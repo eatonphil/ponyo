@@ -27,6 +27,8 @@ struct
       | Expression      of e
       | Type            of ty
       | TypeDec         of Token.t * t
+      | EqTypeDec       of Token.t
+      | ExcDec          of Token.t * t
 
     fun insert (ast: t, child: t) : t =
         case ast of
@@ -77,6 +79,10 @@ struct
                                                   [Token.toString name, tyToString ty]; print value)
           | TypeDec (name, (Type ty)) => (Format.printf "Parsed type-dec: % of %\n"
                                           [Token.toString name, tyToString ty]; ())
+          | ExcDec (name, (Type ty)) => (Format.printf "Parsed exception-dec: % of %\n"
+                                         [Token.toString name, tyToString ty]; ())
+          | EqTypeDec (name) => (Format.printf "Parsed eqtype-dec: %"
+                                            [Token.toString name]; ())
           | Expression (e) => (case e of
               StringExp e => Format.printf "Parsed literal: \"%\"\n" [Token.toString e]
             | NumberExp e => Format.printf "Parsed literal: %\n" [Token.toString e]
