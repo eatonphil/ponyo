@@ -118,7 +118,7 @@ struct
                                 "<div class='ponyo-signature-information'>" ^
                                     (if source = "" then "<span>%</span>" else
                                     "<div class='ponyo-signature-source'>" ^
-                                        "<a href='%'>Source</a>" ^
+                                        "<a href='%' target='_blank'>Source</a>" ^
                                     "</div>") ^
                                     (if description = "" then "<span>%</span>" else
                                     "<div class='ponyo-signature-description'>%</div>") ^
@@ -189,13 +189,16 @@ struct
                     String.join (map (fn child => generatePage (child, comments, source)) children, "")
                 | Ast.ValueDec (name, (Ast.Type ty)) => generateGeneric ("val", name, ty)
                 | Ast.TypeDec (name, (Ast.Type ty)) => generateGeneric ("type", name, ty)
-                | Ast.EqTypeDec (name) => generateGeneric ("eqtype", name, Ast.NoType)
+                | Ast.EqtypeDec (name) => generateGeneric ("eqtype", name, Ast.NoType)
                 | _ => ""
             end
 
         fun writePage (path: string, body: string) : unit =
             let
-                val page = Format.sprintf (!pageTemplate) [Path.base (Path.file path), body]
+                val page = Format.sprintf (!pageTemplate)
+                           [Path.base (Path.file path),
+                           body]
+                           
                 val pageDir = Path.directory (path)
             in
                 if FileSystem.exists (pageDir)

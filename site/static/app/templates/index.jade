@@ -35,7 +35,7 @@ block body
                     li HTTP server/client
                     li Cli tools
                     li Standard ML parser/lexer
-                    li Build tool
+                    li Enhanced build tool and top-level
                     li Documentation generator
                     li Much more on the <a href="https://github.com/eatonphil/ponyo/blob/master/ROADMAP.md">roadmap</a>
 
@@ -45,11 +45,20 @@ block body
                 h2 Hello world!
 
                 pre
-                    code(class="ocaml").
-                        structure Format = Ponyo.Format
+                    code(class="ocaml sml").
+                        structure Main =
+                        struct
+                            local
+                                structure Format = Ponyo.Format
+                            in
 
-                        fun main () =
-                            Format.printf "Hello %!\n" ["world"]
+                            fun main () =
+                                Format.printf "Hello %!\n" ["world"]
+
+                            end
+                        end
+
+                        val main = Main.main
 
                 pre
                     code(class="bash").
@@ -59,7 +68,7 @@ block body
                 p.
                     For more examples, check out the Ponyo
                     <a href="https://github.com/eatonphil/ponyo/tree/master/tool/ponyo">tool</a>
-                    directory, the <a href="https://github.com/eatonphil/ponyo/tree/master/tests">"tests"</a>
+                    directory, the <a href="https://github.com/eatonphil/ponyo/tree/master/test">"test"</a>
                     directory, and the <a href="https://github.com/eatonphil/ponyo/tree/master/site">source</a>
                     for this site.
 

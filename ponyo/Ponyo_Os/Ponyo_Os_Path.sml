@@ -1,4 +1,4 @@
-structure Ponyo_Os_Path =
+structure Ponyo_Os_Path : PONYO_OS_PATH =
 struct
     local structure String = Ponyo_String in
 

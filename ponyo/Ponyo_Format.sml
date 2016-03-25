@@ -1,4 +1,4 @@
-structure Ponyo_Format =
+structure Ponyo_Format : PONYO_FORMAT =
 struct
     local structure String = Ponyo_String in
 

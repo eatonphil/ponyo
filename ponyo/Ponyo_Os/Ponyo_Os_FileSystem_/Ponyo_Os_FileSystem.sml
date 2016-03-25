@@ -1,4 +1,4 @@
-structure Ponyo_Os_FileSystem =
+structure Ponyo_Os_FileSystem : PONYO_OS_FILESYSTEM =
 struct
     local
         structure FileSys = Basis.Os.FileSys

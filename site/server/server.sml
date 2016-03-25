@@ -32,17 +32,19 @@ struct
 
         fun serveDocumentation (path: string) : Response.t =
             let
-                val sigPath = String.substringToEnd (path, String.length "/documentation/")
-                val namespaces = map String.capitalize (String.split (sigPath, "/"))
-                val folder = foldl
-                    (fn (ns, path) => Path.join [path, ns])
-                    (hd namespaces)
-                    (tl namespaces)
+                val file = case String.substringToEnd (path, String.length "/documentation/") of
+                    "string" => "Ponyo_String_/PONYO_STRING"
+                  | "container/list" => "Ponyo_Container/PONYO_CONTAINER_LIST"
+                  | "container/map" => "Ponyo_Container/PONYO_CONTAINER_MAP"
+                  | "os/path" => "Ponyo_Os/PONYO_OS_PATH"
+                  | "format" => "PONYO_FORMAT"
+                  | _ => ""
 
-                val file = String.toUpper (String.join ("ponyo" :: namespaces, "_")) ^ ".html"
-                val fullPath = Path.join ["./dist/templates/documentation/ponyo", folder, file]
+                val fullPath = Path.join ["./dist/templates/documentation/ponyo", file ^ ".html"]
+                val _ = PolyML.print fullPath
             in
-                serveFile (fullPath)
+                if file = "" then Response.new ("404 not found")
+                else serveFile (fullPath)
             end
 
         fun main () =
@@ -51,13 +53,10 @@ struct
                     "/" => serveFile "./dist/templates/index.html"
                   | "/downloads" => serveFile "./dist/templates/downloads.html"
                   | "/documentation" => serveFile "./dist/templates/documentation.html"
-                  | "/documentation/string" => serveDocumentation (Request.path req)
-                  | "/documentation/container/list" => serveDocumentation (Request.path req)
-                  | "/documentation/container/tree/binarysearch" => serveDocumentation (Request.path req)
                   | "/tutorials" => serveFile "./dist/templates/tutorials.html"
                   | "/news" => serveFile "./dist/templates/news.html"
                   | "/news/ponyo-for-standard-ml" => serveFile "./dist/templates/news/ponyo-for-standard-ml.html"
-                  | _ => Response.new ("404 not found")
+                  | _ => serveDocumentation (Request.path req)
             ))
     end
 end
