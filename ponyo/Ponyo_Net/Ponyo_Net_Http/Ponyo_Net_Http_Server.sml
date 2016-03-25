@@ -49,7 +49,7 @@ struct
         in
             Format.printf "Binding server...\n" [];
             bind (sock, INetSock.any port);
-            Format.printf "Server bound. Listening on port %:%\n\n" [address, Format.int port];
+            Format.printf "Server bound. Listening on port %:%\n\n" [address, Int.toString port];
             Socket.listen (sock, !MAX_CONN);
             Socket.Ctl.setREUSEADDR (sock, true);
             serve (sock, router);

@@ -1,4 +1,4 @@
-structure Http =
+structure Ponyo_Net_Http =
 struct
     structure Method   = Ponyo_Net_Http_Method
     structure Header   = Ponyo_Net_Http_Header

@@ -1,4 +1,4 @@
-.PHONY: all build-static build-server build-documentation configure clean
+.PHONY: all build-static build-server build-documentation deploy configure clean
 
 all:
 	$(MAKE) build-server
@@ -13,7 +13,12 @@ build-server:
 	ponyo make server/server.sml -o dist/bin/server
 
 build-documentation:
-	ponyo doc ../ponyo -o dist/templates/documentation -p dist/templates/documentation/signature.html
+	ponyo doc ../ -o dist/templates/documentation \
+            -p dist/templates/documentation/signature.html \
+	    -r github.com,eatonphil,ponyo
+
+deploy:
+	rsync --exclude dist/bin/server -r dist ponyo:~/
 
 configure:
 	@mkdir -p dist/bin

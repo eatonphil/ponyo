@@ -4,13 +4,6 @@ struct
 
     val formatVariable : string ref = ref "%"
 
-    fun int (i: int) = Int.toString (i)
-    fun real (r: real) = Real.toString (r)
-    fun str (s: string) = "\" ^ s ^ \""
-    fun char (c: char) = Char.toString (c)
-    fun list (l: string list) =
-        "[" ^ (String.join (l, ", ")) ^ "]"
-
     (* -sprintf: Returns a formatted string based on the given format
      *  string and the arguments replacing the format variable.
      *

@@ -1,29 +1,34 @@
-structure Parser =
+structure Ponyo_Sml_Parser =
 struct
-    structure Symbol =
-    struct
-        local open Token in
-        val Colon      = Symbol ":"
-        val Comma      = Symbol ","
-        val Asterisk   = Ident "*"
-        val Arrow      = Symbol "->"
-        val LeftCurly  = Symbol "{"
-        val RightCurly = Symbol "}"
-        val LeftParen  = Symbol "("
-        val RightParen = Symbol ")"
-        val End        = Symbol "end"
-        val Equal      = Symbol "="
-        val Sig        = Symbol "sig"
-        val Signature  = Symbol "signature"
-        val Struct     = Symbol "struct"
-        val Structure  = Symbol "structure"
-        val Fun        = Symbol "fun"
-        val Val        = Symbol "val"
-        val Type       = Symbol "type"
-        val EqType     = Symbol "eqtype"
-        val Exception  = Symbol "exception"
+    local
+        structure Format = Ponyo_Format
+        structure Ast = Ponyo_Sml_Ast
+        structure Token = Ponyo_Sml_Token
+        structure Symbol =
+        struct
+            local open Token in
+            val Colon      = Symbol ":"
+            val Comma      = Symbol ","
+            val Asterisk   = Ident "*"
+            val Arrow      = Symbol "->"
+            val LeftCurly  = Symbol "{"
+            val RightCurly = Symbol "}"
+            val LeftParen  = Symbol "("
+            val RightParen = Symbol ")"
+            val End        = Symbol "end"
+            val Equal      = Symbol "="
+            val Sig        = Symbol "sig"
+            val Signature  = Symbol "signature"
+            val Struct     = Symbol "struct"
+            val Structure  = Symbol "structure"
+            val Fun        = Symbol "fun"
+            val Val        = Symbol "val"
+            val Type       = Symbol "type"
+            val EqType     = Symbol "eqtype"
+            val Exception  = Symbol "exception"
+            end
         end
-    end
+    in
 
     type tokens = Token.t list
 
@@ -296,4 +301,6 @@ struct
                 []     => valOf (ast)
               | tokens => raise Fail "Invalid parser construct 2"
         end
+
+    end
 end

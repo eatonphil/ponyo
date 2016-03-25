@@ -1,3 +1,6 @@
+structure String = Ponyo.String
+structure Format = Ponyo.Format
+
 structure Os = Ponyo.Os
 structure Cli = Ponyo.Os.Cli
 structure File = Ponyo.Os.FileSystem.File

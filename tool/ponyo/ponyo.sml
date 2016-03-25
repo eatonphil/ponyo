@@ -1,5 +1,8 @@
 structure Cli = Ponyo.Os.Cli
 
+structure String = Ponyo.String
+structure Format = Ponyo.Format
+
 fun ponyo (program: string, args: string list) : unit =
     let in
         Basis.Os.Process.system ("ponyo-" ^ program ^ " " ^ String.join(args, " "));

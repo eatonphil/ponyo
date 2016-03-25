@@ -1,7 +1,7 @@
 structure Ponyo_Net_Http_Headers =
 struct
     local
-        structure Option = Ponyo_Option
+        structure Option = Ponyo_Container_Option
         structure String = Ponyo_String
         structure Header = Ponyo_Net_Http_Header
     in

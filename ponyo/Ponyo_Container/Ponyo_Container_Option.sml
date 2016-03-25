@@ -1,4 +1,4 @@
-structure Ponyo_Option =
+structure Ponyo_Container_Option =
 struct
     infix 6 >>=
     fun (x: 'a option) >>= (f: 'a -> 'b) : 'b option =

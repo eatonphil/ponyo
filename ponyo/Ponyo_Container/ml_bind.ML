@@ -1,7 +1,7 @@
-structure Container =
+structure Ponyo_Container =
 struct
-    structure Tree = Tree
-    structure Option = Ponyo_Option
+    structure Tree = Ponyo_Container_Tree
+    structure Option = Ponyo_Container_Option
 end;
 
 signature PONYO_CONTAINER_TREE_BINARYSEARCH = PONYO_CONTAINER_TREE_BINARYSEARCH

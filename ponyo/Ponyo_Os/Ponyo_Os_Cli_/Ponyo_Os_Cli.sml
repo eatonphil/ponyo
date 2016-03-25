@@ -1,9 +1,12 @@
 structure Ponyo_Os_Cli =
 struct
+    local
+        structure Format = Ponyo_Format
+        structure String = Ponyo_String
+    in
+
     structure Flag = Ponyo_Os_Cli_Flag
     structure Arg = Ponyo_Os_Cli_Arg
-
-    local structure String = Ponyo_String in
 
     type anonSpec = Flag.anon * Arg.t * string
     type namedSpec = Flag.named * Arg.t * string

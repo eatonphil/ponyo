@@ -7,6 +7,8 @@ struct
         structure Path = Ponyo_Os_Path
     in
 
+    structure File = Ponyo_Os_FileSystem_File;
+
     (* -exists: returns true if the path given is a valid file, directory,
      *  or symbolic link.
      *)

@@ -1,5 +1,11 @@
-structure Ast =
+structure Ponyo_Sml_Ast =
 struct
+    local
+        structure Token = Ponyo_Sml_Token
+        structure Format = Ponyo_Format
+        structure String = Ponyo_String
+    in
+
     datatype e =
         StringExp of Token.t
       | NumberExp of Token.t
@@ -88,4 +94,6 @@ struct
             | NumberExp e => Format.printf "Parsed literal: %\n" [Token.toString e]
             | ValueExp e  => Format.printf "Parsed value reference: %\n" [Token.toString e])
           | _ => ()
+
+    end
 end

@@ -61,7 +61,7 @@ struct
     fun marshall (response: t) =
         let
             val version = #version response
-            val status = Format.int (#status response)
+            val status = Int.toString (#status response)
             val reason = #reason response
             val intro = Format.sprintf "% % %\r\n" [version, status, reason]
             val marshalled = map Header.marshall (Headers.toList (#headers response))

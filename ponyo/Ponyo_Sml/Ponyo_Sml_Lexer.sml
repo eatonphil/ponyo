@@ -1,5 +1,12 @@
-structure Lexer =
+structure Ponyo_Sml_Lexer =
 struct
+    local
+        structure String = Ponyo_String
+        structure Format = Ponyo_Format
+        structure Token = Ponyo_Sml_Token
+        structure StringList = Ponyo_Container_List (String)
+    in
+
     type stream = unit -> char option
 
     type reader = {
@@ -12,41 +19,36 @@ struct
     type readerReadOpt = reader * string option
     type readerTokenOpt = reader * Token.t option
 
-    local
-        structure String = Ponyo_String
-        structure StringList = Ponyo_Container_List (String)
+    infix 6 >>=;
+    fun (reader, string) >>= f : readerTokenOpt =
+        case string of
+            NONE        => (reader, NONE)
+          | SOME string => f (reader, string)
 
-        infix 6 >>=;
-        fun (reader, string) >>= f : readerTokenOpt =
-            case string of
-                NONE        => (reader, NONE)
-              | SOME string => f (reader, string)
+    fun sListLongest (sList: string list) : string =
+        foldl (fn (s, longest) => if (String.length longest) > (String.length s)
+                                  then longest else s) "" sList
 
-        fun sListLongest (sList: string list) : string =
-            foldl (fn (s, longest) => if (String.length longest) > (String.length s)
-                                     then longest else s) "" sList
+    fun stringBeforeStream (chars: string, stream: stream) : stream =
+        let
+            val streamed = ref chars
+            fun next () =
+                if !streamed = "" then NONE
+                else let val c = SOME (String.toChar (!streamed)) in
+                    streamed := String.substringToEnd (!streamed, 1);
+                    c
+                end
+        in
+            fn () => case next () of
+                NONE   => stream ()
+              | SOME c => SOME c
+        end
 
-        fun stringBeforeStream (chars: string, stream: stream) : stream =
-            let
-                val streamed = ref chars
-                fun next () =
-                    if !streamed = "" then NONE
-                    else let val c = SOME (String.toChar (!streamed)) in
-                        streamed := String.substringToEnd (!streamed, 1);
-                        c
-                    end
-            in
-                fn () => case next () of
-                    NONE   => stream ()
-                | SOME c => SOME c
-            end
-
-        (* Char.toString converts " to \", which is wrong in these cases. *)
-        fun charToString (c: char) : string =
-            case c of
-                #"\"" => "\""
-            | c     => Char.toString (c)
-    in
+    (* Char.toString converts " to \", which is wrong in these cases. *)
+    fun charToString (c: char) : string =
+        case c of
+            #"\"" => "\""
+          | c     => Char.toString (c)
 
     val reservedWords = [
         "eqtype", "functor", "include", "sharing", "sig",

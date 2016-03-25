@@ -1,4 +1,4 @@
-structure Token =
+structure Ponyo_Sml_Token =
 struct
     datatype t =
         String  of string

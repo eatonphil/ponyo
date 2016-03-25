@@ -4,5 +4,5 @@ functor A (
 ) : PONYO_CONTAINER_TREE_BINARYSEARCH =
     Ponyo_Container_Tree_BinarySearch (D)
 
-(* Here to be discoverd by Container/ml_bind.ML *)
-structure Tree = struct end
+(* Here to be discoverd by Ponyo_Container/ml_bind.ML *)
+structure Ponyo_Container_Tree = struct end

@@ -1,173 +1,241 @@
-structure Format = Ponyo.Format
+structure Generate =
+struct
+    local
+        structure Format = Ponyo.Format
 
-structure FileSystem = Ponyo.Os.FileSystem
-structure File = Ponyo.Os.FileSystem.File
-structure Path = Ponyo.Os.Path
+        structure FileSystem = Ponyo.Os.FileSystem
+        structure File = Ponyo.Os.FileSystem.File
+        structure Path = Ponyo.Os.Path
 
-structure String = Ponyo.String
+        structure String = Ponyo.String
 
-structure Ast = Ponyo.Sml.Ast
-structure Lexer = Ponyo.Sml.Lexer
-structure Parser = Ponyo.Sml.Parser
+        structure Ast = Ponyo.Sml.Ast
+        structure Lexer = Ponyo.Sml.Lexer
+        structure Parser = Ponyo.Sml.Parser
+        structure Token = Ponyo.Sml.Token
 
-structure StringMap = Ponyo_Container_Map(String)
+        structure StringMap = Ponyo_Container_Map(String)
 
-type comment = string * string * string list
+        type comment = string * string * string list
+    in
+        val inDirectory  = ref ""
+        val outDirectory = ref ""
+        val pageTemplate = ref ""
+        val repository   = ref ("", "", "")
 
-fun parseComments (tokens: Token.t list) : comment StringMap.t =
-    let
-        val comments =
-            foldl (fn (token, comments) => case token of
-                Token.Comment comment => comment :: comments
-              | _ => comments) [] tokens
-
-        fun cleanComment (comment: string) : string =
+        fun sourceLink (path: string) : string =
             let
-                val lines = String.split (comment, "*")
-                val lines = map String.stripWhitespace lines
+                val (host, namespace, project) = !repository
+
+                val githubSource =
+                    Format.sprintf "https://github.com/%/%/blob/master"
+                    [namespace, project]
             in
-                String.join (lines, "\n")
+                case host of
+                    "github.com" => Path.join [githubSource, path]
+                  | _ => raise Fail (Format.sprintf "Unknown provider %." [host]; "")
             end
 
-        val comments = map cleanComment comments
-
-        fun cleanDescription (desc: string) : string =
-            String.replace (String.stripWhitespace (desc), "\n", " ")
-
-        fun parseComment (comment: string) : comment option =
-            case String.splitN (comment, ":", 1) of
-                [] => NONE
-              | name :: [comment] => (
-            case String.splitN (comment, "Ex:", 1) of
-                [] => SOME (String.stripWhitespace name,
-                            cleanDescription comment, [])
-              | description :: [examples] =>
-                  SOME (String.stripWhitespace name,
-                        cleanDescription description,
-                        map String.stripWhitespace (String.split (examples, "\n")))
-              | _ => SOME (String.stripWhitespace name,
-                           cleanDescription comment, []))
-              | _ => NONE
-
-        fun doParseComments (comments: string list, parsed: comment StringMap.t) : comment StringMap.t =
-            case comments of
-                [] => parsed
-              | comment :: comments =>
-            case parseComment (comment) of
-                NONE => doParseComments (comments, parsed)
-              | SOME (comment as (name, _, _)) =>
-                  doParseComments (comments, StringMap.insert parsed (name, comment))
-              
-    in
-        doParseComments (comments, StringMap.empty)
-    end
-
-fun parseFile (path: string) : Ast.t * comment StringMap.t =
-    let
-        val file = String.join (File.readFrom path, "")
-        val file = String.replace (file, "\n", " ")
-        val stream = TextIO.openString (file)
-        fun lex () = Lexer.lex (fn () => TextIO.input1 stream)
-
-        val tokens = lex () handle
-            Fail reason => (Format.println [reason]; [])
-
-        val ast = Parser.parse (tokens) handle
-            Fail reason => (Format.printf "FAILURE [%]: %\n" [path, reason]; Ast.Root [])
-
-        val commentsByName = parseComments (tokens)
-    in
-        (ast, commentsByName)
-    end
-
-fun generatePage (sigAst: Ast.t, comments: comment StringMap.t) : string =
-    let
-        fun generateValue (valueToken, ty) =
+        fun parseComments (tokens: Token.t list) : comment StringMap.t =
             let
-                val name = Token.toString (valueToken)
-                
-                val (_, description, examples) = case StringMap.get comments name of
-                    NONE => ("", "", [])
-                  | SOME comment => comment
+                val comments =
+                    foldl (fn (token, comments) => case token of
+                        Token.Comment comment => comment :: comments
+                    | _ => comments) [] tokens
 
-                val valueHtml = ("<div class='ponyo-value'>" ^
-                                     "<div class='ponyo-value-signature'>" ^
-                                         "<span class='ponyo-value-name-label-val'>val</span>" ^
-                                         "<span class='ponyo-value-name'>%</span>" ^
-                                         "<span class='ponyo-value-name-label-colon'>:</span>" ^
-                                         "<span class='ponyo-value-type'>%</span>" ^
-                                     "</div>" ^
-                                     "<div class='ponyo-value-description'>%</div>" ^
-                                 (if length examples = 0 then "%" else
-                                     "<div class='ponyo-value-examples'>" ^
-                                         "<div class='ponyo-value-examples-label'>Examples:</div>" ^
-                                         "<pre><code class='sml ocaml'>%</pre></code>" ^
-                                     "</div>") ^
-                                 "</div>")
-                val valueValues = [
-                    name,
-                    Ast.tyToString ty,
-                    description,
-                    String.join (examples, "\n")
-                ]
+                fun cleanComment (comment: string) : string =
+                    let
+                        val lines = String.split (comment, "*")
+                        val lines = map String.stripWhitespace lines
+                    in
+                        String.join (lines, "\n")
+                    end
+
+                val comments = map cleanComment comments
+
+                fun cleanDescription (desc: string) : string =
+                    String.replace (String.stripWhitespace (desc), "\n", " ")
+
+                fun parseComment (comment: string) : comment option =
+                    case String.splitN (comment, ":", 1) of
+                        [] => NONE
+                      | name :: [comment] => (
+                    case String.splitN (comment, "Ex:", 1) of
+                        [] => SOME (String.stripWhitespace name,
+                                    cleanDescription comment, [])
+                      | description :: [examples] =>
+                          SOME (String.stripWhitespace name,
+                                cleanDescription description,
+                                map String.stripWhitespace (String.split (examples, "\n")))
+                      | _ => SOME (String.stripWhitespace name,
+                                   cleanDescription comment, []))
+                      | _ => NONE
+
+                fun doParseComments (comments: string list, parsed: comment StringMap.t) : comment StringMap.t =
+                    case comments of
+                        [] => parsed
+                    | comment :: comments =>
+                    case parseComment (comment) of
+                        NONE => doParseComments (comments, parsed)
+                    | SOME (comment as (name, _, _)) =>
+                        doParseComments (comments, StringMap.insert parsed (name, comment))
+
             in
-                Format.sprintf valueHtml valueValues
+                doParseComments (comments, StringMap.empty)
             end
-    in
-        case sigAst of
-            Ast.Root (children) =>
-              String.join (map (fn child => generatePage (child, comments)) children, "")
-          | Ast.Signature (name, body) =>
-              Format.sprintf ("<div class='ponyo-signature' id='%'>" ^
-                                  "<h2>% Signature</h2>" ^
-                                  "<div class='ponyo-signature-body'>%</div>" ^
-                              "</div>") [Token.toString name, Token.toString name, generatePage (body, comments)]
-          | Ast.SignatureBody (children) =>
-              String.join (map (fn child => generatePage (child, comments)) children, "")
-          | Ast.ValueDec (name, (Ast.Type ty)) => generateValue (name, ty)
-          | _ => ""
-    end
 
-fun writePage (path: string, page: string, body: string) : unit =
-    let
-        val page = Format.sprintf page [Path.base (Path.file path), body]
-        val pageDir = Path.directory (path)
-    in
-        if FileSystem.exists (pageDir)
-            then ()
-        else FileSystem.makeDirectory (pageDir);
-        File.writeTo (path, page)
-    end
+        fun parseFile (path: string) : Ast.t * comment StringMap.t =
+            let
+                val file = String.join (File.readFrom path, "")
+                val file = String.replace (file, "\n", " ")
+                val stream = TextIO.openString (file)
+                fun lex () = Lexer.lex (fn () => TextIO.input1 stream)
 
-fun generateHtml (outDir: string, page: string, asts: (Ast.t * comment StringMap.t) StringMap.t) : unit =
-    let
-        fun outFile (path) =
-            Path.join [outDir, Basis.Os.Path.base path ^ ".html"]
+                val tokens = lex () handle
+                    Fail reason => (Format.println [reason]; [])
 
-        fun generatePages (astList: (string * (Ast.t * comment StringMap.t)) list) : unit =
-            case astList of
-                [] => ()
-              | (path, ast) :: astList =>
-            let in
-                writePage (outFile path, page, generatePage ast);
-                generatePages (astList)
+                val ast = Parser.parse (tokens) handle
+                    Fail reason => (Format.printf "FAILURE [%]: %\n" [path, reason]; Ast.Root [])
+
+                val commentsByName = parseComments (tokens)
+            in
+                (ast, commentsByName)
             end
-    in
-        generatePages (StringMap.toList asts)
-    end
 
-fun generateDocumentation (inDir: string, page: string, outDir: string) : unit =
-    let
-        val asts : (Ast.t * (comment StringMap.t)) StringMap.t ref = ref StringMap.empty
-        fun parseSignature (path: string) : unit =
-            case Path.extension (path) of
-                "ML" => if Path.file (path) = "ml_bind.ML" then ()
-                    else asts := StringMap.insert
-                        (!asts)
-                        (String.substringToEnd (path, String.length inDir),
-                         parseFile (path))
-              | _ => ()
-    in
-        FileSystem.walk (inDir, parseSignature);
-        generateHtml (outDir, page, !asts)
+        fun generatePage (ast: Ast.t, comments: comment StringMap.t, source: string) : string =
+            let
+                fun generateSignature (signatureToken, body) =
+                    let
+                        val name = Token.toString (signatureToken)
+
+                        val (_, description, examples) = case StringMap.get comments name of
+                            NONE => ("", "", [])
+                        | SOME comment => comment
+
+                        val sigHtml =
+                            "<div class='ponyo-signature' id='%'>" ^
+                                "<h2>% Signature</h2>" ^
+                                "<div class='ponyo-signature-information'>" ^
+                                    (if source = "" then "<span>%</span>" else
+                                    "<div class='ponyo-signature-source'>" ^
+                                        "<a href='%'>Source</a>" ^
+                                    "</div>") ^
+                                    (if description = "" then "<span>%</span>" else
+                                    "<div class='ponyo-signature-description'>%</div>") ^
+                                    (if length examples = 0 then "<span>%</span>" else
+                                    "<div class='ponyo-signature-examples'>" ^
+                                        "<div class='ponyo-signature-examples-label'>Examples:</div>" ^
+                                        "<pre><code class='sml ocaml'>%</code></pre>" ^
+                                    "</div>") ^
+                                "</div>" ^
+                                "<div class='ponyo-signature-body'>%</div>" ^
+                            "</div>"
+
+                        val sigValues = [
+                            name,
+                            name,
+                            source,
+                            description,
+                            String.join(examples, "\n"),
+                            generatePage (body, comments, source)
+                        ]
+                    in
+                        Format.sprintf sigHtml sigValues
+                    end
+
+                fun generateGeneric (genericType, valueToken, ty) =
+                    let
+                        val name = Token.toString (valueToken)
+
+                        val (_, description, examples) = case StringMap.get comments name of
+                            NONE => ("", "", [])
+                        | SOME comment => comment
+
+                        val valueHtml =
+                            "<div class='ponyo-generic'>" ^
+                                "<div class='ponyo-generic-signature'>" ^
+                                    "<span class='ponyo-generic-name-label-type'>%</span>" ^
+                                    "<span class='ponyo-generic-name'>%</span>" ^
+                                    (if ty = Ast.NoType then "<span>%</span>" else
+                                    "<span class='ponyo-generic-name-label-colon'>:</span>" ^
+                                    "<span class='ponyo-generic-type'>%</span>") ^
+                                "</div>" ^
+                                (if description = "" then "<span>%</span>" else
+                                "<div class='ponyo-generic-description'>%</div>") ^
+                                (if length examples = 0 then "<span>%</span>" else
+                                "<div class='ponyo-generic-examples'>" ^
+                                    "<div class='ponyo-generic-examples-label'>Examples:</div>" ^
+                                    "<pre><code class='sml ocaml'>%</code></pre>" ^
+                                "</div>") ^
+                            "</div>"
+
+                        val valueValues = [
+                            genericType,
+                            name,
+                            if ty = Ast.NoType then "" else Ast.tyToString ty,
+                            description,
+                            String.join (examples, "\n")
+                        ]
+                    in
+                        Format.sprintf valueHtml valueValues
+                    end
+            in
+                case ast of
+                    Ast.Root (children) =>
+                    String.join (map (fn child => generatePage (child, comments, source)) children, "")
+                | Ast.Signature (name, body) =>
+                    generateSignature (name, body)
+                | Ast.SignatureBody (children) =>
+                    String.join (map (fn child => generatePage (child, comments, source)) children, "")
+                | Ast.ValueDec (name, (Ast.Type ty)) => generateGeneric ("val", name, ty)
+                | Ast.TypeDec (name, (Ast.Type ty)) => generateGeneric ("type", name, ty)
+                | Ast.EqTypeDec (name) => generateGeneric ("eqtype", name, Ast.NoType)
+                | _ => ""
+            end
+
+        fun writePage (path: string, body: string) : unit =
+            let
+                val page = Format.sprintf (!pageTemplate) [Path.base (Path.file path), body]
+                val pageDir = Path.directory (path)
+            in
+                if FileSystem.exists (pageDir)
+                    then ()
+                else FileSystem.makeDirectory (pageDir);
+                File.writeTo (path, page)
+            end
+
+        fun generateHtml (asts: (Ast.t * comment StringMap.t) StringMap.t) : unit =
+            let
+                fun outFile (path) =
+                    Path.join [!outDirectory, Basis.Os.Path.base path ^ ".html"]
+
+                fun generatePages (astList: (string * (Ast.t * comment StringMap.t)) list) : unit =
+                    case astList of
+                        [] => ()
+                    | (path, (ast, comments)) :: astList =>
+                    let in
+                        writePage (outFile path, generatePage (ast, comments, sourceLink path));
+                        generatePages (astList)
+                    end
+            in
+                generatePages (StringMap.toList asts)
+            end
+
+        fun generateDocumentation () : unit =
+            let
+                val asts : (Ast.t * (comment StringMap.t)) StringMap.t ref = ref StringMap.empty
+                fun parseSignature (path: string) : unit =
+                    case Path.extension (path) of
+                        "ML" => if Path.file (path) = "ml_bind.ML" then ()
+                            else asts := StringMap.insert
+                                (!asts)
+                                (String.substringToEnd (path, String.length (!inDirectory)),
+                                parseFile (path))
+                    | _ => ()
+            in
+                FileSystem.walk (!inDirectory, parseSignature);
+                generateHtml (!asts)
+            end
+
     end
+end
