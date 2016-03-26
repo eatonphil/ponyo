@@ -16,13 +16,12 @@ struct
 
     and charAt (source: string, index: int) : char =
         let
-            val actualIndex =
-                if index < 0 then
-                    length(source) + index
-                else
-                    index
+            val sourceLength = length(source)
         in
-            List.nth (explode source, index)
+            if index < 0 andalso sourceLength > 0 then
+                charAt (source, index + sourceLength)
+            else
+                List.nth(explode source, index)
         end
 	    handle Subscript => raise IndexError (source, index)
 
