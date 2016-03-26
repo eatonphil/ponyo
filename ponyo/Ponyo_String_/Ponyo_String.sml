@@ -16,10 +16,9 @@ struct
 
     and charAt (source: string, index: int) : char =
         let
-            val sourceLength = length(source)
             val actualIndex =
-                if index < 0 andalso sourceLength <= 0 then
-                    sourceLength + index
+                if index < 0 then
+                    length(source) + index
                 else
                     index
         in
