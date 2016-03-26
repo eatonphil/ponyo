@@ -1,16 +1,18 @@
-structure Cli = Ponyo.Os.Cli
-
-structure String = Ponyo.String
-structure Format = Ponyo.Format
-
-fun ponyo (program: string, args: string list) : unit =
-    let in
-        Basis.Os.Process.system ("ponyo-" ^ program ^ " " ^ String.join(args, " "));
-        ()
-    end
-
 structure Main =
 struct
+    local
+        structure Cli = Ponyo.Os.Cli
+
+        structure String = Ponyo.String
+        structure Format = Ponyo.Format
+    in
+
+    fun ponyo (program: string, args: string list) : unit =
+        let in
+            Basis.Os.Process.system ("ponyo-" ^ program ^ " " ^ String.join(args, " "));
+            ()
+        end
+
     val commandFlag = Cli.Flag.Anon "command"
 
     val spec =
