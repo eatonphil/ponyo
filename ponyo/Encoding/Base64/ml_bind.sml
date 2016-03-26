@@ -1,1 +1,0 @@
-structure Base64 = Ponyo_Encoding_Base64

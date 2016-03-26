@@ -1,4 +1,4 @@
-structure Encoding =
+structure Ponyo_Encoding =
 struct
-    structure Base64 = Base64
+    structure Base64 = Ponyo_Encoding_Base64
 end
