@@ -114,12 +114,9 @@ struct
 
                         val sigHtml =
                             "<div class='ponyo-signature' id='%'>" ^
-                                "<h2>% Signature</h2>" ^
+                                (if source = "" then "<span>%</span><h2>%</h2>" else
+                                "<a href='%' target='_blank'><h2>%</h2></a>") ^
                                 "<div class='ponyo-signature-information'>" ^
-                                    (if source = "" then "<span>%</span>" else
-                                    "<div class='ponyo-signature-source'>" ^
-                                        "<a href='%' target='_blank'>Source</a>" ^
-                                    "</div>") ^
                                     (if description = "" then "<span>%</span>" else
                                     "<div class='ponyo-signature-description'>%</div>") ^
                                     (if length examples = 0 then "<span>%</span>" else
@@ -133,8 +130,8 @@ struct
 
                         val sigValues = [
                             name,
-                            name,
                             source,
+                            name,
                             description,
                             String.join(examples, "\n"),
                             generatePage (body, comments, source)
