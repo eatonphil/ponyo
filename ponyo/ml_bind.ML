@@ -5,5 +5,5 @@ struct
     structure Container = Ponyo_Container
     structure Net = Ponyo_Net
     structure Os = Ponyo_Os
-    structure Sml = Ponyo_Sml
+    structure Sml = Ponyo_Sml_
 end

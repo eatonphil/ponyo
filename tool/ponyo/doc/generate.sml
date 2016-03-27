@@ -110,7 +110,7 @@ struct
 
                         val (_, description, examples) = case StringMap.get comments name of
                             NONE => ("", "", [])
-                        | SOME comment => comment
+                          | SOME comment => comment
 
                         val sigHtml =
                             "<div class='ponyo-signature' id='%'>" ^
@@ -149,7 +149,7 @@ struct
 
                         val (_, description, examples) = case StringMap.get comments name of
                             NONE => ("", "", [])
-                        | SOME comment => comment
+                          | SOME comment => comment
 
                         val valueHtml =
                             "<div class='ponyo-generic'>" ^
@@ -183,14 +183,14 @@ struct
                 case ast of
                     Ast.Root (children) =>
                     String.join (map (fn child => generatePage (child, comments, source)) children, "")
-                | Ast.Signature (name, body) =>
-                    generateSignature (name, body)
-                | Ast.SignatureBody (children) =>
-                    String.join (map (fn child => generatePage (child, comments, source)) children, "")
-                | Ast.ValueDec (name, (Ast.Type ty)) => generateGeneric ("val", name, ty)
-                | Ast.TypeDec (name, (Ast.Type ty)) => generateGeneric ("type", name, ty)
-                | Ast.EqtypeDec (name) => generateGeneric ("eqtype", name, Ast.NoType)
-                | _ => ""
+                  | Ast.Signature (name, body) =>
+                      generateSignature (name, body)
+                  | Ast.SignatureBody (children) =>
+                      String.join (map (fn child => generatePage (child, comments, source)) children, "")
+                  | Ast.ValueDec (name, (Ast.Type ty)) => generateGeneric ("val", name, ty)
+                  | Ast.TypeDec (name, (Ast.Type ty)) => generateGeneric ("type", name, ty)
+                  | Ast.EqtypeDec (name) => generateGeneric ("eqtype", name, Ast.NoType)
+                  | _ => ""
             end
 
         fun writePage (path: string, body: string) : unit =
@@ -215,7 +215,7 @@ struct
                 fun generatePages (astList: (string * (Ast.t * comment StringMap.t)) list) : unit =
                     case astList of
                         [] => ()
-                    | (path, (ast, comments)) :: astList =>
+                      | (path, (ast, comments)) :: astList =>
                     let in
                         writePage (outFile path, generatePage (ast, comments, sourceLink path));
                         generatePages (astList)
@@ -234,7 +234,7 @@ struct
                                 (!asts)
                                 (String.substringToEnd (path, String.length (!inDirectory)),
                                 parseFile (path))
-                    | _ => ()
+                      | _ => ()
             in
                 FileSystem.walk (!inDirectory, parseSignature);
                 generateHtml (!asts)
