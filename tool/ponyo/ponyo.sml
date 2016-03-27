@@ -43,6 +43,8 @@ struct
               | "version" => Format.println ["ponyo version ponyo-0.1"]
               | _ => (Format.printf "ERROR: Bad command [%].\n\n" [cmd]; Cli.doHelp (spec))
         end
+
+    end
 end
 
 val main = Main.main
