@@ -23,13 +23,9 @@ struct
 
     fun serve (sock, router: router) : unit =
         let
-            val accept = Socket.acceptNB (sock);
-            fun fork (conn) =
-                Thread.Thread.fork (fn () => handler (conn, router), [])
+            val (conn, _) = Socket.accept (sock);
         in
-            case accept of
-                NONE => ()
-              | SOME (conn, _) => (fork conn; ());
+            Thread.Thread.fork (fn () => handler (conn, router), []);
             serve (sock, router);
             ()
         end
