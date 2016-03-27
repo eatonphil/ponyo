@@ -15,11 +15,15 @@ struct
 	  | head :: tail => implode (Char.toUpper (head) :: List.map Char.toLower tail)
 
     and charAt (source: string, index: int) : char =
-        if index < 0 then charAt (source, length source + index)
-        else if index > length (source)
-	    then raise IndexError (source, index)
-	else
-	    List.nth (explode source, index)
+        let
+            val sourceLength = length(source)
+        in
+            if index < 0 andalso sourceLength > 0 then
+                charAt (source, index + sourceLength)
+            else
+                List.nth(explode source, index)
+        end
+	    handle Subscript => raise IndexError (source, index)
 
     and compare (vals: string * string) : order = Basis.String.compare (vals)
 

@@ -4,11 +4,12 @@ fun main () =
     let in
         PolyML.print (String.substring ("foobar", 0, 3));
         PolyML.print (String.indexOf ("foobar", "bar"));
-	PolyML.print (String.indexOf ("/www.google.com/", "/"));
-	map PolyML.print (String.split ("Header: foo", ":"));
-	PolyML.print (length (String.splitN ("Header bar foo 1", " ", 1)));
-	PolyML.print (String.stripAll ("\t    Header \t ", [" ", "\t"]));
-	PolyML.print (String.count ("///https://www.google.com//", "//"));
+        PolyML.print (String.indexOf ("/www.google.com/", "/"));
+        PolyML.print (Char.toString (String.charAt ("", ~10)) handle x => "Bad index");
+        map PolyML.print (String.split ("Header: foo", ":"));
+        PolyML.print (length (String.splitN ("Header bar foo 1", " ", 1)));
+        PolyML.print (String.stripAll ("\t    Header \t ", [" ", "\t"]));
+        PolyML.print (String.count ("///https://www.google.com//", "//"));
         map print (String.split ("https://www.google.com/", "//"));
         print "\n\n";
         print (String.join (String.split (String.join (["foobar\n", "\n", "bar\n"], ""), "\n"), "\n"));
