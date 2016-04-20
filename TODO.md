@@ -26,3 +26,8 @@
 
 #### ponyo-doc
 * docs should include date generated
+* ponyo-doc should allow command-line access to local libraries
+  * would require refactoring to support multiple output formats
+  * ex:
+    * ponyo-doc Ponyo.Net.Http.Server (might print the module docs formatted
+      for stdout)
