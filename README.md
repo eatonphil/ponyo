@@ -17,8 +17,8 @@ Next, choose a path for the Ponyo root. We will assume it is at ~/vendor/ponyo.
 Add the following lines to your ~/.profile:
 
 ```bash
-PONYO_PATH=~/vendor/ponyo
-PATH=$PATH:$PONYO_PATH/bin
+PONYO_ROOT=~/vendor/ponyo
+PATH=$PATH:$PONYO_ROOT/bin
 ```
 
 Now, download and install Ponyo to the path.
