@@ -3,5 +3,34 @@ extends ./tmpl/base.jade
 block body
     .container
         .container-small
-            h2 Tutorials
-            p Coming soon!
+            h2 The Ponyo Handbook
+            p.
+                The Ponyo Handbook is a collection of guides for learning
+                Ponyo and (to a large extent) Standard ML. There will be a
+                variety of tracks and new articles introduced over time. If you
+                would like to contribute an article or start a new track, open
+                a PR on Github!
+            ul
+                li
+                    a(href="#sml-basics") Standard ML Basics
+                li
+                    a(href="#ponyo-basics") Ponyo Basics
+            .tracks
+                .track
+                    h3#sml-basics Standard ML Basics
+                    p.
+                        This track assumes a basic understanding of programming
+                        in a C-like language. It will cover the basics of
+                        Standard ML using <a href="https://github.com/polyml/polyml">Poly/ML</a>.
+                    ol
+                        li
+                            a(href="/handbook/sml-basics/1") Hello world!
+                        li The Poly/ML top-level
+                    h3#ponyo-basics Ponyo Basics
+                    p.
+                        This track assumes a basic understanding of Standard ML.
+                    ol
+                        li
+                            a(href="/handbook/ponyo-basics/1") Hello world!
+                        li The command-line interface
+                        li A basic web-server
