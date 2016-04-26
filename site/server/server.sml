@@ -5,6 +5,7 @@ struct
         structure Response = Ponyo.Net.Http.Response
         structure Server = Ponyo.Net.Http.Server
 
+        structure FileSystem = Ponyo.Os.FileSystem
         structure File = Ponyo.Os.FileSystem.File
         structure Path = Ponyo.Os.Path
 
@@ -17,17 +18,25 @@ struct
 
         fun serveFile (path: string) : Response.t =
             let
+                fun exists () = FileSystem.exists (path)
                 fun getFile () = String.join (File.readFrom path, "")
 
-                val newFile = ref false
+                val newFile = ref true
                 val file = case StringMap.get (!fileCache) path of
-                    NONE => getFile ()
-                | SOME file => (newFile := true; file)
+                  NONE => if exists () then getFile () else "404 Not found"
+                | SOME file => (newFile := false; file)
             in
                 if !newFile
                     then fileCache := StringMap.insert (!fileCache) (path, file)
                 else ();
                 Response.new (file)
+            end
+
+        fun serveHandbook (path: string) : Response.t =
+            let
+                val fullPath = Path.join ["./dist/templates", path ^ ".html"]
+            in
+                serveFile (fullPath)
             end
 
         fun serveDocumentation (path: string) : Response.t =
@@ -41,9 +50,8 @@ struct
                   | _ => ""
 
                 val fullPath = Path.join ["./dist/templates/documentation/ponyo", file ^ ".html"]
-                val _ = PolyML.print fullPath
             in
-                if file = "" then Response.new ("404 not found")
+                if file = "" then serveHandbook (path)
                 else serveFile (fullPath)
             end
 
@@ -53,9 +61,10 @@ struct
                     "/" => serveFile "./dist/templates/index.html"
                   | "/downloads" => serveFile "./dist/templates/downloads.html"
                   | "/documentation" => serveFile "./dist/templates/documentation.html"
-                  | "/tutorials" => serveFile "./dist/templates/tutorials.html"
+                  | "/handbook" => serveFile "./dist/templates/handbook.html"
                   | "/news" => serveFile "./dist/templates/news.html"
                   | "/news/ponyo-for-standard-ml" => serveFile "./dist/templates/news/ponyo-for-standard-ml.html"
+                  | "/news/the-ponyo-handbook" => serveFile "./dist/templates/news/the-ponyo-handbook.html"
                   | _ => serveDocumentation (Request.path req)
             ))
     end
