@@ -15,6 +15,7 @@
   * fail in Makefile doesn't trigger end of build attempts
 
 #### ponyo lib
+* add router
 * make sure occurences of "^" are sensible
 * ensure tail-call recursion is used everywhere
 * build out test suite
@@ -26,8 +27,15 @@
 
 #### ponyo-doc
 * docs should include date generated
-* ponyo-doc should allow command-line access to local libraries
+* each function should link to line in Github source
+* ponyo-doc should allow command-line viewing of local library docs
   * would require refactoring to support multiple output formats
   * ex:
     * ponyo-doc Ponyo.Net.Http.Server (might print the module docs formatted
       for stdout)
+
+#### ponyo site
+* deal remotely sensibly with routing and serving files
+* refactor handbook pages to be simpler
+* include navigation
+* search feature
