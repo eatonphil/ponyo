@@ -5,6 +5,7 @@ struct
     structure Headers  = Ponyo_Net_Http_Headers
     structure Request  = Ponyo_Net_Http_Request
     structure Response = Ponyo_Net_Http_Response
+    structure Router   = Ponyo_Net_Http_Router
     structure Client   = Ponyo_Net_Http_Client
     structure Server   = Ponyo_Net_Http_Server
 end

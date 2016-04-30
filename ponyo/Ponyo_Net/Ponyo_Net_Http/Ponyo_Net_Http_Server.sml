@@ -5,13 +5,11 @@ struct
 
         structure Request  = Ponyo_Net_Http_Request
         structure Response = Ponyo_Net_Http_Response
+        structure Router = Ponyo_Net_Http_Router
     in
-
-    type router = Request.t -> Response.t
-
     val MAX_CONN : int ref = ref ~1
 
-    fun handler (conn, router: router) : unit =
+    fun handler (conn, router: Router.t) : unit =
         let
             val request = Request.read (conn);
             val response = router (request);
@@ -21,7 +19,7 @@ struct
             Socket.close (conn)
         end
 
-    fun serve (sock, router: router) : unit =
+    fun serve (sock, router: Router.t) : unit =
         let
             val (conn, _) = Socket.accept (sock);
         in
@@ -39,7 +37,7 @@ struct
             ()
         end
 
-    fun listenAndServe (address: string, port: int, router: router) : unit =
+    fun listenAndServe (address: string, port: int, router: Router.t) : unit =
         let
             val sock = INetSock.TCP.socket ();
         in

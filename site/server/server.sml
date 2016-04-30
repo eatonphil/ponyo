@@ -3,6 +3,7 @@ struct
     local
         structure Request = Ponyo.Net.Http.Request
         structure Response = Ponyo.Net.Http.Response
+        structure Router = Ponyo.Net.Http.Router
         structure Server = Ponyo.Net.Http.Server
 
         structure FileSystem = Ponyo.Os.FileSystem
@@ -14,33 +15,37 @@ struct
 
         structure StringMap = Ponyo_Container_Map (Ponyo.String)
     in
+        val fileRoot = "./dist/templates"
         val fileCache = ref StringMap.empty
 
-        fun serveFile (path: string) : Response.t =
+        fun serveFile (path: string) : Router.t =
             let
+                val path = if path = "" then "" else Path.join [fileRoot, path]
                 fun exists () = FileSystem.exists (path)
                 fun getFile () = String.join (File.readFrom path, "")
 
                 val newFile = ref true
                 val file = case StringMap.get (!fileCache) path of
-                  NONE => if exists () then getFile () else "404 Not found"
+                  NONE => if exists () then getFile () else "404 not found"
                 | SOME file => (newFile := false; file)
             in
                 if !newFile
                     then fileCache := StringMap.insert (!fileCache) (path, file)
                 else ();
-                Response.new (file)
+
+                fn (_: Request.t) => Response.new (file)
             end
 
-        fun serveHandbook (path: string) : Response.t =
+        fun serveHandbook (request: Request.t) : Response.t =
             let
-                val fullPath = Path.join ["./dist/templates", path ^ ".html"]
+                val fullPath = (Request.path request) ^ ".html"
             in
-                serveFile (fullPath)
+                serveFile fullPath request
             end
 
-        fun serveDocumentation (path: string) : Response.t =
+        fun serveDocumentation (request: Request.t) : Response.t =
             let
+                val path = Request.path (request)
                 val file = case String.substringToEnd (path, String.length "/documentation/") of
                     "string" => "Ponyo_String_/PONYO_STRING"
                   | "container/list" => "Ponyo_Container/PONYO_CONTAINER_LIST"
@@ -49,24 +54,23 @@ struct
                   | "format" => "PONYO_FORMAT"
                   | _ => ""
 
-                val fullPath = Path.join ["./dist/templates/documentation/ponyo", file ^ ".html"]
+               val filePath = if file = ""
+                   then ""
+                   else Path.join ["documentation/ponyo", file ^ ".html"]
             in
-                if file = "" then serveHandbook (path)
-                else serveFile (fullPath)
+                  serveFile filePath request
             end
 
         fun main () =
-            Server.listenAndServe ("", 4334, (fn (req) =>
-                case Request.path (req) of
-                    "/" => serveFile "./dist/templates/index.html"
-                  | "/downloads" => serveFile "./dist/templates/downloads.html"
-                  | "/documentation" => serveFile "./dist/templates/documentation.html"
-                  | "/handbook" => serveFile "./dist/templates/handbook.html"
-                  | "/news" => serveFile "./dist/templates/news.html"
-                  | "/news/ponyo-for-standard-ml" => serveFile "./dist/templates/news/ponyo-for-standard-ml.html"
-                  | "/news/the-ponyo-handbook" => serveFile "./dist/templates/news/the-ponyo-handbook.html"
-                  | _ => serveDocumentation (Request.path req)
-            ))
+            Server.listenAndServe ("", 4334, Router.basic [
+                ("/",                serveFile "index.html"),
+                ("/downloads",       serveFile "downloads.html"),
+                ("/documentation",   serveFile "documentation.html"),
+                ("/documentation/*", serveDocumentation),
+                ("/handbook",        serveFile "handbook.html"),
+                ("/handbook/*",      serveHandbook),
+                ("/news",            serveFile "news.html")
+            ])
     end
 end
 

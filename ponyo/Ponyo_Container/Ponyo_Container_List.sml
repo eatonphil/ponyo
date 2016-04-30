@@ -15,6 +15,7 @@ struct
     fun sublistToEnd (list: element list, start: int) : element list =
         take (list, start)
 
+    (* TODO: Should support negative stop.*)
     fun sublist (list: element list, start: int, stop: int) : element list =
         drop (take (list, start), stop - start)
 
