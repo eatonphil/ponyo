@@ -1,8 +1,5 @@
 extends ./tmpl/base.jade
 
-block append css
-    link(rel="stylesheet", href="/css/vendor/highlightjs/default.css")
-
 block body
     .header2
         .container
@@ -49,21 +46,11 @@ block body
                 h2 Hello world!
 
                 pre
-                    code(class="ocaml sml").
-                        structure Main =
-                        struct
-                            local
-                                structure Format = Ponyo.Format
-                            in
+                    code.ocaml.sml.
+                        structure Format = Ponyo.Format
 
-                            fun main () =
-                                Format.printf "Hello %!\n" ["world"]
-
-                            end
-                        end
-
-                        val main = Main.main
-
+                        fun main () =
+                            Format.printf "Hello %!\n" ["world"]
                 pre
                     code(class="bash").
                         $ ponyo make helloworld.sml -o helloworld
@@ -102,7 +89,3 @@ block body
                 p.
                     Note: Many of the Ponyo tools will not work with other implementations or
                     on Windows.
-
-block append js
-    script(src="/js/vendor/highlightjs/highlight.pack.js")
-    script hljs.initHighlightingOnLoad();

@@ -1,10 +1,11 @@
 structure Main =
 struct
     local
-        structure Request = Ponyo.Net.Http.Request
+        structure Method   = Ponyo.Net.Http.Method
+        structure Request  = Ponyo.Net.Http.Request
         structure Response = Ponyo.Net.Http.Response
-        structure Router = Ponyo.Net.Http.Router
-        structure Server = Ponyo.Net.Http.Server
+        structure Router   = Ponyo.Net.Http.Router
+        structure Server   = Ponyo.Net.Http.Server
 
         structure FileSystem = Ponyo.Os.FileSystem
         structure File = Ponyo.Os.FileSystem.File
@@ -61,15 +62,18 @@ struct
                   serveFile filePath request
             end
 
+        fun get (path: string, router: Router.t) : Method.t * string * Router.t =
+            (Method.Get, path, router)
+
         fun main () =
             Server.listenAndServe ("", 4334, Router.basic [
-                ("/",                serveFile "index.html"),
-                ("/downloads",       serveFile "downloads.html"),
-                ("/documentation",   serveFile "documentation.html"),
-                ("/documentation/*", serveDocumentation),
-                ("/handbook",        serveFile "handbook.html"),
-                ("/handbook/*",      serveHandbook),
-                ("/news",            serveFile "news.html")
+                get ("/",                serveFile "index.html"),
+                get ("/downloads",       serveFile "downloads.html"),
+                get ("/documentation",   serveFile "documentation.html"),
+                get ("/documentation/*", serveDocumentation),
+                get ("/handbook",        serveFile "handbook.html"),
+                get ("/handbook/*",      serveHandbook),
+                get ("/news",            serveFile "news.html")
             ])
     end
 end

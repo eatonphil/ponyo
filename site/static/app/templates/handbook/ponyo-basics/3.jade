@@ -1,0 +1,91 @@
+extends ../../tmpl/base.jade
+
+block body
+    .container
+        .container-small
+            h2 A basic web server
+            h4 Ponyo Basics
+            a(href="https://github.com/eatonphil/ponyo/blob/master/site/static/app/templates/handbook/ponyo-basics/3.jade") Article Source
+            p.
+                Ponyo.Net.Http provides tools for building web servers in
+                Standard ML. (Todo: implement HTTP client.) It uses one OS
+                thread per request and routes each request to a function. Let's
+                begin with the simplest web server we can write.
+            pre
+                code.ocaml.sml.
+                    (* server.sml *)
+                    structure Http = Ponyo.Net.Http
+
+                    fun handler (_) = Http.Response.new ("Hello world!")
+
+                    fun main () =
+                        Http.Server.listenAndServe ("", 8080, handler)
+
+            p Compile and run it, navigate to localhost:8080 to check it out!
+            pre
+                code.
+                    $ ponyo make server.sml -o server
+                    $ ./server
+            p.
+                As you can see, Ponyo.Net.Http.Server prints the HTTP request
+                each time a request is made. To make a more advanced server,
+                we can use the request argument passed to the handler instead of
+                ignoring it. For basic routing, pattern matching can be the
+                simplest way to go.
+            pre
+                code.ocaml.sml.
+                    structure Http = Ponyo.Net.Http
+
+                    fun handler (request: Http.Request.t) : Http.Response.t =
+                        case Http.Request.path (request) of
+                            "/hello" => Http.Response.new ("Hello world!")
+                          | _ => Http.Response.new ("Uh-oh, page not found.")
+
+                    fun main () =
+                        Http.Server.listenAndServe ("", 8080, handler)
+            p.
+                But this can be painful and verbose for more complex routing. So
+                Ponyo.Net.Http.Router provides a basic router with slightly more
+                advanced functionality. (Todo: implement slightly slightly more
+                advanced functionality.) Ponyo.Net.Http.Router.basic takes a
+                list of Method.t-string-Router.t tuples. Additionally, it allows
+                you to specify wildcard routes. The first match in the list is
+                taken.
+            pre
+                code.ocaml.sml.
+                    structure Http = Ponyo.Net.Http
+
+                    fun response (text: string) : Http.Router.t =
+                        fn (_) => Http.Response.new (text)
+
+                    fun main () =
+                        Http.Server.listenAndServe ("", 8080, Http.Router.basic [
+                            (Http.Router.Get, "/hello", response "Hello world!"),
+                            (Http.Router.Get, "/*", response "Uh-oh, page not found.")
+                        ])
+            p.
+                Additional information about the request is provided by the
+                Request module. We can print the query string for instance.
+                (* Todo: cleanup Headers data structure and demonstrate
+                printing remote address.*)
+            pre
+                code.ocaml.sml.
+                    structure Format = Ponyo.Format
+                    structure Http = Ponyo.Net.Http
+                    structure Request = Http.Request
+                    structure Response = Http.Response
+
+                    fun handler (format: string) (request: Request.t) : Response.t =
+                        let
+                            val qs = Request.query (request)
+                        in
+                            Format.printf format [qs]
+                        end
+
+                    fun main () =
+                        Http.Server.listenAndServe ("", 8080,
+                            handler ("&lt;h1&gt;Hello World!&lt;/h1&gt;&lt;h2&gt;%&lt;/h2&gt;"))
+            p(style="font-size: small").
+                Why all the todos? The Ponyo handbook is a community document
+                and will grow and improve as the community grows and improves.
+                Want to see some changes? Put up a PR on Github!

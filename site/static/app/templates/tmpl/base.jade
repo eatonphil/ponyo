@@ -25,7 +25,8 @@ html(lang="en")
         meta(name="theme-color" content="#ffffff")
         
         block css
-            link(href="/css/vendor/bootstrap.min.css", rel="stylesheet")
+            link(href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css", rel="stylesheet")
+            link(rel="stylesheet", href="/css/vendor/highlightjs/default.css")
             link(href="/css/style.css", rel="stylesheet")
 
         block title
@@ -64,7 +65,10 @@ html(lang="en")
                             a(href="/news") News
 
         block js
-            script(src="/js/vendor/bootstrap.min.js")
+            script("https://code.jquery.com/jquery-2.2.3.min.js", crossorigin="anonymous")
+            script("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js", crossorigin="anonymous")
+            script(src="/js/vendor/highlightjs/highlight.pack.js")
+            script hljs.initHighlightingOnLoad();
             
         script.
             (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
