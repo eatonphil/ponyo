@@ -28,7 +28,7 @@ struct
                     val joined = String.join (butLast, "/")
                     val prefix = if String.hasPrefix (joined, "/") then "" else "/"
                 in
-                    if length split = 2 then "/*"
+                    if length split = 1 then "/*"
                     else prefix ^ String.join ([joined, "*"], "/")
                 end
 

@@ -33,15 +33,9 @@ struct
                 if !newFile
                     then fileCache := StringMap.insert (!fileCache) (path, file)
                 else ();
+                PolyML.print(path);
 
                 fn (_: Request.t) => Response.new (file)
-            end
-
-        fun serveHandbook (request: Request.t) : Response.t =
-            let
-                val fullPath = (Request.path request) ^ ".html"
-            in
-                serveFile fullPath request
             end
 
         fun serveDocumentation (request: Request.t) : Response.t =
@@ -62,6 +56,9 @@ struct
                   serveFile filePath request
             end
 
+        fun serveHtml (request: Request.t) : Response.t =
+            serveFile (Request.path request ^ ".html") request
+
         fun get (path: string, router: Router.t) : Method.t * string * Router.t =
             (Method.Get, path, router)
 
@@ -72,8 +69,9 @@ struct
                 get ("/documentation",   serveFile "documentation.html"),
                 get ("/documentation/*", serveDocumentation),
                 get ("/handbook",        serveFile "handbook.html"),
-                get ("/handbook/*",      serveHandbook),
-                get ("/news",            serveFile "news.html")
+                get ("/handbook/*",      serveHtml),
+                get ("/news",            serveFile "news.html"),
+                get ("/news/*",          serveHtml)
             ])
     end
 end
