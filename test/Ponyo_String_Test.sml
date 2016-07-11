@@ -12,7 +12,8 @@ fun run () = [
     in [
         c "foobar" = "Foobar",
         c "fOOBAR" = "Foobar",
-        c "foobar foobar" = "Foobar foobar"
+        c "foobar foobar" = "Foobar foobar",
+        c "foobar" = "foobar"
     ] end,
 
     test "String.charAt" let

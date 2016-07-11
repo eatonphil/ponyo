@@ -16,7 +16,6 @@ bootstrap:
 
 test:
 	ponyo-make build.sml -C test -o $$(pwd)/bin/ponyo-test
-	@clear
 	$$(pwd)/bin/ponyo-test
 	rm $$(pwd)/bin/ponyo-test
 
