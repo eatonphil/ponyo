@@ -1,6 +1,6 @@
 install:
-  - curl -O https://github.com/polyml/polyml/archive/v5.6.zip
-  - unzip v5.6.zip
+  - wget -nc -O - https://github.com/polyml/polyml/archive/v5.6.zip | gunzip -
+  - ls
   - (cd v5.6 && ./configure --prefix=/usr && make && sudo make install)
   - make
 script:
