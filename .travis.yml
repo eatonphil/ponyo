@@ -1,5 +1,7 @@
 install:
-  - sudo apt-get install polyml
+  - curl -O https://github.com/polyml/polyml/archive/v5.6.zip
+  - unzip v5.6.zip
+  - (cd v5.6 && ./configure --prefix=/usr && make && sudo make install)
   - make
 script:
   - make test
