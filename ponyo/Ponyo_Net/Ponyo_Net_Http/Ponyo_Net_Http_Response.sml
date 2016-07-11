@@ -58,7 +58,7 @@ struct
             parseFirstLine (#firstLine response, response)
         end
 
-    fun marshall (response: t) =
+    fun marshall (response: t) : string =
         let
             val version = #version response
             val status = Int.toString (#status response)

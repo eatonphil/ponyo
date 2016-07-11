@@ -33,6 +33,5 @@ struct
 	    Request.write (socket, request);
 	    Response.read (socket)
         end
-
     end
 end

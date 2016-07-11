@@ -17,7 +17,7 @@ struct
       | Vary            of string
       | Unknown         of string * string
 
-    val LWS = [" ", "\t"]
+    val LWS = [" ", "\t", "\n", "\r"]
 
     fun toKv (h: t) : string * string = case h of
         Accept          v      => ("Accept", v)
