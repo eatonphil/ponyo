@@ -1,5 +1,5 @@
 install:
-  - apt-get install polyml
+  - sudo apt-get install polyml
   - make
 script:
   - make test
