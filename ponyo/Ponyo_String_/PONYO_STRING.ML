@@ -2,6 +2,8 @@ signature PONYO_STRING =
 sig
     type t = string
 
+    exception IndexError of (string * int)
+
     (*
      *  all: This returns true if each character in the given string
      *  passes the given test.

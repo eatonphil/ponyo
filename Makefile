@@ -1,4 +1,4 @@
-.PHONY: all bootstrap
+.PHONY: all bootstrap test
 
 all:
 	@mkdir -p bin
@@ -15,7 +15,10 @@ bootstrap:
 	polyc -o bin/ponyo-make tool/ponyo/make/build.sml
 
 test:
-	$$(pwd)/test/run_all.sh
+	ponyo-make build.sml -C test -o $$(pwd)/bin/ponyo-test
+	@clear
+	$$(pwd)/bin/ponyo-test
+	rm $$(pwd)/bin/ponyo-test
 
 clean:
 	rm -rf bin

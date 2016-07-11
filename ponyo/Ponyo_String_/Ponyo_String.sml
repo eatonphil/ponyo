@@ -16,7 +16,7 @@ struct
 
     and charAt (source: string, index: int) : char =
         if index < 0 then charAt (source, length source + index)
-        else if index > length (source)
+        else if index >= length (source)
 	    then raise IndexError (source, index)
 	else
 	    List.nth (explode source, index)

@@ -8,4 +8,5 @@ struct
     structure Net = Ponyo_Net
     structure Os = Ponyo_Os
     structure Sml = Ponyo_Sml_
+    structure Test = Ponyo_Test
 end
