@@ -1,5 +1,7 @@
 # Ponyo
 
+[![Build Status](https://travis-ci.org/eatonphil/ponyo.svg?branch=master)](https://travis-ci.org/eatonphil/ponyo)
+
 Ponyo is a comprehensive high-level library and toolkit for Standard ML.
 It is inspired by POCO (C++), the Go standard library, and the Python standard
 library. While the Standard ML basis library is (perhaps) surprisingly
