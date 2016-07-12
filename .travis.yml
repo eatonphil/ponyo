@@ -4,4 +4,4 @@ install:
   - (cd polyml-5.6 && ./configure --prefix=/usr && make && sudo make install)
   - PONYO_ROOT=$(pwd) make
 script:
-  - PONYO_ROOT=$(pwd) make test
+  - PATH=$PATH:$(pwd)/bin PONYO_ROOT=$(pwd) make test
