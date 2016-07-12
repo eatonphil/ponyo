@@ -2,6 +2,6 @@ install:
   - curl -o polyml-5.6.zip https://codeload.github.com/polyml/polyml/zip/v5.6
   - unzip polyml-5.6.zip
   - (cd polyml-5.6 && ./configure --prefix=/usr && make && sudo make install)
-  - PONYO_ROOT=$pwd make
+  - PONYO_ROOT=$(pwd) make
 script:
-  - PONYO_ROOT=$pwd make test
+  - PONYO_ROOT=$(pwd) make test
