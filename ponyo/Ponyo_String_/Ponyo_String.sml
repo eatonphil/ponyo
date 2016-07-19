@@ -49,7 +49,7 @@ struct
         Basis.String.isPrefix prefix source
 
     and hasSubstring (source: string, substring: string) : bool =
-        Basis.String.isSubstring substring source
+        substring <> "" andalso Basis.String.isSubstring substring source
 
     and hasSuffix (source: string, suffix: string) : bool =
         Basis.String.isSuffix suffix source
@@ -77,7 +77,7 @@ struct
 		        then find (i + 1)
 		    else ~1
 	    in
-	        find (0)
+	        find (start)
 	    end
 
     and indexOf (source: string, pattern: string) : int =

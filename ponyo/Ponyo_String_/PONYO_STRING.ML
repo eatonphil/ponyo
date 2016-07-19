@@ -90,6 +90,15 @@ sig
     val hasPrefix : string * string -> bool
 
     (*
+     *  hasSubstring: This returns true if the given string
+     *  contains the given substring.
+     *
+     *  Ex:
+     *      hasSubstring ("foobar", "oba") = true
+     *)
+    val hasSubstring : string * string -> bool
+
+    (*
      *  hasSuffix: This returns true if the given string ends with
      *  the given substring.
      *
