@@ -2,7 +2,7 @@ structure Ponyo_Net_Http_Router =
 struct
     local
         structure String    = Ponyo_String
-        structure StringMap = Ponyo_Container_Map (String)
+        structure StringMap = Ponyo_Container_Tree_BinarySearch (String)
 
         structure Method   = Ponyo_Net_Http_Method 
         structure Request  = Ponyo_Net_Http_Request

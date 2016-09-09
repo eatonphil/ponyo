@@ -10,4 +10,4 @@
  *      val config = StringMap.insert (config, ("DEVELOPMENT", 2))
  *      val develLevel = StringMap.get (config, "DEVELOPMENT")
  *)
-signature PONYO_CONTAINER_MAP = PONYO_CONTAINER_TREE_BINARYSEARCH
+signature PONYO_CONTAINER_MAP = PONYO_CONTAINER_TREE_REDBLACK

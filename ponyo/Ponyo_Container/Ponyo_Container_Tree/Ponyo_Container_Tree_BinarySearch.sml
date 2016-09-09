@@ -1,5 +1,5 @@
 functor Ponyo_Container_Tree_BinarySearch (
-    D : PONYO_CONTAINER_TREE_BINARYSEARCH_DOMAIN
+    D : PONYO_TRAIT_COMPARABLE
 ) : PONYO_CONTAINER_TREE_BINARYSEARCH where type elt = D.t =
 struct
     type elt = D.t

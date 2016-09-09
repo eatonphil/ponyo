@@ -6,7 +6,7 @@ struct
         structure Header = Ponyo_Net_Http_Header
     in
 
-    structure Headers = Ponyo_Container_Map (String);
+    structure Headers = Ponyo_Container_Tree_BinarySearch (String);
 
     open Headers;
 

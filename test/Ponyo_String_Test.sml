@@ -176,6 +176,20 @@ fun run () = [
         r ("foobarfoobar", "oba", "abo") = "foaborfoabor",
         r ("foobar", "roof", "foor") = "foobar",
         r ("foobar", "", "foo") = "foobar"
+    ] end,
+
+    test "String.reverse" let
+        val r = String.reverse
+    in [
+        r ("foobar") = "raboof",
+        r ("") = ""
+    ] end,
+
+    test "String.splitN" let
+        val s = String.splitN
+    in [
+        r ("foobarfoobarfoobar", "foobar", 2) = ["foobar", "foobarfoobar"],
+        r ("foobar", "o", 1) = ["f", ""]
     ] end
 ]
 

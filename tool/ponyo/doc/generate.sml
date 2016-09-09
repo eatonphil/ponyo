@@ -78,7 +78,7 @@ struct
                     case parseComment (comment) of
                         NONE => doParseComments (comments, parsed)
                     | SOME (comment as (name, _, _)) =>
-                        doParseComments (comments, StringMap.insert parsed (name, comment))
+                        doParseComments (comments, StringMap.insert parsed name comment)
 
             in
                 doParseComments (comments, StringMap.empty)
@@ -229,8 +229,8 @@ struct
                         "ML" => if Path.file (path) = "ml_bind.ML" then ()
                             else asts := StringMap.insert
                                 (!asts)
-                                (String.substringToEnd (path, String.length (!inDirectory)),
-                                parseFile (path))
+                                (String.substringToEnd (path, String.length (!inDirectory)))
+                                (parseFile path)
                       | _ => ()
             in
                 FileSystem.walk (!inDirectory, parseSignature);
