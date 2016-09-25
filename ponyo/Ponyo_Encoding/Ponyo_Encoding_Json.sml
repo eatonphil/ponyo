@@ -33,6 +33,17 @@ struct
       | List of t list
       | Object of (string * t) list
 
+    fun equals (a: t, b: t) : bool =
+        case (a, b) of
+            (String aS, String bS) => aS = bS
+          | (Int aI, Int bI) => aI = bI
+          | (Real aR, Real bR) => false (* TODO: fix this *)
+          | (True, True) => true
+          | (False, False) => true
+          | (List aL, List bL) => List.all (fn a => a = true) (List.map equals (ListPair.zip (aL, bL)))
+          | (Object aO, Object bO) => List.all (fn a => a = true) (List.map (fn ((s1, l1), (s2, l2)) => s1 = s2 andalso equals (l1, l2)) (ListPair.zip (aO, bO)))
+          | _ => false
+
     exception MalformedString of char list
     exception MalformedNumber of char list
     exception MalformedTrue
@@ -108,11 +119,13 @@ struct
             lex (rest, t :: l)
         end
 
+    (* TODO: handle TRUE, True *)
     and lexTrue (json: char list, l: Token.t list) : Token.t list =
         case json of
             #"r" :: (#"u" :: (#"e" :: rest)) => lex (rest, Token.True :: l)
           | _ => raise MalformedTrue
 
+    (* TODO: handle FALSE, False *)
     and lexFalse (json: char list, l: Token.t list) : Token.t list =
         case json of
             #"a" :: (#"l" :: (#"s" :: (#"e" :: rest))) => lex (rest, Token.False :: l)
@@ -139,7 +152,7 @@ struct
           | Token.Symbol s :: rest =>
           (if s = Token.LCBracket
               then parseObject (rest)
-          else if s = Token.LCBracket then parseList (rest) else raise MalformedJson (json, "Expected ending bracket"))
+          else if s = Token.LBracket then parseList (rest) else raise MalformedJson (json, "Expected ending bracket"))
           | _ => raise MalformedJson (json, "Expected json value")
 
     and parseSymbol (json: Token.t list, s: string) : Token.t list =

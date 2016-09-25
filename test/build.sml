@@ -1,4 +1,5 @@
 PolyML.use "Ponyo_String_Test";
+PolyML.use "Ponyo_Encoding_Json_Test";
 
 local
     structure Format = Ponyo.Format;
@@ -9,7 +10,8 @@ fun main () =
     let
         val _ = Format.println ["\r\n\r\nTesting Ponyo\r\n\r\n"];
         val tests = test "Ponyo" [
-            test "Ponyo_String_Test" (Ponyo_String_Test.run ())
+            test "Ponyo_String_Test" (Ponyo_String_Test.run ()),
+            test "Ponyo_Encoding_Json_Test" (Ponyo_Encoding_Json_Test.run ())
         ]
     in
         if tests
