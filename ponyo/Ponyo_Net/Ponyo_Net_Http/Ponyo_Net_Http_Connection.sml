@@ -1,4 +1,4 @@
-structure Ponyo_Net_Http_Connection =
+functor Ponyo_Net_Http_Connection (Socket: PONYO_NET_SOCKET) =
 struct
     local
         structure String = Ponyo_String
@@ -100,9 +100,8 @@ struct
 	        doParse (stream, response)
 	end
 
-    fun read (conn) =
+    fun read (conn: ('a, Basis.Socket.active Basis.Socket.stream) Socket.t) =
         let
-	    val toRead = 4096
 	    val response : incomplete = {
                 headersComplete = false,
 		store           = "",
@@ -115,7 +114,7 @@ struct
 
             fun doRead (response: incomplete) : incomplete =
 	        let
-		    val bytes = Socket.recvVec (conn, toRead)
+                    val bytes = Socket.read (conn)
 		    val len = Word8Vector.length bytes
 		    val read = Byte.bytesToString (bytes)
                     val response = parse (response, read)
@@ -140,21 +139,11 @@ struct
 	    #response (doRead (response))
         end
 
-    fun write (conn, output: string) : unit =
+    fun write (conn: ('a, Basis.Socket.active Basis.Socket.stream) Socket.t, output: string) : unit =
         let
 	    val bytes = Byte.stringToBytes (output)
-	    val bytesLen = Word8Vector.length (bytes)
-	    val toWrite = 4096
-	    val written = ref 0
-	    fun min (a, b) = if a < b then a else b
-	in
-	    while (!written < bytesLen) do
-	        let
-		    val theEnd = SOME (min (toWrite, bytesLen - !written))
-		    val currentBytes = Word8VectorSlice.slice (bytes, !written, theEnd)
-		in
-	            written := !written + (Socket.sendVec (conn, currentBytes))
-		end
+        in
+            Socket.writeAll (conn, bytes)
         end
 
     end

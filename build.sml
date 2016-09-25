@@ -3,6 +3,7 @@ structure Basis = struct
     structure List = List
     structure Os = OS
     structure Posix = Posix
+    structure Socket = Socket
 end;
 
 fun cleanPath (path: string, right: bool) : string =
@@ -12,7 +13,7 @@ fun cleanPath (path: string, right: bool) : string =
         then cleanPath (Basis.String.extract (path, 1, NONE), false)
     else path;
 
-val ponyoLib =
+val PONYO_ROOT =
     case Basis.Os.Process.getEnv "PONYO_ROOT" of
         NONE => (print "PONYO_ROOT must be set. (Directory of source is a good default.)\n"; raise Fail "")
       | SOME root =>
@@ -24,6 +25,6 @@ val ponyoLib =
       | SOME home =>
           cleanPath(home, true) ^ "/" ^ (cleanPath (Basis.String.extract (root, 2, NONE), false));
 
-val ponyoLib = ponyoLib ^ "/ponyo";
+val ponyoLib = PONYO_ROOT ^ "/ponyo";
 
 PolyML.make (ponyoLib)

@@ -199,46 +199,59 @@ struct
 
     structure Marshall =
     struct
-        fun marshall (object: t, key: string) : (t * t) =
+        fun a >>= b =
+            case a of
+                SOME v => b (v)
+             | _ => raise Fail "Marshalling error"
+
+        fun marshall (object: t, key: string) : (t * t) option =
             case object of
                 Object (pairs) =>
                   let
                       fun findKey (pairs, key) =
                           case pairs of
-                              (someKey, someVal) :: pairs => if someKey = key then SOME (someVal) else findKey (pairs, key)
+                              (someKey, someVal) :: pairs => if someKey = key then SOME (object, someVal) else findKey (pairs, key)
                             | [] => NONE
                   in
-                      case findKey (pairs, key) of
-                          SOME v => (object, v)
-                        | _ => raise Fail "Key not found"
+                      findKey (pairs, key)
                   end
-              | _ => raise Fail "Cannot marshall non-object"
+              | _ => (raise Fail "Cannot marshall non-object"; NONE)
 
         fun marshallString (object: t, key: string) : (t * string) option =
             case marshall (object, key) of
-                (object, String v) => SOME (object, v)
+                SOME (object, String v) => SOME (object, v)
               | _ => NONE
 
         fun marshallInt (object: t, key: string) : (t * int) option =
             case marshall (object, key) of
-                (object, Int v) => SOME (object, v)
+                SOME (object, Int v) => SOME (object, v)
               | _ => NONE
 
         fun marshallBool (object: t, key: string) : (t * bool) option =
             case marshall (object, key) of
-                (object, True) => SOME (object, true)
-              | (object, False) => SOME (object, false)
+                SOME (object, True) => SOME (object, true)
+              | SOME (object, False) => SOME (object, false)
               | _ => NONE
 
         fun marshallReal (object: t, key: string) : (t * real) option =
             case marshall (object, key) of
-                (object, Real r) => SOME (object, r)
+                SOME (object, Real r) => SOME (object, r)
               | _ => NONE
 
-        fun a >>= b =
-            case a of
-                SOME v => b (v)
-             | _ => raise Fail "Marshalling error"
+        fun 'a marshallList (object: t, key: string, marshallFunc: t -> (t * 'a) option) : (t * 'a list) option =
+            let
+                fun doMarshallList (l: t list, accum: 'a list) : (t * 'a list) option =
+                    case l of
+                        [] => SOME (object, List.rev accum)
+                      | hd :: tl =>
+                    case marshallFunc (hd) of
+                        SOME (object, res) => doMarshallList (tl, res :: accum)
+                      | _ => NONE
+            in
+                case marshall (object, key) of
+                    SOME (object, List l) => doMarshallList (l, [])
+                  | _ => NONE
+            end
     end
 
     end

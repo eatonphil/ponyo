@@ -1,12 +1,12 @@
-structure Ponyo_Net_Http_Router =
+functor Ponyo_Net_Http_Router (Socket: PONYO_NET_SOCKET) =
 struct
     local
         structure String    = Ponyo_String
         structure StringMap = Ponyo_Container_Tree_BinarySearch (String)
 
         structure Method   = Ponyo_Net_Http_Method 
-        structure Request  = Ponyo_Net_Http_Request
-        structure Response = Ponyo_Net_Http_Response
+        structure Request  = Ponyo_Net_Http_Request (Socket)
+        structure Response = Ponyo_Net_Http_Response (Socket)
     in
     type t = Request.t -> Response.t
 

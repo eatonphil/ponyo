@@ -1,4 +1,4 @@
-structure Ponyo_Net_Http_Request =
+functor Ponyo_Net_Http_Request (Socket: PONYO_NET_SOCKET) =
 struct
     local
         structure String = Ponyo_String
@@ -6,7 +6,7 @@ struct
         structure Method     = Ponyo_Net_Http_Method
         structure Header     = Ponyo_Net_Http_Header
         structure Headers    = Ponyo_Net_Http_Headers
-        structure Connection = Ponyo_Net_Http_Connection
+        structure Connection = Ponyo_Net_Http_Connection (Socket);
     in
 
     exception MalformedRequest of string
