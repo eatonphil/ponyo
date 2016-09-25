@@ -188,8 +188,8 @@ fun run () = [
     test "String.splitN" let
         val s = String.splitN
     in [
-        s ("foobarfoobarfoobar", "foobar", 2) = ["foobar", "foobarfoobar"],
-        s ("foobar", "o", 1) = ["f", ""]
+        s ("foobarfoobarfoobar", "foobar", 1) = ["", "foobarfoobar"],
+        s ("foobar", "o", 1) = ["f", "obar"]
     ] end
 ]
 

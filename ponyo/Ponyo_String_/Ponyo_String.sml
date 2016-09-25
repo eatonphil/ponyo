@@ -131,7 +131,7 @@ struct
 		    if n = List.length (sl) then revAndOptAddCurrent (s, sl)
 		    else case indexOf (s, delim) of
 		        ~1 => revAndOptAddCurrent(s, sl)
-		      | 0 => doSplit (substringToEnd (s, length delim), sl)
+		      | 0 => doSplit (substringToEnd (s, length delim), "" :: sl)
 		      | i =>
                           let
 		              val (hd, tl) = split (s, i)
