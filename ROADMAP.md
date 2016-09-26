@@ -9,13 +9,10 @@ Modules (WIP):
 * container
   * tree
     * radix tree
-    * red black tree
-  * map
   * set
 * database
 * encoding
   * base64
-  * json
   * html
   * utf8
   * xml

@@ -9,3 +9,4 @@
 
 // Ponyo artifacts
 bin
+*.so

@@ -13,7 +13,8 @@ tutorials, and news.
 
 ## Installation
 
-First, install [Poly/ML](https://github.com/polyml/polyml).
+First, install [Poly/ML](https://github.com/polyml/polyml). You will also need
+OpenSSL development headers and GNU Make.
 
 Next, choose a path for the Ponyo root. We will assume it is at ~/vendor/ponyo.
 Add the following lines to your ~/.profile:
