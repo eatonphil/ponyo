@@ -31,7 +31,7 @@ struct
                 | SOME file => (newFile := false; file)
             in
                 if !newFile
-                    then fileCache := StringMap.insert (!fileCache) (path, file)
+                    then fileCache := StringMap.insert (!fileCache) path file
                 else ();
                 PolyML.print(path);
 

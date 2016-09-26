@@ -34,8 +34,10 @@ block body
                 p Features:
                 ul
                     li HTTP server/client
+                    li SSL sockets
                     li Cli tools
                     li Standard ML parser/lexer
+                    li JSON support
                     li Enhanced build tool and top-level
                     li Documentation generator
                     li Much more on the <a href="https://github.com/eatonphil/ponyo/blob/master/ROADMAP.md">roadmap</a>
@@ -71,7 +73,8 @@ block body
                 p.
                     Ponyo is a Standard ML library. The Standard ML implementation of choice
                     is <a href="https://github.com/polyml/polyml">Poly/ML</a>. See the Poly/ML
-                    Github page for installation instructions.
+                    Github page for installation instructions. You will need OpenSSL devel
+                    headers to work with the Ponyo_Net_SSLSocket module.
 
                 p After Poly/ML has been installed, add the following lines to your ~/.profile:
                 pre

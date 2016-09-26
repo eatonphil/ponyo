@@ -1,27 +1,29 @@
 .PHONY: all build-static build-server build-documentation deploy configure clean
 
-all:
-	$(MAKE) build-server
-	$(MAKE) build-static
-	$(MAKE) build-documentation
+OUTPUT_DIR=dist/bin
 
-build-static:
+all:
+	$(MAKE) server
+	$(MAKE) static
+	$(MAKE) documentation
+
+static:
 	(cd $$(pwd)/static && gulp)
 
-build-server:
-	@mkdir -p dist/bin
-	ponyo make server/server.sml -o dist/bin/server
+server: server/server.sml
+	@mkdir -p $(OUTPUT_DIR)
+	ponyo make $< -o $(OUTPUT_DIR)/$@
 
-build-documentation:
+documentation:
 	ponyo doc ../ -o dist/templates/documentation \
             -p dist/templates/documentation/signature.html \
 	    -r github.com,eatonphil,ponyo
 
 deploy:
-	rsync --exclude dist/bin/server -r dist ponyo:~/
+	rsync --exclude $(OUTPUT_DIR)/server -r dist ponyo.org:~/
 
 configure:
-	@mkdir -p dist/bin
+	@mkdir -p $(OUTPUT_DIR)
 	@(cd $$(pwd)/static && npm install)
 
 clean:
