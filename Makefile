@@ -31,9 +31,10 @@ all:
 	$(MAKE) bin/ponyo-top
 
 test: test/build.sml bin/ponyo
-	ponyo make $< -o $@
-	./$@
-	rm $@
+	@mkdir -p bin
+	ponyo make $< -o bin/$@
+	./bin/$@
+	@rm ./bin/$@
 
 clean:
 	rm -rf bin ssl.so

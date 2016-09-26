@@ -1,5 +1,5 @@
-PolyML.use "Ponyo_String_Test";
-PolyML.use "Ponyo_Encoding_Json_Test";
+PolyML.use "test/Ponyo_String_Test";
+PolyML.use "test/Ponyo_Encoding_Json_Test";
 
 local
     structure Format = Ponyo.Format;
