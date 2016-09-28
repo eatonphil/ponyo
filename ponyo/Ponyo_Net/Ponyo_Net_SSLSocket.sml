@@ -5,6 +5,8 @@ struct
         val get = get_sym (PONYO_ROOT ^ "/ssl.so");
     in
 
+    val bufferSize = 4096
+
     type sslSocket = vol
     type ('a, 'b) t = sslSocket * ('a, 'b) Socket.sock
 
@@ -28,12 +30,11 @@ struct
 
     fun read (socket: sslSocket, _: ('a, Socket.active Socket.stream) Socket.sock) : Word8Vector.vector =
         let
-            val howMuch = 4096;
-            val buf = alloc howMuch Cchar;
+            val buf = alloc bufferSize Cchar;
             fun readBuf buf 0 = []
               | readBuf buf n = fromCchar buf :: readBuf (offset 1 Cchar buf) (n - 1) 
             
-            val numRead = call3 (get "ssl_read") (POINTER, POINTER, INT) INT (socket, address buf, howMuch);
+            val numRead = call3 (get "ssl_read") (POINTER, POINTER, INT) INT (socket, address buf, bufferSize);
         in
             if numRead <= 0
                 then Byte.stringToBytes ""
@@ -46,13 +47,12 @@ struct
     fun writeAll (socket: ('a, Socket.active Socket.stream) t, toWrite: Word8Vector.vector) : unit =
         let
 	    val toWriteLen = Word8Vector.length (toWrite)
-	    val howMuch = 4096
 	    val written = ref 0
 	    fun min (a, b) = if a < b then a else b
 	in
 	    while (!written < toWriteLen) do
 	        let
-		    val theEnd = SOME (min (howMuch, toWriteLen - !written))
+		    val theEnd = SOME (min (bufferSize, toWriteLen - !written))
 		    val currentBytes = Word8VectorSlice.slice (toWrite, !written, theEnd)
 		in
 	            written := !written + (write (socket, currentBytes))

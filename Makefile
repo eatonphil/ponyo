@@ -27,8 +27,8 @@ all:
 	# Build ponyo tool
 	$(MAKE) bin/ponyo
 	# Use ponyo-make through ponyo tool
-	$(MAKE) bin/ponyo-doc
 	$(MAKE) bin/ponyo-top
+	$(MAKE) bin/ponyo-doc
 
 test: test/build.sml bin/ponyo
 	@mkdir -p bin
