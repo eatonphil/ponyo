@@ -1,16 +1,17 @@
-functor Ponyo_Net_Http_Response (Socket: PONYO_NET_SOCKET) =
+functor Ponyo_Net_Http_Response (Socket: PONYO_NET_SOCKET) : PONYO_NET_HTTP_RESPONSE =
 struct
     local
         structure String = Ponyo_String
         structure Format = Ponyo_Format
 
         structure Header     = Ponyo_Net_Http_Header
-        structure Headers    = Ponyo_Net_Http_Headers
+        structure Headers    = Ponyo_String_Map
         structure Connection = Ponyo_Net_Http_Connection (Socket)
     in
 
     exception MalformedResponse of string
 
+    type socket = (INetSock.inet, Basis.Socket.active Basis.Socket.stream) Socket.t
     type complete = {version : string,
                      status  : int,
 		     reason  : string,
@@ -23,18 +24,18 @@ struct
 
     type t = complete
 
-    fun version (request: t) = #version request
-    fun status (request: t) = #status request
-    fun reason (request: t) = #reason request
-    fun headers (request: t) = #headers request
-    fun body (request: t) = #body request
+    fun version (response: t) = #version response
+    fun status (response: t) = #status response
+    fun reason (response: t) = #reason response
+    fun headers (response: t) = #headers response
+    fun body (response: t) = #body response
 
     fun new (body: string) : t =
         {
             version = "HTTP/1.1",
             status  = 200,
             reason  = "OK",
-            headers = Headers.insert Headers.empty (Header.toKv (Header.ContentLength (String.length body))),
+            headers = Headers.insert Headers.new "Content-Length" (Int.toString (String.length body)),
             body    = body
         }
 
@@ -51,7 +52,7 @@ struct
                   body    = #body response
               }
 
-    fun read (conn) : t =
+    fun read (conn: socket) : t =
         let
             val response = Connection.read (conn)
         in
@@ -73,7 +74,7 @@ struct
             intro ^ headers ^ "\r\n\r\n" ^ body
         end
 
-    fun write (conn, response: t) : unit =
+    fun write (conn: socket, response: t) : unit =
         Connection.write (conn, marshall response)
 
     end

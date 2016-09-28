@@ -6,8 +6,8 @@ struct
 
     datatype 'a t = Leaf | Node of 'a t * elt * 'a * 'a t
 
-    (* -empty: Returns a new empty tree. *)
-    val empty : 'a t = Leaf
+    (* -new: Returns a new empty tree. *)
+    val new : 'a t = Leaf
 
     (* -insert: Creates a new tree from the original with the given
      *  key-val pair.
@@ -44,7 +44,7 @@ struct
                     [] => tree
                   | hd :: tl => doFromList (tl, insert tree hd)
         in
-            doFromList (list, empty)
+            doFromList (list, new)
         end
 
     (* -toList: Runs the search tree from left to right and returns the

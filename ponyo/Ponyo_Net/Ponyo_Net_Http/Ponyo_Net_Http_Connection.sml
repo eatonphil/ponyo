@@ -4,7 +4,7 @@ struct
         structure String = Ponyo_String
 
         structure Header  = Ponyo_Net_Http_Header
-        structure Headers = Ponyo_Net_Http_Headers
+        structure Headers = Ponyo_String_Map
     in
 
     type complete = {firstLine : string,
@@ -65,7 +65,7 @@ struct
 			                store           = "",
 					response        = {
                                             firstLine = line,
-					    headers   = Headers.empty,
+					    headers   = Headers.new,
 					    body      = ""
 					}
                                     }
@@ -73,12 +73,12 @@ struct
 			            case parseHeaderLine (line) of
 				        (* Ignore any bad headers. *)
 				        NONE => response
-				      | SOME header => {
+				      | SOME (header, value) => {
 				          headersComplete = false,
 					  store           = "",
 					  response        = {
                                               firstLine = #firstLine rspBody,
-					      headers   = Headers.insert (#headers rspBody) (Header.toKv (header)),
+					      headers   = Headers.insert (#headers rspBody) header value,
 					      body      = ""
 					   }
                                        }
@@ -107,7 +107,7 @@ struct
 		store           = "",
 		response        = {
                     firstLine = "",
-                    headers   = Headers.empty,
+                    headers   = Headers.new,
 		    body      = ""
                 }
             }
@@ -120,18 +120,15 @@ struct
                     val response = parse (response, read)
 
                     val rspBody = (#response response)
-		    val cl = Header.toString (Header.ContentLength 0)
-		    val clValue = Headers.get (#headers rspBody) cl
-		    val clPresent = clValue <> NONE
-		    fun getCl () : int = case valOf (clValue) of
-		        Header.ContentLength i => i
-		      | _ => 0
-
                     val bodyLength = String.length (#body rspBody)
-		    val readMore =
-		        if not (#headersComplete response) then true
-			else if clPresent andalso getCl () > bodyLength then true
-			else false
+		    val contentLength = Headers.get (#headers rspBody) "content-length"
+		    val contentRemains = case contentLength of
+                        NONE => false
+		      | SOME contentLengthValue => case Int.fromString (contentLengthValue) of
+                        SOME i => i >  bodyLength
+                      | NONE => true
+
+		    val readMore = not (#headersComplete response) orelse contentRemains
 		in
 		    if readMore then doRead (response) else response
 		end;

@@ -13,11 +13,9 @@ struct
 
         structure Format = Ponyo.Format
         structure String = Ponyo.String
-
-        structure StringMap = Ponyo_Container_Map (Ponyo.String)
     in
         val fileRoot = "./dist/templates"
-        val fileCache = ref StringMap.empty
+        val fileCache = ref String.Map.new
 
         fun serveFile (path: string) : Router.t =
             let
@@ -26,12 +24,12 @@ struct
                 fun getFile () = String.join (File.readFrom path, "")
 
                 val newFile = ref true
-                val file = case StringMap.get (!fileCache) path of
+                val file = case String.Map.get (!fileCache) path of
                   NONE => if exists () then getFile () else "404 not found"
                 | SOME file => (newFile := false; file)
             in
                 if !newFile
-                    then fileCache := StringMap.insert (!fileCache) path file
+                    then fileCache := String.Map.insert (!fileCache) path file
                 else ();
                 PolyML.print(path);
 

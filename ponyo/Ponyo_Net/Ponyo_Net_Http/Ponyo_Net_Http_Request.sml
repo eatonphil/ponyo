@@ -1,44 +1,35 @@
-functor Ponyo_Net_Http_Request (Socket: PONYO_NET_SOCKET) =
+functor Ponyo_Net_Http_Request (Socket: PONYO_NET_SOCKET) : PONYO_NET_HTTP_REQUEST =
 struct
     local
         structure String = Ponyo_String
 
         structure Method     = Ponyo_Net_Http_Method
         structure Header     = Ponyo_Net_Http_Header
-        structure Headers    = Ponyo_Net_Http_Headers
+        structure Headers    = Ponyo_String_Map
         structure Connection = Ponyo_Net_Http_Connection (Socket);
     in
 
     exception MalformedRequest of string
 
-    type t = {method  : Method.t,
-	      path    : string,
-              version : string,
-	      headers : string Headers.t,
-	      body    : string}
+    type socket = (INetSock.inet, Basis.Socket.active Basis.Socket.stream) Socket.t
+    type t = { method  : Method.t,
+	       path     : string,
+               version : string,
+	       headers : string Headers.t,
+	       body    : string }
 
-    fun method (request: t) = #method request
-    fun path (request: t) = #path request
+    fun method  (request: t) = #method request
+    fun path    (request: t) = #path request
     fun version (request: t) = #version request
     fun headers (request: t) = #headers request
-    fun body (request: t) = #body request
+    fun body    (request: t) = #body request
 
-    fun new (method: Method.t, path: string, body: string) : t =
-        let
-            val path = if String.hasPrefix (path, "/") then path else "/" ^ path
-	    fun toHeaders (hs): string Headers.t =
-	        case hs of
-		    [] => Headers.empty
-		  | hd :: tl => Headers.insert (toHeaders tl) (Header.toKv hd)
-        in
-	    {
-	        method  = method,
-		path    = path,
-                version = "HTTP/1.1",
-		headers = toHeaders [Header.ContentLength (String.length body)],
-		body    = body
-	    }
-	end
+    fun new (headers: string Headers.t, body: string) : t =
+    	{ method  = Method.Unknown (""),
+	  path    = "",
+          version = "HTTP/1.1",
+	  headers = Headers.insert headers "Content-Length" (Int.toString (String.length body)),
+          body    = body }
 
     fun parseFirstLine (line: string, request: Connection.t) : t =
         case String.split (line, " ") of
@@ -53,9 +44,9 @@ struct
                   body    = #body request
               }
 
-    fun read (conn) : t =
+    fun read (socket: socket) : t =
         let
-            val request = Connection.read (conn)
+            val request = Connection.read (socket)
         in
             parseFirstLine (#firstLine request, request)
         end
@@ -72,8 +63,8 @@ struct
 	    intro ^ headers ^ "\r\n\r\n" ^ body
         end
 
-    fun write (conn, request) : unit =
-        Connection.write (conn, marshall request)
+    fun write (socket: socket, request: t) : unit =
+        Connection.write (socket, marshall request)
 
     end
 end

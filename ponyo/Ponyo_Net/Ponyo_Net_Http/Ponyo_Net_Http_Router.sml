@@ -2,7 +2,7 @@ functor Ponyo_Net_Http_Router (Socket: PONYO_NET_SOCKET) =
 struct
     local
         structure String    = Ponyo_String
-        structure StringMap = Ponyo_Container_Tree_BinarySearch (String)
+        structure StringMap = Ponyo_Container_Map (String)
 
         structure Method   = Ponyo_Net_Http_Method 
         structure Request  = Ponyo_Net_Http_Request (Socket)
@@ -15,9 +15,9 @@ struct
             fun construct (routeList, routes) =
                 case routeList of
                     (method, route, handler) :: tl =>
-                      construct (tl, StringMap.insert routes (route, (method, handler)))
+                      construct (tl, StringMap.insert routes route (method, handler))
                   | _ => routes
-            val routes = construct (routeList, StringMap.empty);
+            val routes = construct (routeList, StringMap.new);
 
             (* Turn a path "/foo/bar" into "/foo/*". *)
             fun pathToSlashStar (path: string) : string =

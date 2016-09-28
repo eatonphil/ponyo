@@ -8,7 +8,7 @@ struct
         Node of ('a t * color * elt * 'a * 'a t)
       | Leaf
 
-    val empty : 'a t = Leaf
+    val new : 'a t = Leaf
 
     fun balance (root: 'a t) : 'a t =
         case root of
@@ -61,10 +61,10 @@ struct
         let
             fun doFromList root l =
                 case l of
-                    [] => empty
+                    [] => new
                   | (k, v) :: tail =>
                 doFromList (insert root k v) l
         in
-            doFromList empty l
+            doFromList new l
         end
 end
