@@ -42,6 +42,7 @@ struct
 
     val debug = ref false
 
+
     fun filterComments (tokens: tokens) : tokens =
         foldl (fn (t, tokens) => case t of
             Token.Comment _ => tokens
@@ -86,6 +87,7 @@ struct
         readIdent (reader) >>= (fn (reader, sigIdent) =>
         (reader, SOME (Ast.Signature (signatureName, Ast.Deferred sigIdent)))))))
 
+
     and parseStrLit (reader: reader) : reader * Ast.t option =
         readSymbol (reader, [Symbol.Struct]) >>= (fn (reader, _) =>
         parseBody (reader, Ast.StructureBody [], false) >>= (fn (reader, body) =>
@@ -96,8 +98,12 @@ struct
         readSymbol (reader, [Symbol.Structure]) >>= (fn (reader, _) =>
         readIdent (reader) >>= (fn (reader, structureName) =>
         readSymbol (reader, [Symbol.Equal]) >>= (fn (reader, _) =>
-        parseStrLit (reader) >>= (fn (reader, ast) =>
-        (reader, SOME (Ast.Structure (structureName, ast)))))))
+        case parseStrLit (reader) of
+            (reader, SOME strLit) =>
+              (reader, SOME (Ast.Structure (structureName, strLit)))
+          | (reader, NONE) =>
+        readIdent (reader) >>= (fn (reader, strIdent) =>
+        (reader, SOME (Ast.Structure (structureName, Ast.Deferred strIdent)))))))
 
     and parseExp (reader: reader) : reader * Ast.t option =
         readToken (reader) >>= (fn (reader as {tokens, store}, token) =>
@@ -283,7 +289,6 @@ struct
         in
             foldl doParse (reader, SOME ast) parsers
         end
-
 
     fun parse (tokens: tokens) : Ast.t =
         let

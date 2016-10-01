@@ -8,7 +8,7 @@ all:
 	$(MAKE) documentation
 
 static:
-	(cd $$(pwd)/static && gulp)
+	(cd $$(pwd)/static && ./node_modules/.bin/gulp)
 
 server: server/server.sml
 	@mkdir -p $(OUTPUT_DIR)

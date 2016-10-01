@@ -21,7 +21,7 @@ bin/ponyo-top: tool/ponyo/top/top.sml bin/ponyo
 	bin/ponyo make $< -o $@
 
 all:
-	$(MAKE) ssl.so
+	#$(MAKE) ssl.so
 	# bootstrap
 	$(MAKE) bin/ponyo-make
 	# Build ponyo tool
