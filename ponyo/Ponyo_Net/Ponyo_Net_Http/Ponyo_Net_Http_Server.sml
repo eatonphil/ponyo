@@ -1,4 +1,4 @@
-structure Ponyo_Net_Http_Server =
+structure Ponyo_Net_Http_Server :> PONYO_NET_HTTP_SERVER =
 struct
     local
         structure Format = Ponyo_Format
@@ -11,44 +11,44 @@ struct
 
     val MAX_CONN : int ref = ref ~1
 
-    fun handler (conn, router: Router.t) : unit =
+    fun handleRequest (conn) (router: Router.t) : unit =
         let
             val request = Request.read (conn);
             val response = router (request);
         in
-            Format.println [Request.marshall request];
-            Response.write (conn, response);
-            Socket.close (conn)
+            Format.println [Request.toString request];
+            Response.write conn response;
+            Socket.close conn
         end
 
-    fun serve (sock, router: Router.t) : unit =
+    fun serve sock (router: Router.t) : unit =
         let
             val (conn, _) = Basis.Socket.accept (sock);
         in
-            Thread.Thread.fork (fn () => handler (conn, router), []);
-            serve (sock, router);
+            Thread.Thread.fork (fn () => handleRequest conn router, []);
+            serve sock router;
             ()
         end
 
-    fun bind (sock, address) =
+    fun bind sock address =
         let
             val sleep = OS.Process.sleep
             fun doBind () = Basis.Socket.bind (sock, address)
         in
-            doBind () handle SysError => (sleep (Time.fromSeconds 1); bind (sock, address));
+            doBind () handle SysError => (sleep (Time.fromSeconds 1); bind sock address);
             ()
         end
 
-    fun listenAndServe (address: string, port: int, router: Router.t) : unit =
+    fun listenAndServe (address: string) (port: int) (router: Router.t) : unit =
         let
             val sock = INetSock.TCP.socket ();
         in
             Format.printf "Binding server...\n" [];
-            bind (sock, INetSock.any port);
+            bind sock (INetSock.any port);
             Format.printf "Server bound. Listening on port %:%\n\n" [address, Int.toString port];
             Basis.Socket.listen (sock, !MAX_CONN);
             Basis.Socket.Ctl.setREUSEADDR (sock, true);
-            serve (sock, router);
+            serve sock router;
             Socket.close (sock);
             ()
         end

@@ -11,9 +11,11 @@ sig
     val headers : t -> string Ponyo_String_Map.t
     val body : t -> string
 
-    val new : string Ponyo_String_Map.t * string -> t
-    val read : socket -> t
-    val write : socket * t -> unit
+    val new : Ponyo_Net_Http_Method.t -> string -> string -> string Ponyo_String_Map.t -> string -> t
+    val init : string Ponyo_String_Map.t -> string -> t
 
-    val marshall : t -> string
+    val read : socket -> t
+    val write : socket -> t -> unit
+
+    val toString : t -> string
 end

@@ -27,7 +27,7 @@ struct
               | _ => raise InvalidRequestAddress (address)
             val request = case request' of
                 SOME request => request
-              | _ => Request.new (Headers.new, "")
+              | _ => Request.init Headers.new ""
             val request = {
                 method  = method,
                 path    = path,
@@ -37,8 +37,8 @@ struct
             }
             val socket = Socket.connect (domain, Port.port);
         in
-	    Request.write (socket, request);
-	    Response.read (socket)
+	    Request.write socket request;
+	    Response.read socket
         end
 
     fun get (address: string, request: request option) : response =

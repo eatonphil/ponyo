@@ -31,9 +31,8 @@ struct
                 if !newFile
                     then fileCache := String.Map.insert (!fileCache) path file
                 else ();
-                PolyML.print(path);
 
-                fn (_: Request.t) => Response.new (file)
+                fn (_: Request.t) => Response.init (file)
             end
 
         fun serveDocumentation (request: Request.t) : Response.t =
@@ -61,7 +60,7 @@ struct
             (Method.Get, path, router)
 
         fun main () =
-            Server.listenAndServe ("", 4334, Router.basic [
+            Server.listenAndServe "" 4334 (Router.basic [
                 get ("/",                serveFile "index.html"),
                 get ("/downloads",       serveFile "downloads.html"),
                 get ("/documentation",   serveFile "documentation.html"),

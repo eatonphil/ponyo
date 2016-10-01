@@ -11,7 +11,21 @@ sig
     val headers : t -> string Ponyo_String_Map.t
     val body : t -> string
 
-    val new : string -> t
+    val new : string -> int -> string -> string Ponyo_String_Map.t -> string -> t
+    val init : string -> t
+
+    val NotFound : t
+    val MethodNotAllowed : t
+    val Unauthorized : t
+    val Forbidden : t
+    val InternalServerError : t
+    val NotImplemented : t
+    val BadGateway : t
+    val ServiceUnavailable : t
+    val GatewayTimeout : t
+
     val read : socket -> t
-    val write : socket * t -> unit
+    val write : socket -> t -> unit
+
+    val toString : t -> string
 end

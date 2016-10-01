@@ -8,6 +8,7 @@ struct
         structure Request  = Ponyo_Net_Http_Request (Socket)
         structure Response = Ponyo_Net_Http_Response (Socket)
     in
+
     type t = Request.t -> Response.t
 
     fun basic (routeList: (Method.t * string * t) list) : t =
@@ -36,12 +37,11 @@ struct
                 case StringMap.get routes path of
                     SOME (method, routeHandler) =>
                       if Request.method request <> method
-                          (* TODO: implement real 405 *)
-                          then Response.new ("405 method not allowed")
+                          then Response.MethodNotAllowed
                       else routeHandler (request)
                   | NONE =>
                       if path = "/*"
-                          then Response.new ("404 not found")
+                          then Response.NotFound
                       else if String.hasSuffix (path, "/")
                           then handler (request, String.substring (path, 0, ~1))
                       else handler (request, pathToSlashStar path)

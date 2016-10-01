@@ -24,14 +24,22 @@ struct
     fun headers (request: t) = #headers request
     fun body    (request: t) = #body request
 
-    fun new (headers: string Headers.t, body: string) : t =
-    	{ method  = Method.Unknown (""),
-	  path    = "",
-          version = "HTTP/1.1",
-	  headers = Headers.insert headers "Content-Length" (Int.toString (String.length body)),
+    fun new (method: Method.t) (path: string) (version: string) (headers: string Headers.t) (body: string) =
+        { method  = method,
+          path    = path,
+          version = version,
+          headers = headers,
           body    = body }
 
-    fun parseFirstLine (line: string, request: Connection.t) : t =
+    fun init (headers: string Headers.t) (body: string) : t =
+        let
+            val contentLength = Int.toString (String.length body)
+            val headers = Headers.insert headers "Content-Length" contentLength
+        in
+            new (Method.Unknown "") "" "HTTP/1.1" headers body
+        end
+
+    fun parseFirstLine (line: string) (request: Connection.t) : t =
         case String.split (line, " ") of
             [] => raise MalformedRequest (line)
           | list => if length (list) <> 3
@@ -48,7 +56,7 @@ struct
         let
             val request = Connection.read (socket)
         in
-            parseFirstLine (#firstLine request, request)
+            parseFirstLine (#firstLine request) request
         end
 
     fun marshall (request: t) : string =
@@ -63,8 +71,10 @@ struct
 	    intro ^ headers ^ "\r\n\r\n" ^ body
         end
 
-    fun write (socket: socket, request: t) : unit =
+    fun write (socket: socket) (request: t) : unit =
         Connection.write (socket, marshall request)
+
+    val toString = marshall
 
     end
 end
