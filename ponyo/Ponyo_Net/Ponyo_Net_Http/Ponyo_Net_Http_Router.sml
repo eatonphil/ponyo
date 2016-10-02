@@ -1,4 +1,4 @@
-functor Ponyo_Net_Http_Router (Socket: PONYO_NET_SOCKET) =
+functor Ponyo_Net_Http_Router (Socket: PONYO_NET_SOCKET) : PONYO_NET_HTTP_ROUTER =
 struct
     local
         structure String    = Ponyo_String
@@ -8,6 +8,9 @@ struct
         structure Request  = Ponyo_Net_Http_Request (Socket)
         structure Response = Ponyo_Net_Http_Response (Socket)
     in
+
+    type request = Request.t
+    type response = Response.t
 
     type t = Request.t -> Response.t
 

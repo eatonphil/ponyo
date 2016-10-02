@@ -1,8 +1,9 @@
-structure Ponyo_Net_Http_Server :> PONYO_NET_HTTP_SERVER =
+structure Ponyo_Net_Http_Server : PONYO_NET_HTTP_SERVER =
 struct
     local
         structure Format = Ponyo_Format
         structure Socket = Ponyo_Net_Socket
+        structure StringMap = Ponyo_String_Map
 
         structure Request  = Ponyo_Net_Http_Request (Socket)
         structure Response = Ponyo_Net_Http_Response (Socket)
@@ -11,14 +12,23 @@ struct
 
     val MAX_CONN : int ref = ref ~1
 
+    fun handleCleanup (conn) : unit =
+        let
+            val exit = Thread.Thread.exit
+        in
+            Socket.close (conn) handle _ => exit ();
+            exit ()
+        end
+
     fun handleRequest (conn) (router: Router.t) : unit =
         let
-            val request = Request.read (conn);
+            val emptyRequest = Request.init StringMap.new ""
+            val request = Request.read (conn) handle _ => emptyRequest
             val response = router (request);
         in
             Format.println [Request.toString request];
-            Response.write conn response;
-            Socket.close conn
+            Response.write conn response handle _ => handleCleanup (conn);
+            handleCleanup (conn)
         end
 
     fun serve sock (router: Router.t) : unit =

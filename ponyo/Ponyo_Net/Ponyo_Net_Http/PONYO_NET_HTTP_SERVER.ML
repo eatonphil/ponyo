@@ -2,11 +2,11 @@
  *  PONYO_NET_HTTP_SERVER: This is the default web server implementation
  *  provided by Ponyo. For a more in-depth example, check out the <a href="https://github.com/eatonphil/ponyo/blob/master/site/server/server.sml">source</a>
  *  of ponyo.org. The provided example will start a new HTTP server running
- *  at http://localhost:5000.
+ *  at http://127.0.0.1:5000.
  *
  *  Example:
- *      Net.Server.listenAndServe "localhost" 5000
- *        (fn _ -> Net.Response.init "Hello world!")
+ *      Net.Server.listenAndServe "127.0.0.1" 5000
+ *        (fn _ => Net.Response.init "Hello world!")
  *)
 signature PONYO_NET_HTTP_SERVER =
 sig
