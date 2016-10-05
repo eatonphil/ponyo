@@ -1,9 +1,8 @@
 structure Ponyo_Encoding_Base64 =
 struct
     local
-        type Word8Vector = Word8Vector.vector
-        structure Word8Vector = Word8Vector
         structure String = Basis.String
+        structure Word8Vector = Word8Vector
 
         val base64Digits =
             let
@@ -33,8 +32,8 @@ struct
          *
          * The idea is that you first start out with three octets (i.e. bytes for most people).
          * You then split these bytes into four 6-bit entities (or "sextets").
-         * Each of these 6-bit entities maps to at most 63 (2^6 - 1), and can be used
-         * to index into our Base64 digit string.
+         * Each of these 6-bit entities maps to at most 63 (6 bits means 2^6 - 1),
+         * and can be used to index into a digit string (defined above).
          *
          * As an exaple, imagine we have the ASCII string "Dan".
          * You can visualize it like so:
@@ -53,7 +52,8 @@ struct
          *
          * We'll call the input octets 'a', 'b', and 'c', and the output sextets 'w', 'x', 'y', and 'z'.
          * Here, (a = 'D', b = 'a', c = 'n'), and (w = 'R', x = 'G', y = 'F', z = 'u').
-         * You can repeat this process over and over again to encode an entire
+         * You can repeat this process over and over again to encode arbitrarily long binary data into
+         * an ASCII representation.
          *
          * Now in some cases, we won't have three full octets.
          * For instance, if we're encoding a single byte, we'll end up with
@@ -61,23 +61,27 @@ struct
          *
          * Labels     |        a       |       b       |       c       |
          * -----------+----------------+---------------+---------------+
-         * ASCII      |        D       |               |               |
-         * As octets  |       68       |               |               |
+         * ASCII      |        D       |      N/A      |      N/A      |
+         * As octets  |       68       |      N/A      |      N/A      |
          *            |                |               |               |
-         * Bits       | 0 1 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0|
+         * Bits       | 0 1 0 0 0 1 0 0 - - - - - - - - - - - - - - - -|
          *            |            |           |           |           |
-         * As sextets |     17     |     0     |     0     |     0     |
+         * As sextets |     17     |     ?     |     ?     |     ?     |
+         * Base-64    |      R     |     ?     |     ?     |     ?     |
          * -----------+------------+-----------+-----------+-----------+
          * Labels     |      w     |     x     |     y     |      z    |
          *
-         * We could use the same scheme as before, and just set our outputs to "RAAA";
-         * however, if we did that and tried to rebuild our inputs,
+         * We could use the same scheme as before with 'b' & 'c' set to 0 and
+         * just set our outputs to "RAAA"; however, if we did that and tried to rebuild our inputs,
          * the octet value of 'b' and 'c' would both be 0 (which is NUL).
-         * The problem is that we've lost the encoding of our length.
-         * We could just omit them at the end, but RFC 4648 calls for using padding.
+         * The problem is we need to encode our length.
+         * We could just omit 'y' and 'z' to signal a the lack of a 'b' and 'c' respectively,
+         * but RFC 4648 instead calls for using a padding character.
+         * In this implementation, the padding character is '=' which is accessible at index 64.
          *
          * If both 'b' and 'c' are missing, then 'y' and 'z' are represented by
-         * padding characters - in this case the character '=' which is accessible at index 64.
+         * padding characters.
+         *
          * If *just* 'c' is missing, then only 'z' is assigned that sentinel value.
          * So in the above, case, we end up with "RA==".
          *
@@ -85,7 +89,7 @@ struct
          * the appropriate sextet of bits so that they can still be read from.
          *)
 
-        (* A structure of bit masks to make *)
+        (* A structure of bit masks to we'll use. *)
         structure Masks =
         struct
             val LowerCToZ           = (* 00111111 *) 0wx3F
@@ -131,7 +135,7 @@ struct
         fun fromOctetSingleton (a: Word8.word) =
             getBase64String [getW(a), getX(a, 0w0), 0w64, 0w64]
 
-        fun base64Encode (i: int, data: Word8Vector, dataLength: int, accumulator: string) =
+        fun base64Encode (i: int, data: Word8Vector.vector, dataLength: int, accumulator: string) =
             if i >= dataLength
             then
                 accumulator
@@ -147,7 +151,7 @@ struct
     in
         structure Encode =
         struct
-            fun fromWord8Vector (data: Word8Vector) = base64Encode(0, data, Word8Vector.length data, "")
+            fun fromWord8Vector (data: Word8Vector.vector) = base64Encode(0, data, Word8Vector.length data, "")
 
             val fromWord8List = fromWord8Vector o Word8Vector.fromList
 
