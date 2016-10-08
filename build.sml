@@ -25,6 +25,6 @@ val PONYO_ROOT =
       | SOME home =>
           cleanPath(home, true) ^ "/" ^ (cleanPath (Basis.String.extract (root, 2, NONE), false));
 
-val ponyoLib = PONYO_ROOT ^ "/ponyo";
+val ponyoLib = PONYO_ROOT ^ "/src";
 
 PolyML.make (ponyoLib)

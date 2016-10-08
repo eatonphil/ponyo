@@ -30,10 +30,9 @@ struct
 	        case source of
 		    ""  => count
 		  | str =>
-                      let in case indexOf(source, substring) of
-		          ~1 => count
-		        | index => doCount (substringToEnd (source, offset (index)), count + 1)
-		      end
+                case indexOf(source, substring) of
+		    ~1 => count
+		  | index => doCount (substringToEnd (source, offset (index)), count + 1)
 	in
 	    if length (substring) > length (source)
 	        then 0
@@ -186,10 +185,12 @@ struct
         stripAll (source, WS)
 
     and substring (source: string, start: int, stop: int) : string =
-        Substring.string (Substring.substring (source, start, stop))
+        if stop < 0 then substring (source, start, length source + stop)
+        else Substring.string (Substring.substring (source, start, stop))
 
     and substringToEnd (source: string, start: int) : string =
-        Substring.string (Substring.extract (source, start, NONE))
+        if start < 0 then substringToEnd (source, length source + start)
+	else Substring.string (Substring.extract (source, start, NONE))
 
     and toChar (source: string) : char = charAt (source, 0)
 

@@ -20,14 +20,11 @@ struct
             NONE => ""
           | SOME extension => extension
 
-    (*
-     * -file: File returns the filename portion of a file path.
-     *
-     *  Ex:
-     *      file ("foo/bar.html") = "bar.html"
-     *)
     fun file (path: string) : string =
         Basis.Os.Path.file (path)
+
+    fun filename (path: string) : string =
+        String.substring (file path, 0, ~1 * (1 + String.length (extension path)))
 
     fun join (paths: string list) =
         case paths of

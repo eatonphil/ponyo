@@ -4,21 +4,25 @@ default: all
 ssl.so: lib/ssl.c
 	gcc -shared -fPIC -o $@ -lcrypto -lssl $<
 
-bin/ponyo-make: tool/ponyo/make/build.sml
+bin/ponyo-make: tool/make/build.sml
 	@mkdir -p bin
 	polyc -o $@ $<
 
-bin/ponyo: tool/ponyo/ponyo.sml bin/ponyo-make
+bin/ponyo: tool/ponyo.sml bin/ponyo-make
 	@mkdir -p bin
 	bin/ponyo-make $< -o $@
 
-bin/ponyo-doc: tool/ponyo/doc/build.sml bin/ponyo
+bin/ponyo-doc: tool/doc/build.sml tool/doc/generate.sml tool/doc/doc.sml bin/ponyo bin/ponyo-make
 	@mkdir -p bin
 	bin/ponyo make $< -o $@
 
-bin/ponyo-top: tool/ponyo/top/top.sml bin/ponyo
+bin/ponyo-top: tool/top/top.sml bin/ponyo bin/ponyo-make
 	@mkdir -p bin
 	bin/ponyo make $< -o $@
+
+bin/ponyo-test: tool/test/test.sml bin/ponyo bin/ponyo-make
+	@mkdir -p bin
+	bin/ponyo-make $< -o $@
 
 all:
 	#$(MAKE) ssl.so
@@ -30,11 +34,9 @@ all:
 	$(MAKE) bin/ponyo-top
 	$(MAKE) bin/ponyo-doc
 
-test: test/build.sml bin/ponyo
+test: test/*.sml bin/ponyo-test
 	@mkdir -p bin
-	ponyo make $< -o bin/$@
-	./bin/$@
-	@rm ./bin/$@
+	ponyo test
 
 clean:
 	rm -rf bin ssl.so
