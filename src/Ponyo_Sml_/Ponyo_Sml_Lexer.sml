@@ -281,7 +281,7 @@ struct
                 doLexAll ({stream=stream, store=""}, [])
         in
             case (#stream reader) () of
-                SOME c => (PolyML.print (c, #store reader); raise Fail "Invalid lexical construct 1")
+                SOME c => raise Fail "Invalid lexical construct 1"
               | NONE   =>
             case (#store reader) of
                 "" => List.rev (tokens)

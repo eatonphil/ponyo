@@ -35,28 +35,33 @@ struct
             Basis.Os.FileSys.mkDir (path)
         end
 
-    fun walk (root: string, walkFun: string -> unit) : unit =
+    (* TODO: better name? *)
+    fun walkWith (root: string) (walkFun: string -> 'a -> 'a) (init: 'a) : 'a =
         let
             fun withRoot (child: string) =
                 Path.join [root, child]
 
-            fun walkRoot (rootDir: FileSys.dirstream) : unit =
+            fun walkRoot (rootDir: FileSys.dirstream) (accum: 'a) : 'a =
                 case FileSys.readDir (rootDir) of
-                    NONE => ()
+                    NONE => accum
                   | SOME path =>
-                let in
-                    walkFun (withRoot path);
+                let
+                    val newAccum = walkFun (withRoot path) accum
+                in
                     if FileSys.isDir (withRoot path)
-                        then walk (withRoot path, walkFun)
-                    else ();
-                    walkRoot (rootDir)
+                        then walkWith (withRoot path) walkFun newAccum
+                    else newAccum;
+                    walkRoot rootDir newAccum
                 end
         in
             if FileSys.isDir (root)
-               then walkRoot (Basis.Os.FileSys.openDir (root)) handle
-                   Basis.Os.SysErr _ => ()
-            else ()
+               then walkRoot (Basis.Os.FileSys.openDir root) init handle
+                   Basis.Os.SysErr _ => init
+            else init
         end
+
+    fun walk (root: string) (walkFun: string -> unit) : unit =
+        walkWith root (fn a => (fn () => walkFun a)) ()
 
     fun which (executable: string) : string option =
         let

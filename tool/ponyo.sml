@@ -39,6 +39,7 @@ struct
                 "doc"     => ponyo (cmd, rest)
               | "make"    => ponyo (cmd, rest)
               | "top"     => ponyo (cmd, rest)
+              | "test"    => ponyo (cmd, rest)
               | "help"    => Cli.doHelp (spec)
               | "version" => Format.println ["ponyo version ponyo-0.1"]
               | _ => (Format.printf "ERROR: Bad command [%].\n\n" [cmd]; Cli.doHelp (spec))

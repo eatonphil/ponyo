@@ -12,17 +12,22 @@ fun exec (program: string, args: string list) : unit =
 structure Main =
 struct
     val polyFlag = Cli.Flag.Named ("p", "poly")
+    val evalFlag = Cli.Flag.Named ("e", "eval")
 
     val spec =
         let
             open Cli
 
             val polyDesc = "location of poly binary if not in PATH"
+            val evalDesc = "evalautes and exits"
         in
             ("ponyo-top",
              "Ponyo-top gives access to the Poly top-level with pre-built Ponyo libraries.",
              [],
-             [(polyFlag, Arg.optional (Arg.string, ""), polyDesc)])
+             [
+              (polyFlag, Arg.optional (Arg.string, ""), polyDesc),
+              (evalFlag, Arg.optional (Arg.string, ""), evalDesc)
+             ])
         end
 
     fun getPonyoRoot () =
@@ -36,6 +41,7 @@ struct
                 Fail reason =>
                      (Format.printf "ERROR: %\n\n" [reason]; Cli.doHelp (spec); [])
             val [polyPath] = Cli.getNamed (args, polyFlag)
+            val [eval] = Cli.getNamed (args, evalFlag)
 
             val ponyoLib = Path.join ([getPonyoRoot (), "build.sml"])
             val polyExecutable =
@@ -45,8 +51,10 @@ struct
                   | SOME path => path
 
             val makeLine = Format.sprintf "PolyML.make \"%\"; val _ = print \"Ponyo-top top-level ready!\\n\";" [ponyoLib]
+            fun evalLine () = Format.sprintf "PolyML.make \"%\"; %" [ponyoLib, eval]
+            val toExec = ["poly", "--eval"] @ (if eval = "" then [makeLine] else [evalLine (), "-q"])
         in
-            exec (polyExecutable, ["poly", "--eval", makeLine])
+            exec (polyExecutable, toExec)
         end
 end
 
