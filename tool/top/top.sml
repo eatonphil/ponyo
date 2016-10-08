@@ -43,7 +43,6 @@ struct
             val [polyPath] = Cli.getNamed (args, polyFlag)
             val [eval] = Cli.getNamed (args, evalFlag)
 
-            val _ = PolyML.print(2)
             val ponyoLib = Path.join ([getPonyoRoot (), "build.sml"])
             val polyExecutable =
                 if FileSystem.exists (polyPath) then polyPath
