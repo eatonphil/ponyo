@@ -6,8 +6,7 @@ structure FileSystem = Ponyo.Os.FileSystem
 structure Path = Ponyo.Os.Path
 
 fun exec (program: string, args: string list) : unit =
-    (Format.println [program ^ " " ^ String.join(args, " ")];
-    Basis.Posix.Process.exec (program, args))
+    Basis.Posix.Process.exec (program, args)
 
 structure Main =
 struct
@@ -52,7 +51,10 @@ struct
 
             val makeLine = Format.sprintf "PolyML.make \"%\"; val _ = print \"Ponyo-top top-level ready!\\n\";" [ponyoLib]
             fun evalLine () = Format.sprintf "PolyML.make \"%\"; %" [ponyoLib, eval]
-            val toExec = ["poly", "--eval"] @ (if eval = "" then [makeLine] else [evalLine (), "-q"])
+
+            (* The first argument is the arg0 which is the name of the program.
+             * This is here intentionally. *)
+            val toExec = ["poly", "--eval", if eval = "" then makeLine else evalLine ()]
         in
             exec (polyExecutable, toExec)
         end
