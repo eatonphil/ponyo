@@ -3,7 +3,7 @@
  *  Ponyo_Container_List functor.
  *
  *  Ex:
- *      structure IntList = Ponyo_Container_List(Int);
+ *      structure IntList = Ponyo_Container_List (Int);
  *      val sortedInts = IntList.sort [2, 1, 3, 4];
  *)
 signature PONYO_CONTAINER_LIST =

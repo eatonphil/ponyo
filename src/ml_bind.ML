@@ -4,6 +4,7 @@ struct
     structure Container = Ponyo_Container
     structure String = Ponyo_String_
     structure Char = Ponyo_Char_
+    structure Int = Ponyo_Int_
     structure Format = Ponyo_Format_
     structure Encoding = Ponyo_Encoding
     structure Net = Ponyo_Net
