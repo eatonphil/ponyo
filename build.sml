@@ -4,6 +4,8 @@ structure Basis = struct
     structure Os = OS
     structure Posix = Posix
     structure Socket = Socket
+    structure Int = Int
+    structure Char = Char
 end;
 
 fun cleanPath (path: string, right: bool) : string =
