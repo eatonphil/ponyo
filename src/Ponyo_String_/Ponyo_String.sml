@@ -4,6 +4,8 @@ struct
 
     exception IndexError of string * int
 
+    val unitialized = ""
+
     val WS = [" ", "\t", "\r", "\n", "\v", "\f"]
     
     fun all (source: string) (test: char -> bool) : bool =
@@ -30,7 +32,7 @@ struct
 	        case source of
 		    ""  => count
 		  | str =>
-                case indexOf(source, substring) of
+                case indexOf (source, substring) of
 		    ~1 => count
 		  | index => doCount (substringToEnd (source, offset (index)), count + 1)
 	in
@@ -56,28 +58,47 @@ struct
     and implode (sourceList: char list) : string = Basis.String.implode (sourceList)
 
     and indexOfFrom (source: string, pattern: string, start: int) : int =
-        if not (hasSubstring (source, pattern)) orelse
-	   length (pattern) > length (source) andalso
-	   start > length (source) then ~1
-	else if length (pattern) = 0 then 0
-	else
-	    let
-                fun isMatch (i: int, j: int) : bool =
-		    if j = length (pattern)
-		        then true
-		    else if charAt (source, i) = charAt (pattern, j)
-		        then isMatch (i + 1, j + 1)
-		    else false
+        (* KMP algorithm *)
+        let
+            val patternLength = length pattern
+            val sourceLength = length source
+            val shifts = Array.tabulate (patternLength + 1, (fn _ => 1));
+            val shift = ref 1
 
-	        fun find (i: int) : int =
-	            if isMatch (i, 0)
-		        then i
-		    else if i < length (source) - length (pattern)
-		        then find (i + 1)
-		    else ~1
-	    in
-	        find (start)
-	    end
+            val _ = mapi pattern (fn (i, c) =>
+                let in
+                    while (!shift) <= i andalso charAt (pattern, i) <> charAt (pattern, i - (!shift)) do
+                        shift := Array.sub (shifts, i - (!shift));
+                    Array.update (shifts, i + 1, !shift);
+                    c
+                end)
+
+            val start = ref 0
+            val matchLength = ref 0
+            fun search (sourceIndex: int) =
+                if sourceIndex = sourceLength - 1 then
+                    start := ~1
+                else
+                    let
+                        val c = charAt (source, sourceIndex)
+                    in
+                        while (!matchLength) = patternLength orelse
+                              (!matchLength) >= 0 andalso
+                              charAt (pattern, !matchLength) <> c do
+                            let in
+                                start := (!start) + Array.sub (shifts, !matchLength);
+                                matchLength := (!matchLength) - Array.sub (shifts, !matchLength)
+                            end;
+                        matchLength := (!matchLength) + 1;
+                        if (!matchLength) = patternLength then
+                            ()
+                        else
+                            search (sourceIndex + 1)
+                    end
+        in
+            search (0);
+            !start
+        end
 
     and indexOf (source: string, pattern: string) : int =
     	indexOfFrom (source, pattern, 0)
@@ -105,8 +126,21 @@ struct
     and map (source: string) (func: char -> char) : string =
         Basis.String.map func source
 
+    and mapi (source: string) (func: (int * char) -> char) : string =
+        let
+            val i = ref 0
+        in
+            map source (fn (c) =>
+                let
+                    val c = func (!i, c)
+                in
+                     i := (!i) + 1;
+                     c
+                end)
+        end
+
     and replace (source: string, match: string, replacement: string) : string =
-        join(split (source, match), replacement)
+        join (split (source, match), replacement)
 
     and reverse (source: string) : string =
     	implode (rev (explode source))
@@ -143,7 +177,7 @@ struct
             end
 
     and split (source: string, delim: string) : string list =
-        splitN (source, delim, 1 + count (source, delim))
+        splitN (source, delim, ~1)
 
     and stripLeft (source: string, garbage: string) : string =
         if hasPrefix (source, garbage)
@@ -202,4 +236,22 @@ struct
 
     and toUpper (source: string) : string =
         map source Char.toUpper
+
+    (* http://www.cse.yorku.ca/~oz/hash.html djb2 *)
+    and hash (source: string) : Word64.word =
+        let
+            val hash = ref (Word64.fromInt 5381)
+            val sourceRef = ref source
+
+            val fiveAsWord = Word.fromInt 5
+        in
+            while length (!sourceRef) > 0 do
+                let
+                    val c = (Word64.fromInt (Char.ord (charAt (!sourceRef, 0))))
+                in
+                    hash := Word64.<< (!hash, fiveAsWord) + !hash + c;
+                    sourceRef := substringToEnd (!sourceRef, 1)
+                end;
+            !hash
+        end
 end

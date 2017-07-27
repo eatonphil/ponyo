@@ -27,3 +27,9 @@ functor E (
     D : PONYO_CONTAINER_LIST_DOMAIN
 ) : PONYO_CONTAINER_LIST =
     Ponyo_Container_List (D);
+
+signature PONYO_CONTAINER_DICT = PONYO_CONTAINER_DICT;
+functor F (
+    D: PONYO_TRAIT_HASHABLE
+) : PONYO_CONTAINER_DICT =
+    Ponyo_Container_Dict (D);

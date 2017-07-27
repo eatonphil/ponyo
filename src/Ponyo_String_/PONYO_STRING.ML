@@ -316,4 +316,7 @@ sig
 
     (* toUpper: This converts the given string to uppercase. *)
     val toUpper : string -> string
+
+    val hash : string -> Word64.word
+    val unitialized : string
 end

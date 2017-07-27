@@ -8,6 +8,12 @@ structure Basis = struct
     structure Char = Char
 end;
 
+fun debug (s: string) =
+    let in
+        print (s);
+        TextIO.flushOut (TextIO.stdOut)
+    end
+
 fun cleanPath (path: string, right: bool) : string =
     if right andalso Basis.String.isSuffix "/" path
         then cleanPath (Basis.String.substring (path, 0, String.size path - 1), true)
