@@ -13,14 +13,15 @@ struct
 
     (*
      * Iterating over the characters slightly reduces the number of allocations
-     * compared to mapping over the string.
+     * compared to mapping over the string. Using a ref also slightly reduces the
+     * number of allocations compared to using a recursive helper function.
      *)
     fun app (source: string) (f: char -> unit) : unit =
         let
-            val i = ref 0
             val l = length (source)
+            val i = ref 0
         in
-            while !i < l - 1 do (f (charAt (source, !i)); i := !i + 1)
+            while !i < l do (f (charAt (source, !i)); i := !i + 1)
         end
 
     and capitalize (source: string) : string =
@@ -249,29 +250,35 @@ struct
     and toUpper (source: string) : string =
         map source Char.toUpper
 
-    (* http://www.cse.yorku.ca/~oz/hash.html djb2 second version *)
-    and hash2 (source: string) : Word64.word =
+    (* http://www.cse.yorku.ca/~oz/hash.html djb2 *)
+    and djb2 (source: string) : Word64.word =
         let
-            val thirtythree = Word64.fromInt (33)
-            val hash = ref (Word64.fromInt 5381)
+            val five = Word.fromInt (5)
+            val hash = ref (Word32.fromInt 5381)
         in
             app source (fn (c) =>
-                hash := Word64.xorb (!hash * thirtythree, (Word64.fromInt (Char.ord c))));
-            !hash
+                hash := Word32.+ ((Word32.<< (!hash, five)) + (!hash), (Word32.fromInt (Char.ord c))));
+            Word32.toLargeWord (!hash)
         end
 
-    and hash (source: string) : Word64.word =
+    (*
+     * The Python 2 hashing algorithm for testing and reference.
+     * https://stackoverflow.com/questions/2070276/where-can-i-find-source-or-algorithm-of-pythons-hash-function
+     *)
+    and python2 (source: string) : Word64.word =
         let
-            val zero = Word64.fromInt (0)
-            val one = Word64.fromInt (1)
+            val zero = Word32.fromInt (0)
+            val one = Word32.fromInt (1)
             val seven = Word.fromInt (7)
-            val magic = Word64.fromInt (1000003)
-            fun charToWord (c) = Word64.fromInt (Char.ord c)
+            val magic = Word32.fromInt (1000003)
+            fun charToWord (c) = Word32.fromInt (Char.ord c)
 
             val l = length source
-            val x = ref (Word64.<< (charToWord (charAt (source, 0)), seven))
+            val x = ref (Word32.<< (charToWord (charAt (source, 0)), seven))
         in
-            app source (fn c => x := Word64.xorb (Word64.* (magic, !x), charToWord c));
-            Word64.xorb (!x, Word64.fromInt l)
+            app source (fn c => x := Word32.xorb (Word32.* (magic, !x), charToWord c));
+            Word32.toLargeWord (Word32.xorb (!x, Word32.fromInt l))
         end
+
+    val hash = djb2
 end

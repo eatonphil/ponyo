@@ -23,7 +23,6 @@ struct
     fun insert (dict: 'a t) (key: elt) (value: 'a) : 'a t =
         if load_ (dict) > loadFactor then
             let
-                val _ = debug ("resizing!!!\n\n\n")
                 val (table, _) = dict
                 val resized = ref (newWithSize (Vector.length (table) * 2))
 
