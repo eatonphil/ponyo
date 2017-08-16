@@ -71,7 +71,29 @@ struct
     and implode (sourceList: char list) : string = Basis.String.implode (sourceList)
 
     and indexOfFrom (source: string, pattern: string, start: int) : int =
-        (* KMP algorithm *)
+        if not (hasSubstring (source, pattern)) orelse
+            length (pattern) > length (source) andalso
+            start > length (source) then ~1
+         else if length (pattern) = 0 then 0
+         else
+             let
+                   fun isMatch (i: int, j: int) : bool =
+         	    if j = length (pattern)
+         	        then true
+         	    else if charAt (source, i) = charAt (pattern, j)
+         	        then isMatch (i + 1, j + 1)
+         	    else false
+         
+                 fun find (i: int) : int =
+                     if isMatch (i, 0)
+         	        then i
+         	    else if i < length (source) - length (pattern)
+         	        then find (i + 1)
+         	    else ~1
+             in
+                 find (start)
+             end
+        (* TODO: use KMP algorithm
         let
             val patternLength = length pattern
             val sourceLength = length source
@@ -111,7 +133,7 @@ struct
         in
             search (0);
             !start
-        end
+        end*)
 
     and indexOf (source: string, pattern: string) : int =
     	indexOfFrom (source, pattern, 0)
