@@ -2,7 +2,7 @@ structure Ponyo_String :> PONYO_STRING =
 struct
     type t = string
 
-    exception IndexError of string * int
+    exception IndexError of string * int * int
 
     val unitialized = ""
 
@@ -19,9 +19,9 @@ struct
     and charAt (source: string, index: int) : char =
         if index < 0 then charAt (source, length source + index)
         else if index >= length (source)
-	    then raise IndexError (source, index)
+	    then raise IndexError (source, index, length (source))
 	else
-	    List.nth (explode source, index)
+	    Basis.String.sub (source, index)
 
     and compare (vals: string * string) : order = Basis.String.compare (vals)
 
@@ -238,7 +238,7 @@ struct
         map source Char.toUpper
 
     (* http://www.cse.yorku.ca/~oz/hash.html djb2 *)
-    and hash (source: string) : Word64.word =
+    and hash2 (source: string) : Word64.word =
         let
             val hash = ref (Word64.fromInt 5381)
             val sourceRef = ref source
@@ -253,5 +253,29 @@ struct
                     sourceRef := substringToEnd (!sourceRef, 1)
                 end;
             !hash
+        end
+
+    and hash (source: string) : Word64.word =
+        let
+            val zero = Word64.fromInt (0)
+            val one = Word64.fromInt (1)
+            val seven = Word.fromInt (7)
+            val magic = Word64.fromInt (1000003)
+            fun currentCharacter (i) = (Word64.fromInt (Char.ord (charAt (source, i))))
+
+            val l = length source
+            val c = ref (0)
+
+            val x = ref (Word64.<< (currentCharacter 0, seven))
+        in
+            (*
+             * Iterating over the characters slightly reduces the number of allocations
+             * compared to mapping over the string.
+             *)
+            while !c < l - 1 do let in
+                x := Word64.xorb (Word64.* (magic, !x), (currentCharacter (!c)));
+                c := !c + 1
+            end;
+            Word64.xorb (!x, Word64.fromInt l)
         end
 end
