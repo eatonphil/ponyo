@@ -11,6 +11,18 @@ struct
     fun all (source: string) (test: char -> bool) : bool =
         List.all test (explode (source))
 
+    (*
+     * Iterating over the characters slightly reduces the number of allocations
+     * compared to mapping over the string.
+     *)
+    fun app (source: string) (f: char -> unit) : unit =
+        let
+            val i = ref 0
+            val l = length (source)
+        in
+            while !i < l - 1 do (f (charAt (source, !i)); i := !i + 1)
+        end
+
     and capitalize (source: string) : string =
 	case explode (source) of
 	    [] => ""
@@ -237,21 +249,14 @@ struct
     and toUpper (source: string) : string =
         map source Char.toUpper
 
-    (* http://www.cse.yorku.ca/~oz/hash.html djb2 *)
+    (* http://www.cse.yorku.ca/~oz/hash.html djb2 second version *)
     and hash2 (source: string) : Word64.word =
         let
+            val thirtythree = Word64.fromInt (33)
             val hash = ref (Word64.fromInt 5381)
-            val sourceRef = ref source
-
-            val fiveAsWord = Word.fromInt 5
         in
-            while length (!sourceRef) > 0 do
-                let
-                    val c = (Word64.fromInt (Char.ord (charAt (!sourceRef, 0))))
-                in
-                    hash := Word64.<< (!hash, fiveAsWord) + !hash + c;
-                    sourceRef := substringToEnd (!sourceRef, 1)
-                end;
+            app source (fn (c) =>
+                hash := Word64.xorb (!hash * thirtythree, (Word64.fromInt (Char.ord c))));
             !hash
         end
 
@@ -261,21 +266,12 @@ struct
             val one = Word64.fromInt (1)
             val seven = Word.fromInt (7)
             val magic = Word64.fromInt (1000003)
-            fun currentCharacter (i) = (Word64.fromInt (Char.ord (charAt (source, i))))
+            fun charToWord (c) = Word64.fromInt (Char.ord c)
 
             val l = length source
-            val c = ref (0)
-
-            val x = ref (Word64.<< (currentCharacter 0, seven))
+            val x = ref (Word64.<< (charToWord (charAt (source, 0)), seven))
         in
-            (*
-             * Iterating over the characters slightly reduces the number of allocations
-             * compared to mapping over the string.
-             *)
-            while !c < l - 1 do let in
-                x := Word64.xorb (Word64.* (magic, !x), (currentCharacter (!c)));
-                c := !c + 1
-            end;
+            app source (fn c => x := Word64.xorb (Word64.* (magic, !x), charToWord c));
             Word64.xorb (!x, Word64.fromInt l)
         end
 end
