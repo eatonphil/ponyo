@@ -2,7 +2,7 @@ signature PONYO_STRING =
 sig
     type t = string
 
-    exception IndexError of (string * int)
+    exception IndexError of (string * int * int)
 
     (*
      *  all: This returns true if each character in the given string
@@ -316,4 +316,7 @@ sig
 
     (* toUpper: This converts the given string to uppercase. *)
     val toUpper : string -> string
+
+    val hash : string -> Word64.word
+    val unitialized : string
 end
