@@ -3,13 +3,13 @@ struct
     structure T = Ponyo_Container_Map (D);
 
     type elt = D.t
-    type 'a t = ('a T.t) vector * int
+    type 'a t = ('a T.t * bool) vector * int
 
     val defaultSize = 16
     val loadFactor = 0.75
 
     fun newWithSize (size: int) : 'a t =
-        (Vector.tabulate (size, (fn i => T.new)), 0)
+        (Vector.tabulate (size, (fn i => (T.new, false))), 0)
 
     fun new () : 'a t = newWithSize (defaultSize)
 
@@ -26,7 +26,7 @@ struct
                 val (table, _) = dict
                 val resized = ref (newWithSize (Vector.length (table) * 2))
 
-                fun insertElement (tree) =
+                fun insertElement (tree, _) =
                     List.app (fn (key, value) => resized := insert (!resized) key value) (T.toList tree)
             in
                 Vector.app insertElement table;
@@ -37,9 +37,10 @@ struct
                 val (table, used) = dict
                 val length = Word64.fromInt (Vector.length table)
                 val index = Word64.toInt (Word64.mod (D.hash key, length))
-                val current : 'a T.t = Vector.sub (table, index)
+                val (current : 'a T.t, empty) = Vector.sub (table, index)
+                val used = used + (if empty then 1 else 0)
             in
-                (Vector.update (table, index, (T.insert current key value)), used + 1)
+                (Vector.update (table, index, (T.insert current key value, true)), used)
             end
 
     fun get (dict: 'a t) (key: elt) : 'a =
@@ -47,7 +48,7 @@ struct
             val (table, _) = dict
             val length = Word64.fromInt (Vector.length table)
             val index = Word64.toInt (Word64.mod (D.hash key, length))
-            val tree = Vector.sub (table, index)
+            val (tree, _) = Vector.sub (table, index)
             val value = valOf (T.get tree key)
         in
             value
