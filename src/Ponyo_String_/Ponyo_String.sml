@@ -250,14 +250,14 @@ struct
     and toUpper (source: string) : string =
         map source Char.toUpper
 
-    (* http://www.cse.yorku.ca/~oz/hash.html djb2 *)
-    and djb2 (source: string) : Word64.word =
+    (* http://www.cse.yorku.ca/~oz/hash.html djb2 second version *)
+    and djb2a (source: string) : Word64.word =
         let
             val five = Word.fromInt (5)
             val hash = ref (Word32.fromInt 5381)
         in
             app source (fn (c) =>
-                hash := Word32.+ ((Word32.<< (!hash, five)) + (!hash), (Word32.fromInt (Char.ord c))));
+                hash := Word32.xorb ((Word32.<< (!hash, five)) + (!hash), (Word32.fromInt (Char.ord c))));
             Word32.toLargeWord (!hash)
         end
 
@@ -280,5 +280,5 @@ struct
             Word32.toLargeWord (Word32.xorb (!x, Word32.fromInt l))
         end
 
-    val hash = djb2
+    val hash = djb2a
 end
