@@ -5,7 +5,7 @@ struct
     open Int
 
     (* http://burtleburtle.net/bob/hash/integer.html *)
-    fun hash (i: int) : Word64.word =
+    fun hash2 (i: int) : Word64.word =
         let
             val three = Word.fromInt (3)
             val four = Word.fromInt (4)
@@ -25,5 +25,10 @@ struct
             Word32.toLargeWord (a)
         end
 
+    (* This is currently significantly faster in tests than the above hash2.
+     * However, the distribution of keys in the hash table should be worse.
+     * Worth more investigation.
+     *)
+    fun hash (i) = Word64.fromInt (i)
     val unitialized = 0
 end
