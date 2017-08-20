@@ -15,7 +15,7 @@ struct
         structure String = Ponyo.String
     in
         val fileRoot = "./dist/templates"
-        val fileCache = ref String.Map.new
+        val fileCache = ref (String.Dict.new ())
 
         fun serveFile (path: string) : Router.t =
             let
@@ -24,12 +24,12 @@ struct
                 fun getFile () = String.join (File.readFrom path, "")
 
                 val newFile = ref true
-                val file = case String.Map.get (!fileCache) path of
+                val file = case String.Dict.get (!fileCache) path of
                   NONE => if exists () then getFile () else "404 not found"
                 | SOME file => (newFile := false; file)
             in
                 if !newFile
-                    then fileCache := String.Map.insert (!fileCache) path file
+                    then fileCache := String.Dict.insert (!fileCache) path file
                 else ();
 
                 fn (_: Request.t) => Response.init (file)

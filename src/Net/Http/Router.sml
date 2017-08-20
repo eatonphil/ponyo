@@ -1,10 +1,9 @@
 functor Ponyo_Net_Http_Router (Socket: PONYO_NET_SOCKET) : PONYO_NET_HTTP_ROUTER =
 struct
     local
-        structure String    = Ponyo_String
-        structure StringMap = Ponyo_Container_Map (String)
+        structure String = Ponyo_String
+        structure Method = Ponyo_Net_Http_Method 
 
-        structure Method   = Ponyo_Net_Http_Method 
         structure Request  = Ponyo_Net_Http_Request (Socket)
         structure Response = Ponyo_Net_Http_Response (Socket)
     in
@@ -19,9 +18,9 @@ struct
             fun construct (routeList, routes) =
                 case routeList of
                     (method, route, handler) :: tl =>
-                      construct (tl, StringMap.insert routes route (method, handler))
+                      construct (tl, String.Dict.insert routes route (method, handler))
                   | _ => routes
-            val routes = construct (routeList, StringMap.new);
+            val routes = construct (routeList, String.Dict.new ());
 
             (* Turn a path "/foo/bar" into "/foo/*". *)
             fun pathToSlashStar (path: string) : string =
@@ -37,7 +36,7 @@ struct
                 end
 
             fun handler (request, path) =
-                case StringMap.get routes path of
+                case String.Dict.get routes path of
                     SOME (method, routeHandler) =>
                       if Request.method request <> method
                           then Response.MethodNotAllowed

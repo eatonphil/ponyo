@@ -5,7 +5,7 @@ struct
         structure Format = Ponyo_Format
 
         structure Header     = Ponyo_Net_Http_Header
-        structure Headers    = String.Map
+        structure Headers    = String.Dict
         structure Connection = Ponyo_Net_Http_Connection (Socket)
     in
 
@@ -40,7 +40,7 @@ struct
     fun init (body: string) : t =
         let
             val contentLength = Int.toString (String.length body)
-            val headers = Headers.insert Headers.new "Content-Length" contentLength
+            val headers = Headers.insert (Headers.new ()) "Content-Length" contentLength
         in
             new "HTTP/1.1" 200 "OK" headers body
         end

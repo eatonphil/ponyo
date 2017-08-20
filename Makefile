@@ -1,8 +1,15 @@
 .PHONY: all ssl.so bin/ponyo-make bin/ponyo bin/ponyo-doc bin/ponyo-top clean test
 default: all
 
+UNAME := $(shell uname)
+
+GCC_INCLUDES=
+ifeq ($(UNAME), Darwin)
+	GCC_INCLUDES="-I/usr/local/opt/openssl/include"
+endif
+
 ssl.so: lib/ssl.c
-	gcc -shared -fPIC -o $@ -lcrypto -lssl $<
+	gcc $(GCC_INCLUDES) -shared -fPIC -o $@ -lcrypto -lssl $<
 
 bin/ponyo-make: tool/make/build.sml
 	@mkdir -p bin
@@ -25,7 +32,7 @@ bin/ponyo-test: tool/test/test.sml bin/ponyo bin/ponyo-make
 	bin/ponyo-make $< -o $@
 
 all:
-	#$(MAKE) ssl.so
+	$(MAKE) ssl.so
 	# bootstrap
 	$(MAKE) bin/ponyo-make
 	# Build ponyo tool

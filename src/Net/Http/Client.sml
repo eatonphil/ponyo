@@ -6,7 +6,7 @@ struct
     local
         structure String   = Ponyo_String
         structure Header   = Ponyo_Net_Http_Header
-        structure Headers  = String.Map
+        structure Headers  = String.Dict
         structure Method   = Ponyo_Net_Http_Method
         structure Response = Ponyo_Net_Http_Response (Socket)
         structure Request  = Ponyo_Net_Http_Request (Socket)
@@ -27,7 +27,7 @@ struct
               | _ => raise InvalidRequestAddress (address)
             val request = case request' of
                 SOME request => request
-              | _ => Request.init Headers.new ""
+              | _ => Request.init (Headers.new ()) ""
             val request = {
                 method  = method,
                 path    = path,

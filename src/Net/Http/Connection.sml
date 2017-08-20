@@ -4,7 +4,7 @@ struct
         structure String = Ponyo_String
 
         structure Header  = Ponyo_Net_Http_Header
-        structure Headers = String.Map
+        structure Headers = String.Dict
     in
 
     type complete = {firstLine : string,
@@ -65,7 +65,7 @@ struct
 			                store           = "",
 					response        = {
                                             firstLine = line,
-					    headers   = Headers.new,
+					    headers   = Headers.new (),
 					    body      = ""
 					}
                                     }
@@ -107,7 +107,7 @@ struct
 		store           = "",
 		response        = {
                     firstLine = "",
-                    headers   = Headers.new,
+                    headers   = Headers.new (),
 		    body      = ""
                 }
             }

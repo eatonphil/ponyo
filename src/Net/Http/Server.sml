@@ -23,7 +23,7 @@ struct
 
     fun handleRequest (conn) (router: Router.t) : unit =
         let
-            val emptyRequest = Request.init String.Map.new ""
+            val emptyRequest = Request.init (String.Dict.new ()) ""
             val request = Request.read (conn) handle _ => emptyRequest
             val response = router (request);
         in

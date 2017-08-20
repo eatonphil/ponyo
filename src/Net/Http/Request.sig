@@ -8,11 +8,11 @@ sig
     val method : t -> Ponyo_Net_Http_Method.t
     val path : t -> string
     val version : t -> string
-    val headers : t -> string Ponyo_String.Map.t
+    val headers : t -> string Ponyo_String.Dict.t
     val body : t -> string
 
-    val new : Ponyo_Net_Http_Method.t -> string -> string -> string Ponyo_String.Map.t -> string -> t
-    val init : string Ponyo_String.Map.t -> string -> t
+    val new : Ponyo_Net_Http_Method.t -> string -> string -> string Ponyo_String.Dict.t -> string -> t
+    val init : string Ponyo_String.Dict.t -> string -> t
 
     val read : socket -> t
     val write : socket -> t -> unit
