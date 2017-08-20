@@ -1,5 +1,6 @@
-structure D = Ponyo.Int.Dict
-structure M = Ponyo.Int.Map
+open Ponyo
+structure D = Int.Dict
+structure M = Int.Map
 structure P = PolyML.Profiling
 
 val a = [
@@ -5002,7 +5003,7 @@ val a = [
 
 fun p f profile =
     if profile then
-        P.profile P.ProfileTime f () handle e => Ponyo.Format.println [exnName e, exnMessage e]
+        P.profile P.ProfileTime f () handle e => Format.println [exnName e, exnMessage e]
     else
         f ()
 
@@ -5012,7 +5013,7 @@ fun t () =
         val i = ref 0
     in
         p (fn () => (List.map (fn (k) => (d := D.insert (!d) k (!i); i := !i + 1)) a; ())) false;
-        p (fn () => (app (fn (k) => (D.get (!d) k; ())) (List.rev a); ())) true;
+        p (fn () => (app (fn (k) => (valOf (D.get (!d) k)); ())) (List.rev a); ())) false;
         ()
     end
 
@@ -5022,12 +5023,12 @@ fun m () =
         val i = ref 0
     in
         p (fn () => (List.map (fn (k) => (d := M.insert (!d) k (!i); i := !i + 1)) a; ())) false;
-        p (fn () => (app (fn (k) => (M.get (!d) k; ())) (List.rev a); ())) true;
+        p (fn () => (app (fn (k) => (valOf (M.get (!d) k); ())) (List.rev a); ())) false;
         ()
     end
 
 fun main () =
     let in
-        p t false;
-        p m false
+        p t true;
+        p m true
     end

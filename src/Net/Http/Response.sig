@@ -8,10 +8,10 @@ sig
     val version : t -> string
     val status : t -> int
     val reason : t -> string
-    val headers : t -> string Ponyo_String.Map.t
+    val headers : t -> string Ponyo_String.Dict.t
     val body : t -> string
 
-    val new : string -> int -> string -> string Ponyo_String.Map.t -> string -> t
+    val new : string -> int -> string -> string Ponyo_String.Dict.t -> string -> t
     val init : string -> t
 
     val NotFound : t

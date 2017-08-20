@@ -5,7 +5,7 @@ struct
 
         structure Method     = Ponyo_Net_Http_Method
         structure Header     = Ponyo_Net_Http_Header
-        structure Headers    = String.Map
+        structure Headers    = String.Dict
         structure Connection = Ponyo_Net_Http_Connection (Socket);
     in
 

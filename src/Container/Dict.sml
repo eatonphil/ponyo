@@ -3,53 +3,57 @@ struct
     structure T = Ponyo_Container_Map (D);
 
     type elt = D.t
-    type 'a t = ('a T.t) vector * int * int
+    type 'a t = 'a T.t array * int
 
     val defaultSize = 16
     val loadFactor = 0.75
 
     fun newWithSize (size: int) : 'a t =
-        (Vector.tabulate (size, (fn i => (T.new))), 0, size)
+        (Array.tabulate (size, (fn i => T.new)), 0)
 
     fun new () : 'a t = newWithSize (defaultSize)
 
-    fun load_ (dict: 'a t) : real =
+    fun load (dict: 'a t) : real =
         let
-            val (_, used, size) = dict
+            val (table, used) = dict
         in
-            (Real.fromInt used) / (Real.fromInt size)
+            (Real.fromInt used) / (Real.fromInt (Array.length table))
         end
 
+    fun index ((table, _), key) : int = Word64.toInt (Word64.mod (D.hash key, Word64.fromInt (Array.length table)))
+
     fun insert (dict: 'a t) (key: elt) (value: 'a) : 'a t =
-        if load_ (dict) > loadFactor then
+        if load (dict) > loadFactor then
             let
-                val (table, _, size) = dict
-                val resized = ref (newWithSize (size * 2))
+                val (table, _) = dict
+                val resized = ref (newWithSize ((Array.length table) * 2))
 
                 fun insertElement (tree) =
                     List.app (fn (key, value) => resized := insert (!resized) key value) (T.toList tree)
             in
-                Vector.app insertElement table;
+                Array.app insertElement table;
                 insert (!resized) key value
             end
         else
             let
-                val (table, used, size) = dict
-                val length = Word64.fromInt (size)
-                val index = Word64.toInt (Word64.mod (D.hash key, length))
-                val (current : 'a T.t) = Vector.sub (table, index)
+                val (table, used) = dict
+                val i = index (dict, key)
+                val current = Array.sub (table, i)
             in
-                (Vector.update (table, index, (T.insert current key value)), used + 1, size)
+                Array.update (table, i, T.insert current key value);
+                (table, used + 1)
             end
 
-    fun get (dict: 'a t) (key: elt) : 'a =
+    fun get (dict: 'a t) (key: elt) : 'a option =
         let
-            val (table, _, size) = dict
-            val length = Word64.fromInt (size)
-            val index = Word64.toInt (Word64.mod (D.hash key, length))
-            val tree = Vector.sub (table, index)
-            val value = valOf (T.get tree key)
+            val (table, _) = dict
+            val tree = Array.sub (table, (index (dict, key)))
         in
-            value
+            T.get tree key
         end
+
+    (* This is not going to be particularly efficient. But storing all key
+     * values as a list on the structure itself creates a big perf hit. *)
+    fun toList ((table, _): 'a t) : (D.t * 'a) list =
+        Array.foldr (fn (kvs, allKvs) => (T.toList (kvs) @ allKvs)) [] table
 end

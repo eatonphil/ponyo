@@ -35,7 +35,7 @@ struct
               | _ => raise Fail (Format.sprintf "Unknown provider %." [host]; "")
         end
 
-    fun parseComments (tokens: Token.t list) : comment String.Map.t =
+    fun parseComments (tokens: Token.t list) : comment String.Dict.t =
         let
             val comments =
                 foldl (fn (token, comments) => case token of
@@ -70,20 +70,20 @@ struct
                                    cleanDescription comment, []))
                   | _ => NONE
 
-            fun doParseComments (comments: string list, parsed: comment String.Map.t) : comment String.Map.t =
+            fun doParseComments (comments: string list, parsed: comment String.Dict.t) : comment String.Dict.t =
                 case comments of
                     [] => parsed
                 | comment :: comments =>
                 case parseComment (comment) of
                     NONE => doParseComments (comments, parsed)
                 | SOME (comment as (name, _, _)) =>
-                    doParseComments (comments, String.Map.insert parsed name comment)
+                    doParseComments (comments, String.Dict.insert parsed name comment)
 
         in
-            doParseComments (comments, String.Map.new)
+            doParseComments (comments, String.Dict.new ())
         end
 
-    fun parseFile (path: string) : Ast.t * comment String.Map.t =
+    fun parseFile (path: string) : Ast.t * comment String.Dict.t =
         let
             val file = String.join (File.readFrom path, "")
             val file = String.replace (file, "\n", " ")
@@ -101,13 +101,13 @@ struct
             (ast, commentsByName)
         end
 
-    fun generatePage (ast: Ast.t, comments: comment String.Map.t, source: string) : string =
+    fun generatePage (ast: Ast.t, comments: comment String.Dict.t, source: string) : string =
         let
             fun generateSignature (signatureToken, body) =
                 let
                     val name = Token.toString (signatureToken)
 
-                    val (_, description, examples) = case String.Map.get comments name of
+                    val (_, description, examples) = case String.Dict.get comments name of
                         NONE => ("", "", [])
                       | SOME comment => comment
 
@@ -143,7 +143,7 @@ struct
                 let
                     val name = Token.toString (valueToken)
 
-                    val (_, description, examples) = case String.Map.get comments name of
+                    val (_, description, examples) = case String.Dict.get comments name of
                         NONE => ("", "", [])
                       | SOME comment => comment
 
@@ -203,12 +203,12 @@ struct
             File.writeTo (path, page)
         end
 
-    fun generateHtml (asts: (Ast.t * comment String.Map.t) String.Map.t) : unit =
+    fun generateHtml (asts: (Ast.t * comment String.Dict.t) String.Dict.t) : unit =
         let
             fun outFile (path) =
                 Path.join [!outDirectory, Basis.Os.Path.base path ^ ".html"]
 
-            fun generatePages (astList: (string * (Ast.t * comment String.Map.t)) list) : unit =
+            fun generatePages (astList: (string * (Ast.t * comment String.Dict.t)) list) : unit =
                 case astList of
                     [] => ()
                   | (path, (ast, comments)) :: astList =>
@@ -217,22 +217,22 @@ struct
                     generatePages (astList)
                 end
         in
-            generatePages (String.Map.toList asts)
+            generatePages (String.Dict.toList asts)
         end
 
-    fun parseSignature (path: string) (asts: (Ast.t * comment String.Map.t) String.Map.t) : (Ast.t * comment String.Map.t) String.Map.t =
+    fun parseSignature (path: string) (asts: (Ast.t * comment String.Dict.t) String.Dict.t) : (Ast.t * comment String.Dict.t) String.Dict.t =
         if Path.extension (path) <> "ML"
             then asts
         else if Path.file (path) = "ml_bind.ML"
             then asts
-        else String.Map.insert
+        else String.Dict.insert
              asts
              (String.substringToEnd (path, String.length (!inDirectory)))
              (parseFile path)
 
     fun generateDocumentation () : unit =
         let
-            val asts = Filesystem.walkWith (!inDirectory) parseSignature String.Map.new
+            val asts = Filesystem.walkWith (!inDirectory) parseSignature (String.Dict.new ())
         in
             generateHtml asts
         end
