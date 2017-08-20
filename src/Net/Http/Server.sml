@@ -37,6 +37,7 @@ struct
             val (conn, _) = Basis.Socket.accept (sock);
         in
             Thread.fork (fn () => handleRequest conn router);
+            Thread.run ();
             serve sock router;
             ()
         end
@@ -54,7 +55,7 @@ struct
         let
             val sock = INetSock.TCP.socket ();
         in
-            Format.printf "Binding server...\n" [];
+            Format.println ["Binding server..."];
             bind sock (INetSock.any port);
             Format.printf "Server bound. Listening on port %:%\n\n" [address, Int.toString port];
             Basis.Socket.listen (sock, !MAX_CONN);
