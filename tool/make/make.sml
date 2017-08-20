@@ -59,7 +59,11 @@ fun makeMLton (program: string, ponyoRoot: string, libraries: string list,
             else
                 libraries
         val librariesList = String.join (libraries, "\n")
-        val program = Os.Path.join [Basis.OS.FileSys.getDir(), program]
+        val program =
+            if String.charAt (program, 0) = #"/"
+                then program
+            else
+                Os.Path.join [Basis.OS.FileSys.getDir(), program]
         val buildScript = String.join ([librariesList, program, mainShim], "\n")
 
         fun make () =

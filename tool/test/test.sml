@@ -62,7 +62,7 @@ struct
             val testFileName = "/tmp/test.sml"
         in
             writePage testFileName testFile;
-            exec "ponyo-make" [testFileName, "-o", "/tmp/test"];
+            exec "ponyo-make" [testFileName, "-o", "/tmp/test", "-b", "mlton"];
             exec "/tmp/test" [];
             ()
         end
