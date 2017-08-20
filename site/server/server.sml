@@ -7,8 +7,8 @@ struct
         structure Router   = Ponyo.Net.Http.Router
         structure Server   = Ponyo.Net.Http.Server
 
-        structure FileSystem = Ponyo.Os.FileSystem
-        structure File = Ponyo.Os.FileSystem.File
+        structure Filesystem = Ponyo.Os.Filesystem
+        structure File = Ponyo.Os.Filesystem.File
         structure Path = Ponyo.Os.Path
 
         structure Format = Ponyo.Format
@@ -20,7 +20,7 @@ struct
         fun serveFile (path: string) : Router.t =
             let
                 val path = if path = "" then "" else Path.join [fileRoot, path]
-                fun exists () = FileSystem.exists (path)
+                fun exists () = Filesystem.exists (path)
                 fun getFile () = String.join (File.readFrom path, "")
 
                 val newFile = ref true
@@ -73,4 +73,4 @@ struct
     end
 end
 
-val main = Main.main
+val _ = Main.main ()

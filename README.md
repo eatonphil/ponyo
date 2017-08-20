@@ -11,10 +11,21 @@ ML ecosystem in general.
 See [ponyo.org](http://ponyo.org) for more information, documentation,
 tutorials, and news.
 
-## Installation
+## Prereqs
 
-First, install [Poly/ML](https://github.com/polyml/polyml). You will also need
+### Poly/ML
+
+Install [Poly/ML](https://github.com/polyml/polyml). You will also need
 OpenSSL development headers and GNU Make.
+
+### MLton
+
+Install [MLton](https://github.com/MLton/mlton). MLton is a bit of a
+second-class citizen but that should improve over time. In particular,
+the threaded HTTP server is lousy and there is no support for SSL sockets
+yet.
+
+## Installation
 
 Next, choose a path for the Ponyo root. We will assume it is at ~/vendor/ponyo.
 Add the following lines to your ~/.profile:

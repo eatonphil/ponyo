@@ -4,8 +4,8 @@ fun exec (program: string) (args: string list) : Basis.Os.Process.status =
 structure Main =
 struct
     local
-        structure FileSystem = Ponyo.Os.FileSystem
-        structure File = FileSystem.File
+        structure Filesystem = Ponyo.Os.Filesystem
+        structure File = Filesystem.File
         structure Path = Ponyo.Os.Path
 
         structure String = Ponyo.String
@@ -18,7 +18,7 @@ struct
         else foundFiles
 
     fun testFiles (directory) : string list =
-        FileSystem.walkWith directory findFiles []
+        Filesystem.walkWith directory findFiles []
 
     fun generateUses (files: string list) : string =
         String.join (map (fn (file: string) => Format.sprintf "use \"%\";\n" [file]) files, "")
@@ -38,7 +38,7 @@ struct
         "fun main () =\n" ^
         "    let\n" ^
         "        val _ = Format.println [\"Beginning tests.\"]\n" ^
-        "        val tests = test \"All\" [%] handle e => (PolyML.print (e); false)\n" ^
+        "        val tests = test \"All\" [%] handle e => (Format.println [e]; false)\n" ^
         "    in\n" ^
         "        if tests then Format.println [\"All tests passed!\"]\n" ^
         "        else (Format.println [\"Tests failed.\"]; Basis.Os.Process.exit (Basis.Os.Process.failure); ())\n" ^
@@ -49,9 +49,9 @@ struct
         let
             val pageDir = Path.directory (path)
         in
-            if FileSystem.exists (pageDir)
+            if Filesystem.exists (pageDir)
                 then ()
-            else FileSystem.makeDirectory (pageDir);
+            else Filesystem.makeDirectory (pageDir);
             File.writeTo (path, page)
         end
 

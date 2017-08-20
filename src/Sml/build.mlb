@@ -1,0 +1,10 @@
+$(SML_LIB)/basis/basis.mlb
+../String/build.mlb
+../Format/build.mlb
+../Os/build.mlb
+
+Token.sml
+Ast.sml
+Lexer.sml
+Parser.sml
+Sml_export.sml

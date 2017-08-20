@@ -1,0 +1,1 @@
+structure Ponyo_Net_SSLSocket = Ponyo_Net_Socket

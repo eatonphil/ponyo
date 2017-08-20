@@ -1,0 +1,4 @@
+$(SML_LIB)/basis/basis.mlb
+Comparable.sig
+Equal.sig
+Hashable.sig

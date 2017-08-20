@@ -1,1 +1,0 @@
-structure Ponyo_String_Dict = Ponyo_Container_Dict (Ponyo_String);

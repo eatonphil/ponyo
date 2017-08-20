@@ -3,7 +3,7 @@ structure Format = Ponyo.Format
 
 structure Os = Ponyo.Os
 structure Cli = Ponyo.Os.Cli
-structure File = Ponyo.Os.FileSystem.File
+structure File = Ponyo.Os.Filesystem.File
 
 fun exec (program: string, args: string list) : Basis.Os.Process.status =
     Basis.Os.Process.system (program ^ " " ^ String.join(args, " "));
