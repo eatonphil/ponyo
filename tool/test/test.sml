@@ -72,4 +72,8 @@ end
 
 val main = Main.main
 
-(* TODO: generateUses must support MLton and this script must take a backend parameter. We should also delete the /tmp/test file on success *)
+(* TODO:
+   * generateUses must support MLton
+   * this script must take a backend parameter
+   * should delete the /tmp/test file on success
+   * exec should crash the script when it fails *)
