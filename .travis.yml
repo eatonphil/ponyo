@@ -1,6 +1,5 @@
 env:
-  - PONYO_ROOT=$TRAVIS_BUILD_DIR
-  - PATH=$PATH:$PONYO_ROOT/bin
+  - PONYO_ROOT=$TRAVIS_BUILD_DIR PATH=$PATH:$PONYO_ROOT/bin
 install:
   - sudo apt-get install mlton openssl
   - curl -o polyml-5.7.zip https://codeload.github.com/polyml/polyml/zip/v5.7
