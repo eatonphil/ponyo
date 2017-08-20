@@ -1,4 +1,4 @@
-structure Ponyo_Int =
+structure Ponyo_Int_internal =
 struct
     type t = int
 

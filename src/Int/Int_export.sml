@@ -1,7 +1,9 @@
-structure Ponyo_Int_ =
+structure T = Ponyo_Int_internal
+
+structure Ponyo_Int =
 struct
-    open Ponyo_Int
-    structure Map = Ponyo_Container_Map (Ponyo_Int)
-    structure List = Ponyo_Container_List (Ponyo_Int)
-    structure Dict = Ponyo_Container_Dict (Ponyo_Int)
+    open T
+    structure Map = Ponyo_Container_Map (T)
+    structure List = Ponyo_Container_List (T)
+    structure Dict = Ponyo_Container_Dict (T)
 end
