@@ -206,7 +206,7 @@ struct
     fun generateHtml (asts: (Ast.t * comment String.Dict.t) String.Dict.t) : unit =
         let
             fun outFile (path) =
-                Path.join [!outDirectory, Basis.Os.Path.base path ^ ".html"]
+                Path.join [!outDirectory, Basis.OS.Path.base path ^ ".html"]
 
             fun generatePages (astList: (string * (Ast.t * comment String.Dict.t)) list) : unit =
                 case astList of

@@ -1,4 +1,5 @@
 install:
+  - sudo apt-get install mlton
   - sudo apt-get install openssl
   - curl -o polyml-5.6.zip https://codeload.github.com/polyml/polyml/zip/v5.6
   - unzip polyml-5.6.zip
@@ -6,3 +7,4 @@ install:
   - PONYO_ROOT=$(pwd) make
 script:
   - PATH=$PATH:$(pwd)/bin PONYO_ROOT=$(pwd) make test
+  - PATH=$PATH:$(pwd)/bin PONYO_ROOT=$(pwd) SML_BACKEND=mlton make test

@@ -1,5 +1,5 @@
-fun exec (program: string) (args: string list) : Basis.Os.Process.status =
-    Basis.Os.Process.system (program ^ " " ^ Ponyo.String.join(args, " "));
+fun exec (program: string) (args: string list) : Basis.OS.Process.status =
+    Basis.OS.Process.system (program ^ " " ^ Ponyo.String.join(args, " "));
 
 structure Main =
 struct
@@ -41,7 +41,7 @@ struct
         "        val tests = test \"All\" [%] handle e => (Format.println [e]; false)\n" ^
         "    in\n" ^
         "        if tests then Format.println [\"All tests passed!\"]\n" ^
-        "        else (Format.println [\"Tests failed.\"]; Basis.Os.Process.exit (Basis.Os.Process.failure); ())\n" ^
+        "        else (Format.println [\"Tests failed.\"]; Basis.OS.Process.exit (Basis.OS.Process.failure); ())\n" ^
         "    end\n" ^
         "end") [generateTests files]
 
