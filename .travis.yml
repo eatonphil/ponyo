@@ -7,5 +7,5 @@ install:
   - PONYO_ROOT=$(pwd) make
   - PONYO_ROOT=$(pwd) SML_BACKEND=mlton make
 script:
-  - PATH=$PATH:$(pwd)/bin PONYO_ROOT=$(pwd) make test
-  - PATH=$PATH:$(pwd)/bin PONYO_ROOT=$(pwd) SML_BACKEND=mlton make test
+  - PATH=$PATH:$(pwd)/bin PONYO_ROOT=$(pwd) ponyo test -b polyml
+  - PATH=$PATH:$(pwd)/bin PONYO_ROOT=$(pwd) ponyo test -b mlton
