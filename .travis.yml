@@ -1,3 +1,4 @@
+dist: xenial
 env:
   - PONYO_ROOT=$TRAVIS_BUILD_DIR
 install:
