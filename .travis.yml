@@ -1,8 +1,10 @@
-dist: xenial
 env:
   - PONYO_ROOT=$TRAVIS_BUILD_DIR
 install:
-  - sudo apt-get install mlton polyml openssl
+  - sudo apt-get install mlton openssl
+  - curl -o polyml-5.7.zip https://codeload.github.com/polyml/polyml/zip/v5.7
+  - unzip polyml-5.7.zip
+  - (cd polyml-5.7 && ./configure --prefix=/usr && make && sudo make install)
   - make
   - make bin/ponyo-test
   - make clean
