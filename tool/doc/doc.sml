@@ -5,7 +5,7 @@ struct
         structure Parser = Ponyo.Sml.Parser
 
         structure Cli = Ponyo.Os.Cli
-        structure File = Ponyo.Os.FileSystem.File
+        structure File = Ponyo.Os.Filesystem.File
 
         structure Format = Ponyo.Format
         structure String = Ponyo.String

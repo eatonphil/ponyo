@@ -3,8 +3,8 @@ struct
     local
         structure Format = Ponyo.Format
 
-        structure FileSystem = Ponyo.Os.FileSystem
-        structure File = Ponyo.Os.FileSystem.File
+        structure Filesystem = Ponyo.Os.Filesystem
+        structure File = Ponyo.Os.Filesystem.File
         structure Path = Ponyo.Os.Path
 
         structure String = Ponyo.String
@@ -197,9 +197,9 @@ struct
                        
             val pageDir = Path.directory (path)
         in
-            if FileSystem.exists (pageDir)
+            if Filesystem.exists (pageDir)
                 then ()
-            else FileSystem.makeDirectory (pageDir);
+            else Filesystem.makeDirectory (pageDir);
             File.writeTo (path, page)
         end
 
@@ -232,7 +232,7 @@ struct
 
     fun generateDocumentation () : unit =
         let
-            val asts = FileSystem.walkWith (!inDirectory) parseSignature String.Map.new
+            val asts = Filesystem.walkWith (!inDirectory) parseSignature String.Map.new
         in
             generateHtml asts
         end

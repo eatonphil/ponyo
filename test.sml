@@ -1,0 +1,1 @@
+structure S = String

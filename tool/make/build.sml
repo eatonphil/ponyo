@@ -1,2 +1,2 @@
-PolyML.make "build.sml";
+use "build.sml";
 use "tool/make/make.sml"

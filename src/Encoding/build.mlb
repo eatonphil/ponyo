@@ -1,0 +1,10 @@
+$(SML_LIB)/basis/basis.mlb
+../Basis.sml
+../Container/build.mlb
+../String/build.mlb
+../Char/build.mlb
+../Format/build.mlb
+
+Json.sml
+Base64.sml
+Encoding_export.sml

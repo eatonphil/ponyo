@@ -1,0 +1,16 @@
+$(SML_LIB)/basis/basis.mlb
+
+Basis.sml
+Trait/build.mlb
+Container/build.mlb
+String/build.mlb
+Int/build.mlb
+Char/build.mlb
+Format/build.mlb
+Os/build.mlb
+Encoding/build.mlb
+Net/build.mlb
+Sml/build.mlb
+Test.sml
+
+Ponyo.sml
