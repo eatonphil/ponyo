@@ -1,81 +1,13 @@
-structure String = Ponyo.String
-structure Format = Ponyo.Format
-
-structure Os = Ponyo.Os
-structure Cli = Ponyo.Os.Cli
-structure File = Ponyo.Os.Filesystem.File
-
-fun exec (program: string, args: string list) : Basis.OS.Process.status =
-    Basis.OS.Process.system (program ^ " " ^ String.join(args, " "));
-
-fun writeTmpAndMake (buildFile: string, buildScript: string, doMake, saveTmp: bool) : unit =
-    let
-        val status = ref Basis.OS.Process.success
-    in
-        File.writeTo (buildFile, buildScript);
-        status := doMake ();
-        if saveTmp then
-            ()
-        else
-            Basis.OS.FileSys.remove (buildFile);
-        if Basis.OS.Process.isSuccess (!status) then
-            ()
-        else
-            Basis.OS.Process.exit (!status)
-    end
-
-fun makePolyML (program: string, ponyoRoot: string, libraries: string list,
-                binaryName: string, saveTmp: bool) : unit =
-    let
-        val buildFile = "/tmp/ponyo_build.sml"
-        val libraries =
-            if ponyoRoot <> "" then
-                Os.Path.join [ponyoRoot, "build.sml"] :: libraries
-            else
-                libraries
-        val librariesList = String.join (libraries, "\",\"")
-        val buildScript =
-            Format.sprintf "map PolyML.make [\"%\"]; use \"%\""
-            [librariesList, program]
-
-        fun make () =
-            exec ("polyc", ["-o", binaryName, buildFile])
-    in
-        writeTmpAndMake (buildFile, buildScript, make, saveTmp)
-    end
-
-fun makeMLton (program: string, ponyoRoot: string, libraries: string list,
-               binaryName: string, saveTmp: bool) : unit =
-    let
-        val buildFile = "/tmp/ponyo_build.mlb"
-
-        (* MLton does not automatically call main. *)
-        val mainShim = "/tmp/ponyo_mlton_main.sml"
-        val _ = File.writeTo (mainShim, "val _ = main ()");
-
-        val libraries =
-            if ponyoRoot <> "" then
-                Os.Path.join [ponyoRoot, "build.mlb"] :: libraries
-            else
-                libraries
-        val librariesList = String.join (libraries, "\n")
-        val program =
-            if String.charAt (program, 0) = #"/"
-                then program
-            else
-                Os.Path.join [Basis.OS.FileSys.getDir(), program]
-        val buildScript = String.join ([librariesList, program, mainShim], "\n")
-
-        fun make () =
-            exec ("mlton", ["-output", binaryName, buildFile])
-    in
-        writeTmpAndMake (buildFile, buildScript, make, saveTmp)
-    end
-
-fun findMain (path: string) : string = path
-
 structure Main =
 struct
+    local
+        open Ponyo
+
+        structure Os = Os
+        structure Cli = Os.Cli
+        structure File = Os.Filesystem.File
+    in
+
     val programFlag    = Cli.Flag.Anon "program"
     val outputFlag     = Cli.Flag.Named ("o", "output")
     val backendFlag    = Cli.Flag.Named ("b", "backend")
@@ -106,6 +38,75 @@ struct
               (saveTmpFlag, Arg.optional (Arg.bool, "false"), saveTmpDesc),
               (workingDirFlag, Arg.optional (Arg.string, ""), workingDirDesc)])
         end
+
+    fun exec (program: string, args: string list) : Basis.OS.Process.status =
+        Basis.OS.Process.system (program ^ " " ^ String.join(args, " "));
+    
+    fun writeTmpAndMake (buildFile: string, buildScript: string, doMake, saveTmp: bool) : unit =
+        let
+            val status = ref Basis.OS.Process.success
+        in
+            File.writeTo (buildFile, buildScript);
+            status := doMake ();
+            if saveTmp then
+                ()
+            else
+                Basis.OS.FileSys.remove (buildFile);
+            if Basis.OS.Process.isSuccess (!status) then
+                ()
+            else
+                Basis.OS.Process.exit (!status)
+        end
+    
+    fun makePolyML (program: string, ponyoRoot: string, libraries: string list,
+                    binaryName: string, saveTmp: bool) : unit =
+        let
+            val buildFile = "/tmp/ponyo_build.sml"
+            val libraries =
+                if ponyoRoot <> "" then
+                    Os.Path.join [ponyoRoot, "build.sml"] :: libraries
+                else
+                    libraries
+            val librariesList = String.join (libraries, "\",\"")
+            val buildScript =
+                Format.sprintf "map PolyML.make [\"%\"]; use \"%\""
+                [librariesList, program]
+    
+            fun make () =
+                exec ("polyc", ["-o", binaryName, buildFile])
+        in
+            writeTmpAndMake (buildFile, buildScript, make, saveTmp)
+        end
+    
+    fun makeMLton (program: string, ponyoRoot: string, libraries: string list,
+                   binaryName: string, saveTmp: bool) : unit =
+        let
+            val buildFile = "/tmp/ponyo_build.mlb"
+    
+            (* MLton does not automatically call main. *)
+            val mainShim = "/tmp/ponyo_mlton_main.sml"
+            val _ = File.writeTo (mainShim, "val _ = main ()");
+    
+            val libraries =
+                if ponyoRoot <> "" then
+                    Os.Path.join [ponyoRoot, "build.mlb"] :: libraries
+                else
+                    libraries
+            val librariesList = String.join (libraries, "\n")
+            val program =
+                if String.charAt (program, 0) = #"/"
+                    then program
+                else
+                    Os.Path.join [Basis.OS.FileSys.getDir(), program]
+            val buildScript = String.join ([librariesList, program, mainShim], "\n")
+    
+            fun make () =
+                exec ("mlton", ["-output", binaryName, buildFile])
+        in
+            writeTmpAndMake (buildFile, buildScript, make, saveTmp)
+        end
+
+    fun findMain (path: string) : string = path
 
     fun getPonyoRoot () =
         case Basis.OS.Process.getEnv "PONYO_ROOT" of
@@ -149,6 +150,7 @@ struct
             if workingDir <> "" then Basis.OS.FileSys.chDir (workingDir) else ();
             make (program, ponyoLib, libraries, output, saveTmp="true")
         end
+    end
 end
 
 val main = Main.main

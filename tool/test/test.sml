@@ -1,16 +1,31 @@
-fun exec (program: string) (args: string list) : Basis.OS.Process.status =
-    Basis.OS.Process.system (program ^ " " ^ Ponyo.String.join(args, " "));
-
 structure Main =
 struct
     local
-        structure Filesystem = Ponyo.Os.Filesystem
-        structure File = Filesystem.File
-        structure Path = Ponyo.Os.Path
+        open Ponyo
 
-        structure String = Ponyo.String
-        structure Format = Ponyo.Format
+        structure Cli = Os.Cli
+        structure Filesystem = Os.Filesystem
+        structure File = Filesystem.File
+        structure Path = Os.Path
+        structure String = String
+        structure Format = Format
     in
+
+    val backendFlag    = Cli.Flag.Named ("b", "backend")
+
+    val spec =
+        let
+            open Cli
+
+            val backendDesc    = "compiler backend to use: [polyml, mlton]"
+        in
+            ("test",
+             "Ponyo test runner.",
+             [(backendFlag, Arg.optional (Arg.string, "polyml"), backendDesc)])
+        end
+
+    fun exec (program: string) (args: string list) : Basis.OS.Process.status =
+        Basis.OS.Process.system (program ^ " " ^ String.join(args, " "));
 
     fun findFiles (currentPath: string) (foundFiles: string list) : string list =
         if String.hasSuffix (currentPath, "_Test.sml")
@@ -34,7 +49,7 @@ struct
     fun generateFile (files: string list) : string =
         (generateUses files) ^
         Format.sprintf
-        ("local structure Format = Ponyo.Format; val test = Ponyo.Test.test in\n" ^
+        ("local structure Format = Format; val test = Ponyo.Test.test in\n" ^
         "fun main () =\n" ^
         "    let\n" ^
         "        val _ = Format.println [\"Beginning tests.\"]\n" ^
@@ -45,7 +60,7 @@ struct
         "    end\n" ^
         "end") [generateTests files]
 
-    fun writePage (path: string) (page: string) : unit =
+    fun writeFile (path: string) (page: string) : unit =
         let
             val pageDir = Path.directory (path)
         in
@@ -57,12 +72,21 @@ struct
 
     fun main () =
         let
+            val args = Cli.getArgs (spec) handle
+                Fail reason =>
+                    (Format.printf "ERROR: %\n\n" [reason]; Cli.doHelp (spec); [])
+
+            fun getAnon (flag) = Cli.getAnon (args, flag)
+            fun getNamed (flag) = Cli.getNamed (args, flag)
+
+            val [backend] = getNamed (backendFlag)
+
             val tests = testFiles ("test")
             val testFile = generateFile (tests)
             val testFileName = "/tmp/test.sml"
         in
-            writePage testFileName testFile;
-            exec "ponyo-make" [testFileName, "-o", "/tmp/test", "-b", "polyml"];
+            writeFile testFileName testFile;
+            exec "ponyo-make" [testFileName, "-o", "/tmp/test", "-b", backend];
             exec "/tmp/test" [];
             ()
         end
