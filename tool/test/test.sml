@@ -38,7 +38,7 @@ struct
         "fun main () =\n" ^
         "    let\n" ^
         "        val _ = Format.println [\"Beginning tests.\"]\n" ^
-        "        val tests = test \"All\" [%] handle e => (Format.println [e]; false)\n" ^
+        "        val tests = test \"All\" [%] handle e => (Format.println [exnName e, exnMessage e]; false)\n" ^
         "    in\n" ^
         "        if tests then Format.println [\"All tests passed!\"]\n" ^
         "        else (Format.println [\"Tests failed.\"]; Basis.OS.Process.exit (Basis.OS.Process.failure); ())\n" ^
@@ -62,7 +62,7 @@ struct
             val testFileName = "/tmp/test.sml"
         in
             writePage testFileName testFile;
-            exec "ponyo-make" [testFileName, "-o", "/tmp/test", "-b", "mlton"];
+            exec "ponyo-make" [testFileName, "-o", "/tmp/test", "-b", "polyml"];
             exec "/tmp/test" [];
             ()
         end
@@ -71,3 +71,5 @@ struct
 end
 
 val main = Main.main
+
+(* TODO: generateUses must support MLton and this script must take a backend parameter. We should also delete the /tmp/test file on success *)
