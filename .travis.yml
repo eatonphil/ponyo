@@ -1,11 +1,13 @@
+env:
+  - PONYO_ROOT=$TRAVIS_BUILD_DIR
 install:
   - sudo apt-get install mlton
   - sudo apt-get install openssl
   - curl -o polyml-5.6.zip https://codeload.github.com/polyml/polyml/zip/v5.6
   - unzip polyml-5.6.zip
   - (cd polyml-5.6 && ./configure --prefix=/usr && make && sudo make install)
-  - PONYO_ROOT=$(pwd) make
-  - PONYO_ROOT=$(pwd) SML_BACKEND=mlton make
+  - make
+  - SML_BACKEND=mlton make
 script:
-  - PATH=$PATH:$(pwd)/bin PONYO_ROOT=$(pwd) ponyo test -b polyml
-  - PATH=$PATH:$(pwd)/bin PONYO_ROOT=$(pwd) ponyo test -b mlton
+  - ./bin/ponyo-test -b polyml
+  - ./bin/ponyo-test -b mlton
