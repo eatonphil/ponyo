@@ -3,27 +3,27 @@ struct
     local
         open Ponyo
 
-        structure Cli = Os.Cli
+        structure Cli        = Os.Cli
         structure Filesystem = Os.Filesystem
-        structure File = Filesystem.File
-        structure Path = Os.Path
-        structure String = String
-        structure Format = Format
+        structure File       = Filesystem.File
+        structure Path       = Os.Path
     in
 
-    val backendFlag    = Cli.Flag.Named ("b", "backend")
+    val backendFlag = Cli.Flag.Named ("b", "backend")
 
     val spec =
         let
             open Cli
 
-            val backendDesc    = "compiler backend to use: [polyml, mlton]"
+            val backendDesc = "compiler backend to use: [polyml, mlton]"
         in
             ("test",
              "Ponyo test runner.",
+             [],
              [(backendFlag, Arg.optional (Arg.string, "polyml"), backendDesc)])
         end
 
+    (* TODO: crash on failure *)
     fun exec (program: string) (args: string list) : Basis.OS.Process.status =
         Basis.OS.Process.system (program ^ " " ^ String.join(args, " "));
 
@@ -35,9 +35,6 @@ struct
     fun testFiles (directory) : string list =
         Filesystem.walkWith directory findFiles []
 
-    fun generateUses (files: string list) : string =
-        String.join (map (fn (file: string) => Format.sprintf "use \"%\";\n" [file]) files, "")
-
     fun generateTests (files: string list) : string =
         let
             fun generateRun (file: string) : string =
@@ -46,28 +43,28 @@ struct
             String.join (map generateRun files, ",\n")
         end
 
-    fun generateFile (files: string list) : string =
-        (generateUses files) ^
+    fun generateFile (files: string list, backend: string) : string =
         Format.sprintf
-        ("local structure Format = Format; val test = Ponyo.Test.test in\n" ^
+        ("local open Ponyo; val test = Test.test in\n" ^
         "fun main () =\n" ^
         "    let\n" ^
-        "        val _ = Format.println [\"Beginning tests.\"]\n" ^
+        "        val _ = Format.println [\"Beginning tests with %.\"]\n" ^
         "        val tests = test \"All\" [%] handle e => (Format.println [exnName e, exnMessage e]; false)\n" ^
         "    in\n" ^
         "        if tests then Format.println [\"All tests passed!\"]\n" ^
         "        else (Format.println [\"Tests failed.\"]; Basis.OS.Process.exit (Basis.OS.Process.failure); ())\n" ^
         "    end\n" ^
-        "end") [generateTests files]
+        "end") (backend :: [generateTests files])
 
-    fun writeFile (path: string) (page: string) : unit =
+    fun writeFile (file: string) (contents: string) : unit =
         let
-            val pageDir = Path.directory (path)
+            val fileDir = Path.directory (file)
         in
-            if Filesystem.exists (pageDir)
+            if Filesystem.exists (fileDir)
                 then ()
-            else Filesystem.makeDirectory (pageDir);
-            File.writeTo (path, page)
+            else
+                Filesystem.makeDirectory (fileDir);
+            File.writeTo (file, contents)
         end
 
     fun main () =
@@ -76,17 +73,19 @@ struct
                 Fail reason =>
                     (Format.printf "ERROR: %\n\n" [reason]; Cli.doHelp (spec); [])
 
-            fun getAnon (flag) = Cli.getAnon (args, flag)
             fun getNamed (flag) = Cli.getNamed (args, flag)
 
             val [backend] = getNamed (backendFlag)
 
-            val tests = testFiles ("test")
-            val testFile = generateFile (tests)
+            fun makeAbsolutePath (test) =
+                Os.Path.join [Basis.OS.FileSys.getDir (), test]
+            val tests = map makeAbsolutePath (testFiles "test")
+            val testFile = generateFile (tests, backend)
             val testFileName = "/tmp/test.sml"
         in
             writeFile testFileName testFile;
-            exec "ponyo-make" [testFileName, "-o", "/tmp/test", "-b", backend];
+            exec "ponyo-make" ([testFileName, "-I"] @ tests @ ["-b", backend, "-o", "/tmp/test"]);
+            (* TODO: delete tmp files on success *)
             exec "/tmp/test" [];
             ()
         end
@@ -95,9 +94,3 @@ struct
 end
 
 val main = Main.main
-
-(* TODO:
-   * generateUses must support MLton
-   * this script must take a backend parameter
-   * should delete the /tmp/test file on success
-   * exec should crash the script when it fails *)

@@ -45,7 +45,7 @@ all:
 
 test: test/*.sml bin/ponyo-test
 	@mkdir -p bin
-	ponyo test
+	ponyo test -b $(SML_BACKEND)
 
 clean:
 	rm -rf bin ssl.so

@@ -84,7 +84,7 @@ struct
             val buildFile = "/tmp/ponyo_build.mlb"
     
             (* MLton does not automatically call main. *)
-            val mainShim = "/tmp/ponyo_mlton_main.sml"
+            val mainShim = "/tmp/ponyo_build_main.sml"
             val _ = File.writeTo (mainShim, "val _ = main ()");
     
             val libraries =
@@ -97,7 +97,7 @@ struct
                 if String.charAt (program, 0) = #"/"
                     then program
                 else
-                    Os.Path.join [Basis.OS.FileSys.getDir(), program]
+                    Os.Path.join [Basis.OS.FileSys.getDir (), program]
             val buildScript = String.join ([librariesList, program, mainShim], "\n")
     
             fun make () =
@@ -147,8 +147,11 @@ struct
                   | "mlton" => makeMLton
                   | _ => (Format.printf "ERROR: Bad backend.\n\n" []; Cli.doHelp (spec); makePolyML)
         in
-            if workingDir <> "" then Basis.OS.FileSys.chDir (workingDir) else ();
-            make (program, ponyoLib, libraries, output, saveTmp="true")
+            if workingDir <> "" then
+                Basis.OS.FileSys.chDir (workingDir)
+            else
+                ();
+            make (program, ponyoLib, libraries, output, saveTmp = "true")
         end
     end
 end
