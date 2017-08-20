@@ -3,7 +3,10 @@ env:
 install:
   - sudo apt-get install mlton polyml openssl
   - make
+  - make bin/ponyo-test
+  - make clean
   - SML_BACKEND=mlton make
+  - SML_BACKEND=mlton make bin/ponyo-test
 script:
   - ./bin/ponyo-test -b polyml
   - ./bin/ponyo-test -b mlton

@@ -23,11 +23,11 @@ bin/ponyo: tool/ponyo.sml bin/ponyo-make
 
 bin/ponyo-doc: tool/doc/build.sml tool/doc/generate.sml tool/doc/doc.sml bin/ponyo bin/ponyo-make
 	@mkdir -p bin
-	bin/ponyo make $< -b $(SML_BACKEND) -o $@
+	bin/ponyo-make $< -b $(SML_BACKEND) -o $@
 
 bin/ponyo-top: tool/top/top.sml bin/ponyo bin/ponyo-make
 	@mkdir -p bin
-	bin/ponyo make $< -b polyml -o $@
+	bin/ponyo-make $< -b polyml -o $@
 
 bin/ponyo-test: tool/test/test.sml bin/ponyo bin/ponyo-make
 	@mkdir -p bin
@@ -45,7 +45,7 @@ all:
 
 test: test/*.sml bin/ponyo-test
 	@mkdir -p bin
-	ponyo test -b $(SML_BACKEND)
+	ponyo-test -b $(SML_BACKEND)
 
 clean:
 	rm -rf bin ssl.so
