@@ -73,7 +73,7 @@ struct
                 end
         in
             Format.printf "%" [helpString ()];
-            Basis.Os.Process.exit (Basis.Os.Process.success)
+            Basis.OS.Process.exit (Basis.OS.Process.success)
         end
 
     type args = string * string list

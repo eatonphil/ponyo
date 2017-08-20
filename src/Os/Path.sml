@@ -3,7 +3,7 @@ struct
     local structure String = Ponyo_String in
 
     fun base (path: string) : string =
-        Basis.Os.Path.base (path)
+        Basis.OS.Path.base (path)
 
     (* TODO: implement stub *)
     fun clean (path: string) : string =
@@ -13,15 +13,15 @@ struct
         end
 
     fun directory (path: string) : string =
-        Basis.Os.Path.dir (path)
+        Basis.OS.Path.dir (path)
  
     fun extension (path: string) : string =
-        case Basis.Os.Path.ext (clean path) of
+        case Basis.OS.Path.ext (clean path) of
             NONE => ""
           | SOME extension => extension
 
     fun file (path: string) : string =
-        Basis.Os.Path.file (path)
+        Basis.OS.Path.file (path)
 
     fun filename (path: string) : string =
         String.substring (file path, 0, ~1 * (1 + String.length (extension path)))

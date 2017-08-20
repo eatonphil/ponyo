@@ -30,7 +30,7 @@ struct
         end
 
     fun getPonyoRoot () =
-        case Basis.Os.Process.getEnv "PONYO_ROOT" of
+        case Basis.OS.Process.getEnv "PONYO_ROOT" of
             SOME root => root
           | NONE => "./"
 

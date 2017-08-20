@@ -9,7 +9,7 @@ struct
 
     fun ponyo (program: string, args: string list) : unit =
         let in
-            Basis.Os.Process.system ("ponyo-" ^ program ^ " " ^ String.join(args, " "));
+            Basis.OS.Process.system ("ponyo-" ^ program ^ " " ^ String.join(args, " "));
             ()
         end
 

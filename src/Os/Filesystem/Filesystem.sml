@@ -1,7 +1,7 @@
 structure Ponyo_Os_Filesystem : PONYO_OS_FILESYSTEM =
 struct
     local
-        structure FileSys = Basis.Os.FileSys
+        structure FileSys = Basis.OS.FileSys
 
         structure String = Ponyo_String
         structure Path = Ponyo_Os_Path
@@ -16,14 +16,14 @@ struct
         FileSys.isDir (path) orelse
           FileSys.isLink (path) orelse
           FileSys.fileSize (path) > ~1 handle
-            Basis.Os.SysErr _ => false
+            Basis.OS.SysErr _ => false
 
     (* -expand: expands paths beginning with a tilde if the 
      *  current HOME is set.
      *)
     fun expand (path: string) =
         if not (String.hasPrefix (path, "~/")) then path
-        else case Basis.Os.Process.getEnv "HOME" of
+        else case Basis.OS.Process.getEnv "HOME" of
             SOME home => Path.join [home, String.substringToEnd (path, 2)]
           | NONE => path
 
@@ -32,7 +32,7 @@ struct
             val directory = Path.directory (path) 
         in
             if not (exists directory) then makeDirectory (directory) else ();
-            Basis.Os.FileSys.mkDir (path)
+            Basis.OS.FileSys.mkDir (path)
         end
 
     (* TODO: better name? *)
@@ -55,8 +55,8 @@ struct
                 end
         in
             if FileSys.isDir (root)
-               then walkRoot (Basis.Os.FileSys.openDir root) init handle
-                   Basis.Os.SysErr _ => init
+               then walkRoot (Basis.OS.FileSys.openDir root) init handle
+                   Basis.OS.SysErr _ => init
             else init
         end
 
@@ -81,7 +81,7 @@ struct
                     else checkPaths (paths)
                 end
         in
-            case Basis.Os.Process.getEnv "PATH" of
+            case Basis.OS.Process.getEnv "PATH" of
                 NONE => NONE
               | SOME paths => checkPaths (splitPaths (paths))
         end
