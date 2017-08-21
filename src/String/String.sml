@@ -174,6 +174,26 @@ struct
                 end)
         end
 
+    and padLeft (source: string, padding: char, size: int) : string =
+        let
+            val sourceLength = length (source)
+        in
+            if sourceLength < size then
+                CharVector.tabulate (size - sourceLength, (fn (_) => padding)) ^ source
+            else
+                source
+        end
+
+    and padRight (source: string, padding: char, size: int) : string =
+        let
+            val sourceLength = length (source)
+        in
+            if sourceLength < size then
+                source ^ (CharVector.tabulate (size - sourceLength, (fn (_) => padding)))
+            else
+                source
+        end
+
     and replace (source: string, match: string, replacement: string) : string =
         join (split (source, match), replacement)
 

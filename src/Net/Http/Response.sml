@@ -3,6 +3,7 @@ struct
     local
         structure String = Ponyo_String
         structure Format = Ponyo_Format
+        structure Time   = Ponyo_Time
 
         structure Header     = Ponyo_Net_Http_Header
         structure Headers    = String.Dict
@@ -41,6 +42,11 @@ struct
         let
             val contentLength = Int.toString (String.length body)
             val headers = Headers.insert (Headers.new ()) "Content-Length" contentLength
+            val monthAhead =
+                let open Time in
+                    toISO8601 (add (now ()) [Interval.Day 30])
+                end
+            val headers = Headers.insert headers "Expires" monthAhead
         in
             new "HTTP/1.1" 200 "OK" headers body
         end

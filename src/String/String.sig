@@ -195,6 +195,9 @@ sig
      *)
     val map : string -> (char -> char) -> string
 
+    val padLeft : string * char * int -> string
+    val padRight : string * char * int -> string
+
     (*
      *  replace: This returns a new string from the given string
      *  by replacing every instance of the first substring with

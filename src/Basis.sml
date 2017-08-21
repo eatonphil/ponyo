@@ -6,4 +6,5 @@ structure Basis = struct
     structure Socket = Socket
     structure Int = Int
     structure Char = Char
+    structure Time = Time
 end

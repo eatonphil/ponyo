@@ -32,12 +32,7 @@ struct
           body    = body }
 
     fun init (headers: string Headers.t) (body: string) : t =
-        let
-            val contentLength = Int.toString (String.length body)
-            val headers = Headers.insert headers "Content-Length" contentLength
-        in
-            new (Method.Unknown "") "" "HTTP/1.1" headers body
-        end
+        new (Method.Unknown "") "" "HTTP/1.1" headers body
 
     fun parseFirstLine (line: string) (request: Connection.t) : t =
         case String.split (line, " ") of

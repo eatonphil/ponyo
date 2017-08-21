@@ -13,6 +13,9 @@ SML_BACKEND?="polyml"
 ssl.so: lib/ssl.c
 	gcc $(GCC_INCLUDES) -shared -fPIC -o $@ -lcrypto -lssl $<
 
+libc.so: lib/libc.c
+	gcc $(GCC_INCLUDES) -shared -fPIC -o $@ -lc $<
+
 bin/ponyo-make: tool/make/build.sml
 	@mkdir -p bin
 	polyc -o $@ $<
@@ -35,6 +38,7 @@ bin/ponyo-test: tool/test/test.sml bin/ponyo bin/ponyo-make
 
 all:
 	$(MAKE) ssl.so
+	$(MAKE) libc.so
 	# bootstrap
 	$(MAKE) bin/ponyo-make
 	# Build ponyo tool
@@ -48,4 +52,4 @@ test: test/*.sml bin/ponyo-test
 	ponyo-test -b $(SML_BACKEND)
 
 clean:
-	rm -rf bin ssl.so
+	rm -rf bin ssl.so libc.so

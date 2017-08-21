@@ -8,6 +8,7 @@ use "src/Int/build.sml";
 use "src/Char/build.sml";
 use "src/Encoding/build.sml";
 use "src/Thread/build.sml";
+use "src/Time/build.sml";
 use "src/Net/build.sml";
 use "src/Sml/build.sml";
 use "src/Test.sml";

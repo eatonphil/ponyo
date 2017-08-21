@@ -1,4 +1,4 @@
-.PHONY: all build-static build-server build-documentation deploy configure clean
+.PHONY: all static server documentation deploy configure clean
 
 OUTPUT_DIR=dist/bin
 
