@@ -8,3 +8,9 @@ structure Basis = struct
     structure Char = Char
     structure Time = Time
 end
+
+fun debug (s: string) =
+    let in
+        print (s);
+        TextIO.flushOut (TextIO.stdOut)
+    end

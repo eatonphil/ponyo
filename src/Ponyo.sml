@@ -1,9 +1,3 @@
-fun debug (s: string) =
-    let in
-        print (s);
-        TextIO.flushOut (TextIO.stdOut)
-    end
-
 structure Ponyo = struct
     structure Char = Ponyo_Char
     structure Encoding = Ponyo_Encoding

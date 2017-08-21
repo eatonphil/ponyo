@@ -67,9 +67,10 @@ struct
     fun strftime (time: t, format: string, bufferSize: int) : string =
         let
             val buffer = alloc bufferSize (Cpointer Cchar)
+            val timeInt = Int.fromLarge (getSeconds time)
+            val c_strftime = call4 (get "ponyo_strftime") (LONG, STRING, LONG, POINTER) VOID
         in
-            call4 (get "ponyo_strftime") (INT, STRING, INT, POINTER) VOID
-                (Int.fromLarge (getSeconds time), format, bufferSize, buffer);
+            c_strftime (timeInt, format, bufferSize, address buffer);
             fromCstring (buffer)
         end
 
