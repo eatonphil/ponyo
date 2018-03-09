@@ -64,18 +64,18 @@ struct
     fun now () : t =
         getSeconds (Basis.Time.toNanoseconds (Basis.Time.now ()))
 
-    fun strftime (time: t, format: string, bufferSize: int) : string =
+    fun format (time: t, format: string, bufferSize: int) : string =
         let
             val buffer = alloc bufferSize (Cpointer Cchar)
             val timeInt = Int.fromLarge (getSeconds time)
-            val c_strftime = call4 (get "ponyo_strftime") (LONG, STRING, LONG, POINTER) VOID
+            val c_format = call4 (get "ponyo_strftime") (LONG, STRING, LONG, POINTER) VOID
         in
-            c_strftime (timeInt, format, bufferSize, address buffer);
+            c_format (timeInt, format, bufferSize, address buffer);
             fromCstring (buffer)
         end
 
     fun toISO8601 (time: t) : string =
-        strftime (time, "%Y-%m-%dT%H:%M:%SZ", String.length "2011-10-08T07:07:09Z")
+        format (time, "%Y-%m-%dT%H:%M:%SZ", String.length "2011-10-08T07:07:09Z")
 
     end
 end

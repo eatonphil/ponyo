@@ -30,7 +30,7 @@ sig
 
     val now : unit -> t
 
-    val strftime : t * string * int -> string
+    val format : t * string * int -> string
 
     val toISO8601 : t -> string
 end
