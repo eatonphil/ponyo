@@ -73,4 +73,4 @@ struct
     end
 end
 
-val _ = Main.main ()
+val main = Main.main
