@@ -63,17 +63,16 @@ struct
     val GatewayTimeout = makeGenericResponse 504 "Gateway Timeout"
 
     fun parseFirstLine (line: string) (response: Connection.t) : t =
-        case String.split (line, " ") of
-            [] =>  raise MalformedResponse (line)
-          | list => if length (list) <> 3
-              then raise MalformedResponse (line)
-              else {
-                  version = List.nth (list, 0),
-                  status  = valOf (Int.fromString (List.nth (list, 1))),
-                  reason  = List.nth (list, 2),
+        case String.splitN (line, " ", 2) of
+            [version, status, reason] =>
+              {
+                  version = version,
+                  status  = valOf (Int.fromString status),
+                  reason  = reason,
                   headers = #headers response,
                   body    = #body response
               }
+          | _ =>  raise MalformedResponse (line)
 
     fun read (conn: socket) : t =
         let
