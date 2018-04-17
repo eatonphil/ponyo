@@ -1,7 +1,13 @@
+ann "allowFFI true" in
+
 $(SML_LIB)/basis/basis.mlb
+$(SML_LIB)/basis/mlton.mlb
+$(SML_LIB)/basis/c-types.mlb
 
 Socket.sig
 Socket.sml
 SSLSocket_mlton.sml
 Http/build.mlb
 Net_export.sml
+
+end
