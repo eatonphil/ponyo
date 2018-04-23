@@ -68,7 +68,7 @@ struct
 	    val headers = foldl (fn (a, b) => String.join ([a, b], "\r\n")) "" marshalled
 	    val body = #body request
 	in
-	    intro ^ headers ^ "\r\n\r\n" ^ body
+	    intro ^ headers ^ "\r\n" ^ body
         end
 
     fun write (socket: socket) (request: t) : unit =
