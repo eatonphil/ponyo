@@ -193,7 +193,7 @@ struct
 		    end
 
                 fun revAndOptAddCurrent (current: string, accum: string list) : string list =
-		    rev (if current = "" then accum else current :: accum)
+		    rev (current :: accum)
 
 	        fun doSplit (s: string, sl: string list) : string list =
 		    if n = List.length (sl) then revAndOptAddCurrent (s, sl)
