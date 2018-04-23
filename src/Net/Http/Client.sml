@@ -22,9 +22,11 @@ struct
             val address = if String.hasSubstring (address, "://")
                 then (List.nth (String.split (address, "://"), 1))
                 else address
-            val (domain, path) = case String.splitN (address, "/", 1) of
-                [domain, path] => (domain, "/" ^ path)
-              | _ => raise InvalidRequestAddress (address)
+            val (domain, path) = Substring.splitl (fn c => c <> #"/") (Substring.full address)
+            val domain = Substring.string domain
+            val path = if Substring.isEmpty path
+                then "/"
+                else Substring.string path
             val request = case request' of
                 SOME request => request
               | _ => Request.init (Headers.new ()) ""
