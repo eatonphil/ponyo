@@ -189,7 +189,8 @@ fun run () = [
         val s = String.splitN
     in [
         s ("foobarfoobarfoobar", "foobar", 1) = ["", "foobarfoobar"],
-        s ("foobar", "o", 1) = ["f", "obar"]
+        s ("foobar", "o", 1) = ["f", "obar"],
+        s ("www.google.com/", "/", 1) = ["www.google.com", ""]
     ] end
 ]
 
