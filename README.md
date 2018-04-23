@@ -22,8 +22,17 @@ OpenSSL development headers and GNU Make.
 
 Install [MLton](https://github.com/MLton/mlton). MLton is a bit of a
 second-class citizen but that should improve over time. In particular,
-the threaded HTTP server is lousy and there is no support for SSL sockets
-yet.
+the green-threaded synchronous HTTP server is lousy.
+
+#### SSL client sockets
+
+SSL client socket support requires special compilation and is not yet
+supported by the regular Ponyo build process. To build Ponyo with SSL
+client socket support for MLton, run:
+
+```
+mlton -link-opt -lssl -link-opt -lcrypto <YOURPROJECT>.mlb lib/ssl.c
+```
 
 ## Installation
 
