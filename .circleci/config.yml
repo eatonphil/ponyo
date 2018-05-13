@@ -10,7 +10,7 @@ jobs:
           name: Install debian-packaged dependencies
           command: |
             apt update
-            apt install -y polyml mlton build-essential libssl-dev
+            apt install -y polyml mlton build-essential libssl-dev libpolyml-dev
       - run:
           name: Build ponyo against mlton and polyml
           command: |
