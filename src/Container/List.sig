@@ -69,6 +69,10 @@ sig
      *      sublistToEnd ([1, 2, 3, 4], 1) = [2, 3, 4]
      *)
     val sublistToEnd : element list * int -> element list
+
+    val join : element list * string -> string
+
+    val toString : element list -> string
 end
 
 signature PONYO_CONTAINER_LIST_DOMAIN =
@@ -76,4 +80,5 @@ sig
     eqtype t
 
     val compare : t * t -> order
+    val toString : t -> string
 end

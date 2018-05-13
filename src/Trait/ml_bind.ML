@@ -1,5 +1,0 @@
-structure Ponyo_Trait = struct end
-
-(* DISCOVER *)
-signature PONYO_TRAIT_COMPARABLE = PONYO_TRAIT_COMPARABLE
-signature PONYO_TRAIT_HASHABLE = PONYO_TRAIT_HASHABLE

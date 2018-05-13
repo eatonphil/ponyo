@@ -25,6 +25,12 @@ struct
     fun contains (list: element list, element: element) : bool =
         count (list, element) > 0
 
+    fun join (list: element list, joiner: string) : string =
+        String.concatWith joiner (map D.toString list)
+
+    fun toString (list: element list) : string =
+        "[" ^ (join (list, " ")) ^ "]"
+
     (* TODO: implement stub *)
     fun sort (list: element list) : element list =
         list
