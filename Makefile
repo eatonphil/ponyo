@@ -1,4 +1,5 @@
 .PHONY: all ssl.so bin/ponyo-make bin/ponyo bin/ponyo-doc bin/ponyo-top clean test
+
 default: all
 
 UNAME:=$(shell uname)
@@ -21,9 +22,9 @@ bin/ponyo: tool/ponyo.sml bin/ponyo-make
 	@mkdir -p bin
 	bin/ponyo-make $< -b $(SML_BACKEND) -o $@
 
-bin/ponyo-doc: tool/doc/build.sml tool/doc/generate.sml tool/doc/doc.sml bin/ponyo bin/ponyo-make
+bin/ponyo-doc: tool/doc/build.mlb tool/doc/generate.sml tool/doc/doc.sml bin/ponyo bin/ponyo-make
 	@mkdir -p bin
-	bin/ponyo-make $< -b $(SML_BACKEND) -o $@
+	bin/ponyo-make tool/doc/doc.sml -f tool/doc/generate.sml -b $(SML_BACKEND) -o $@
 
 bin/ponyo-top: tool/top/top.sml bin/ponyo bin/ponyo-make
 	@mkdir -p bin
@@ -35,11 +36,8 @@ bin/ponyo-test: tool/test/test.sml bin/ponyo bin/ponyo-make
 
 all:
 	$(MAKE) ssl.so
-	# bootstrap
 	$(MAKE) bin/ponyo-make
-	# Build ponyo tool
 	$(MAKE) bin/ponyo
-	# Use ponyo-make through ponyo tool
 	$(MAKE) bin/ponyo-top
 	$(MAKE) bin/ponyo-doc
 

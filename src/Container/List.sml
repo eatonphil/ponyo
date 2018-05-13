@@ -26,7 +26,7 @@ struct
         count (list, element) > 0
 
     fun join (list: element list, joiner: string) : string =
-        Basis.String.concatWith joiner (map D.toString list)
+        String.concatWith joiner (map D.toString list)
 
     fun toString (list: element list) : string =
         "[" ^ (join (list, " ")) ^ "]"

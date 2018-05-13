@@ -10,7 +10,8 @@ struct
 
     in
 
-    val programFlag    = Cli.Flag.Anon "program"
+    val mainFlag       = Cli.Flag.Anon "main"
+    val filesFlag      = Cli.Flag.Named ("f", "files")
     val outputFlag     = Cli.Flag.Named ("o", "output")
     val backendFlag    = Cli.Flag.Named ("b", "backend")
     val includeFlag    = Cli.Flag.Named ("I", "include")
@@ -22,7 +23,8 @@ struct
         let
             open Cli
 
-            val programDesc    = "name of (or directory containing) main"
+            val mainDesc       = "main file to compile"
+            val filesDesc      = "additional files to compile"
             val outputDesc     = "name of resulting binary"
             val includeDesc    = "list of Standard ML files to include in build"
             val noPonyoDesc    = "prevent default inclusion of Ponyo library in build"
@@ -32,8 +34,9 @@ struct
         in
             ("ponyo-make",
              "Ponyo-make builds Standard ML projects.",
-             [(programFlag, Arg.string, programDesc)],
-             [(outputFlag, Arg.optional (Arg.string, "./a.out"), outputDesc),
+             [(mainFlag, Arg.string, mainDesc)],
+             [(filesFlag, Arg.list Arg.string, filesDesc),
+              (outputFlag, Arg.optional (Arg.string, "./a.out"), outputDesc),
               (backendFlag, Arg.optional (Arg.string, "polyml"), backendDesc),
               (includeFlag, Arg.list Arg.string, includeDesc),
               (noPonyoFlag, Arg.optional (Arg.bool, "false"), noPonyoDesc),
@@ -60,8 +63,9 @@ struct
                 Basis.OS.Process.exit (!status)
         end
     
-    fun makePolyML (program: string, ponyoRoot: string, libraries: string list,
-                    binaryName: string, saveTmp: bool) : unit =
+    fun makePolyML (main: string, sources: string list, ponyoRoot: string,
+                    libraries: string list, binaryName: string,
+                    saveTmp: bool) : unit =
         let
             val buildFile = "/tmp/ponyo_build.sml"
             val libraries =
@@ -69,19 +73,19 @@ struct
                     Os.Path.join [ponyoRoot, "build.sml"] :: libraries
                 else
                     libraries
-            val librariesList = String.join (libraries, "\",\"")
+            val librariesList = String.join (libraries @ sources, "\",\"")
             val buildScript =
                 Format.sprintf "map PolyML.make [\"%\"]; oldUse \"%\""
-                [librariesList, program]
-    
+                               (librariesList :: [main])
             fun make () =
                 exec ("polyc", ["-o", binaryName, buildFile])
         in
             writeTmpAndMake (buildFile, buildScript, make, saveTmp)
         end
     
-    fun makeMLton (program: string, ponyoRoot: string, libraries: string list,
-                   binaryName: string, saveTmp: bool) : unit =
+    fun makeMLton (main: string, sources: string list, ponyoRoot: string,
+                   libraries: string list, binaryName: string,
+                   saveTmp: bool) : unit =
         let
             val buildFile = "/tmp/ponyo_build.mlb"
     
@@ -95,20 +99,19 @@ struct
                 else
                     libraries
             val librariesList = String.join (libraries, "\n")
-            val program =
-                if String.charAt (program, 0) = #"/"
-                    then program
-                else
-                    Os.Path.join [Basis.OS.FileSys.getDir (), program]
-            val buildScript = String.join ([librariesList, program, mainShim], "\n")
+            val sources =
+                (map (fn (source) =>
+                    if String.charAt (source, 0) = #"/"
+                        then source
+                    else
+                        Os.Path.join [Basis.OS.FileSys.getDir (), source]) (sources @ [main]))
+            val buildScript = String.join (librariesList :: sources @ [mainShim], "\n")
     
             fun make () =
                 exec ("mlton", ["-output", binaryName, buildFile])
         in
             writeTmpAndMake (buildFile, buildScript, make, saveTmp)
         end
-
-    fun findMain (path: string) : string = path
 
     fun getPonyoRoot () =
         case Basis.OS.Process.getEnv "PONYO_ROOT" of
@@ -124,11 +127,8 @@ struct
             fun getAnon (flag) = Cli.getAnon (args, flag)
             fun getNamed (flag) = Cli.getNamed (args, flag)
 
-            val [program] = getAnon (programFlag)
-
-            val program =
-                if String.hasSuffix (program, ".sml") then program
-                else findMain (program)
+            val [main] = getAnon (mainFlag)
+            val sources = getNamed (filesFlag)
 
             val [noPonyo] = getNamed (noPonyoFlag)
             val [saveTmp] = getNamed (saveTmpFlag)
@@ -153,7 +153,7 @@ struct
                 Basis.OS.FileSys.chDir (workingDir)
             else
                 ();
-            make (program, ponyoLib, libraries, output, saveTmp = "true")
+            make (main, sources, ponyoLib, libraries, output, saveTmp = "true")
         end
     end
 end
