@@ -1,0 +1,27 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: debian:testing-slim
+    steps:
+      - checkout
+
+      - run:
+          name: Install debian-packaged dependencies
+          command: |
+            apt update
+            apt install -y polyml mlton build-essential libssl-dev libpolyml-dev
+      - run:
+          name: Build ponyo against mlton and polyml
+          command: |
+            export PONYO_ROOT=$(pwd)
+            make
+            make bin/ponyo-test
+            make clean
+            SML_BACKEND=mlton make
+            SML_BACKEND=mlton make bin/ponyo-test
+      - run:
+          name: Run ponyo tests using mlton and polyml
+          command: |
+            ./bin/ponyo-test -b polyml
+            ./bin/ponyo-test -b mlton
