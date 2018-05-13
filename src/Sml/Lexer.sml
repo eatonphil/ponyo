@@ -179,7 +179,7 @@ struct
             val seen = ref ""
 
             fun isAlphaNumeric (c: char) : bool =
-                Char.isAlphaNum (c) orelse Char.contains "'_" c
+                Char.isAlphaNum (c) orelse Char.contains "'_." c
             fun isSymbolic (c: char) : bool = Char.contains "!%&$#+-/:<=>?@\\~'^|*" c
             fun firstChar () = if !seen = "" then #" " else String.charAt (!seen, 0)
 

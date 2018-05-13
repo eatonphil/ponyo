@@ -303,4 +303,6 @@ struct
         end
 
     val hash = djb2a
+
+    fun toString (s: string) : string = s
 end

@@ -319,4 +319,5 @@ sig
 
     val hash : string -> Word64.word
     val unitialized : string
+    val toString : string -> string
 end

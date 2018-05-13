@@ -27,6 +27,7 @@ struct
             val Datatype   = Symbol "datatype"
             val Eqtype     = Symbol "eqtype"
             val Exception  = Symbol "exception"
+            val Of         = Symbol "of"
             end
         end
     in
@@ -115,8 +116,6 @@ struct
 
     and parseType (reader: reader) : reader * Ast.t option =
         let
-            
-
             fun parseList (reader: reader) : reader * Ast.ty list =
                 case parseType (reader) of
                     (reader, SOME (Ast.Type ty)) =>
@@ -259,7 +258,7 @@ struct
     and parseExcDec (reader: reader) : reader * Ast.t option =
         readSymbol (reader, [Symbol.Exception]) >>= (fn (reader, _) =>
         readIdent (reader) >>= (fn (reader, excName) =>
-        case readSymbol (reader, [Symbol.Equal]) of
+        case readSymbol (reader, [Symbol.Of]) of
             (reader, NONE) =>
               (reader, SOME (Ast.ExcDec (excName, Ast.Type Ast.NoType)))
           | (reader, SOME _) =>
