@@ -42,7 +42,7 @@ struct
                           then Response.MethodNotAllowed
                       else routeHandler (request)
                   | NONE =>
-                      if path = "/*"
+                      if path = "/*" orelse path = "//*"
                           then Response.NotFound
                       else if String.hasSuffix (path, "/")
                           then handler (request, String.substring (path, 0, ~1))

@@ -25,7 +25,7 @@ struct
         let
             val emptyRequest = Request.init (String.Dict.new ()) ""
             val request = Request.read (conn) handle _ => emptyRequest
-            val response = router (request);
+            val response = router (request) handle _ => Response.InternalServerError;
         in
             Format.println [Request.toString request];
             Response.write conn response handle _ => handleCleanup (conn);

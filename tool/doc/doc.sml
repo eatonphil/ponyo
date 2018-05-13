@@ -36,7 +36,7 @@ struct
             val repositoryDesc = "comma-separated list (e.g. github.com,eatonphil,ponyo)"
         in
             ("ponyo-doc",
-             "Ponyo-doc converts signatures in .ML files to HTML files.",
+             "Ponyo-doc converts signatures in .sig files to HTML files.",
              [(directoryFlag, Arg.string, directoryDesc)],
              [(outDirFlag, Arg.Optional (Arg.string, "./"), outDirectoryDesc),
               (debugFlag, Arg.Optional (Arg.bool, "false"), debugDesc),
@@ -58,7 +58,7 @@ struct
             val [debug] = getNamed (debugFlag)
             val [pageTemplateFile] = getNamed (pageTemplateFlag)
             val [repository] = getNamed (repositoryFlag)
-            val (host, namespace, project) = case String.split (repository, ",") of
+            val (host, namespace, project) = case String.split (repository, "/") of
                 host :: (namespace :: (project :: [])) => (host, namespace, project)
               | _ => (Format.println ["ERROR: Bad repository.\n\n"];
                       Cli.doHelp (spec); ("", "", ""))

@@ -221,7 +221,7 @@ struct
         end
 
     fun parseSignature (path: string) (asts: (Ast.t * comment String.Dict.t) String.Dict.t) : (Ast.t * comment String.Dict.t) String.Dict.t =
-        if Path.extension (path) <> "ML"
+        if Path.extension (path) <> "sig"
             then asts
         else if Path.file (path) = "ml_bind.ML"
             then asts

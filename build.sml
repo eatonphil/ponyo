@@ -17,6 +17,6 @@ val PONYO_ROOT =
       | SOME home =>
           cleanPath(home, true) ^ "/" ^ (cleanPath (String.extract (root, 2, NONE), false));
 
-val ponyoLib = PONYO_ROOT ^ "/src/build.sml";
-
-use (ponyoLib);
+val oldUse = use;
+fun use (path: string) = oldUse (PONYO_ROOT ^ "/" ^ path);
+use "src/build.sml";
