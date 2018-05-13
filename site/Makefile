@@ -1,6 +1,6 @@
-.PHONY: all build-static build-server build-documentation deploy configure clean
-
 OUTPUT_DIR=dist/bin
+
+.PHONY: all static $(OUTPUT_DIR)/server documentation deploy configure clean
 
 all:
 	$(MAKE) $(OUTPUT_DIR)/server
@@ -24,7 +24,7 @@ deploy:
 
 configure:
 	@mkdir -p $(OUTPUT_DIR)
-	@(cd $$(pwd)/static && npm install)
+	@(cd $$(pwd)/static && yarn)
 
 clean:
 	rm -rf dist static/node_modules
