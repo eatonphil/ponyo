@@ -25,7 +25,7 @@ struct
 
                 val newFile = ref true
                 val file = case String.Dict.get (!fileCache) path of
-                  NONE => if exists () then getFile () else "404 not found"
+                  NONE => if exists () then getFile () else "Page not found!"
                 | SOME file => (newFile := false; file)
             in
                 if !newFile
@@ -39,18 +39,19 @@ struct
             let
                 val path = Request.path (request)
                 val file = case String.substringToEnd (path, String.length "/documentation/") of
-                    "string" => "Ponyo_String_/PONYO_STRING"
-                  | "container/list" => "Ponyo_Container/PONYO_CONTAINER_LIST"
-                  | "container/map" => "Ponyo_Container/PONYO_CONTAINER_MAP"
-                  | "os/path" => "Ponyo_Os/PONYO_OS_PATH"
-                  | "format" => "PONYO_FORMAT"
+                    "string" => "String/String"
+                  | "container/list" => "Container/List"
+                  | "container/map" => "Container/Map"
+                  | "os/path" => "Os/Path"
+                  | "format" => "Format/Format"
                   | _ => ""
 
                val filePath = if file = ""
                    then ""
-                   else Path.join ["documentation/ponyo", file ^ ".html"]
+                   else Path.join ["documentation/src/", file ^ ".html"]
             in
-                  serveFile filePath request
+                print (filePath ^ "\n");
+                serveFile filePath request
             end
 
         fun serveHtml (request: Request.t) : Response.t =

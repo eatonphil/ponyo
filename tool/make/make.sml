@@ -1,11 +1,13 @@
 structure Main =
 struct
     local
-        open Ponyo
 
-        structure Os = Os
-        structure Cli = Os.Cli
-        structure File = Os.Filesystem.File
+    open Ponyo
+
+    structure Os = Os
+    structure Cli = Os.Cli
+    structure File = Os.Filesystem.File
+
     in
 
     val programFlag    = Cli.Flag.Anon "program"
@@ -69,7 +71,7 @@ struct
                     libraries
             val librariesList = String.join (libraries, "\",\"")
             val buildScript =
-                Format.sprintf "map PolyML.make [\"%\"]; use \"%\""
+                Format.sprintf "map PolyML.make [\"%\"]; oldUse \"%\""
                 [librariesList, program]
     
             fun make () =

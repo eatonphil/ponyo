@@ -93,7 +93,7 @@ struct
                 else hd marshalled
             val body = #body response
         in
-            intro ^ headers ^ "\r\n" ^ body
+            intro ^ headers ^ "\r\n\r\n" ^ body
         end
 
     fun write (conn: socket) (response: t) : unit =
