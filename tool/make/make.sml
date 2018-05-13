@@ -113,6 +113,36 @@ struct
             writeTmpAndMake (buildFile, buildScript, make, saveTmp)
         end
 
+    fun makeMLKit (main: string, sources: string list, ponyoRoot: string,
+                   libraries: string list, binaryName: string,
+                   saveTmp: bool) : unit =
+        let
+            val buildFile = "/tmp/ponyo_build.mlb"
+    
+            (* MLton does not automatically call main. *)
+            val mainShim = "/tmp/ponyo_build_main.sml"
+            val _ = File.writeTo (mainShim, "val _ = main ()");
+    
+            val libraries =
+                if ponyoRoot <> "" then
+                    Os.Path.join [ponyoRoot, "build.mlb"] :: libraries
+                else
+                    libraries
+            val librariesList = String.join (libraries, "\n")
+            val sources =
+                (map (fn (source) =>
+                    if String.charAt (source, 0) = #"/"
+                        then source
+                    else
+                        Os.Path.join [Basis.OS.FileSys.getDir (), source]) (sources @ [main]))
+            val buildScript = String.join (librariesList :: sources @ [mainShim], "\n")
+    
+            fun make () =
+                exec ("mlkit", ["--output", binaryName, buildFile])
+        in
+            writeTmpAndMake (buildFile, buildScript, make, saveTmp)
+        end
+
     fun getPonyoRoot () =
         case Basis.OS.Process.getEnv "PONYO_ROOT" of
             SOME root => root
@@ -147,6 +177,7 @@ struct
                 case backend of
                     "polyml" => makePolyML
                   | "mlton" => makeMLton
+                  | "mlkit" => makeMLKit
                   | _ => (Format.printf "ERROR: Bad backend.\n\n" []; Cli.doHelp (spec); makePolyML)
         in
             if workingDir <> "" then
