@@ -53,7 +53,7 @@ struct
             val comments = map cleanComment comments
 
             fun cleanDescription (desc: string) : string =
-                String.replace (String.stripWhitespace (desc), "\n", " ")
+                String.replace (String.stripWhitespace desc, "\n", " ")
 
             fun parseComment (comment: string) : comment option =
                 case String.splitN (comment, ":", 1) of
@@ -65,7 +65,7 @@ struct
                       | description :: [examples] =>
                           SOME (String.stripWhitespace name,
                                 cleanDescription description,
-                                map String.stripWhitespace (String.split (examples, "\n")))
+                                map String.stripWhitespace (String.split (String.stripWhitespace examples, "\n")))
                       | _ => SOME (String.stripWhitespace name,
                                    cleanDescription comment, []))
                   | _ => NONE
@@ -132,7 +132,7 @@ struct
                         source,
                         name,
                         description,
-                        String.join(examples, "\n"),
+                        String.join (examples, "\n"),
                         generatePage (body, comments, source)
                     ]
                 in

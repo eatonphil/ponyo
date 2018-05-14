@@ -1,23 +1,16 @@
 extends ./tmpl/base.jade
 
 block body
+    style header { background: white !important; } header .nav a { color: #333 !important; }
     .header2
         .container
             h1 Ponyo
             h3 Library and Toolkit for Standard ML
-            nav
-                .nav
-                    a(href="#about") About
-                .nav
-                    a(href="#hello-world") Hello world!
-                .nav
-                    a(href="#installation") Installation
             iframe(src="https://ghbtns.com/github-btn.html?user=eatonphil&repo=ponyo&type=star&count=true&size=large", frameborder="0", scrolling="0", width="160px", height="30px")
 
     .page#about
         .container
             .container-small
-                h2 About
                 p.
                     Ponyo is a modern, high-level, comprehensive library for Standard ML.
                     It is also a set of tools for working with Standard ML projects.
@@ -48,10 +41,8 @@ block body
 
                 pre
                     code.ocaml.sml.
-                        structure Format = Ponyo.Format
-
                         fun main () =
-                            Format.printf "Hello %!\n" ["world"]
+                            Ponyo.Format.println ["Hello world!\n"]
                 pre
                     code(class="bash").
                         $ ponyo make helloworld.sml -o helloworld
@@ -60,7 +51,7 @@ block body
                 p.
                     For more examples, check out the Ponyo
                     <a href="https://github.com/eatonphil/ponyo/tree/master/tool/ponyo">tool</a>
-                    directory, the <a href="https://github.com/eatonphil/ponyo/tree/master/test">"test"</a>
+                    directory, the <a href="https://github.com/eatonphil/ponyo/tree/master/test">test</a>
                     directory, and the <a href="https://github.com/eatonphil/ponyo/tree/master/site">source</a>
                     for this site.
 
@@ -70,10 +61,10 @@ block body
                 h2 Installation
 
                 p.
-                    Ponyo is a Standard ML library. The Standard ML implementation of choice
-                    is <a href="https://github.com/polyml/polyml">Poly/ML</a>. See the Poly/ML
-                    Github page for installation instructions. You will need OpenSSL devel
-                    headers to work with the Ponyo_Net_SSLSocket module.
+                    Ponyo is a Standard ML library. Ponyo requires
+                    <a href="https://github.com/polyml/polyml">Poly/ML</a> to bootstrap but can
+                    use <a href="http://mlton.org/">MLton</a> to compile Ponyo programs. Ponyo
+                    programs should generally work on macOS and Linux.
 
                 p After Poly/ML has been installed, add the following lines to your ~/.profile:
                 pre
@@ -87,7 +78,3 @@ block body
                     code(class="bash").
                         $ git clone https://github.com/eatonphil/ponyo && cd ponyo
                         $ make
-
-                p.
-                    Note: Many of the Ponyo tools will not work with other implementations or
-                    on Windows.

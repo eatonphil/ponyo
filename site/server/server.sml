@@ -2,6 +2,7 @@ structure Main =
 struct
     local
         structure Method   = Ponyo.Net.Http.Method
+        structure Mime     = Ponyo.Net.Http.Mime
         structure Request  = Ponyo.Net.Http.Request
         structure Response = Ponyo.Net.Http.Response
         structure Router   = Ponyo.Net.Http.Router
@@ -14,7 +15,7 @@ struct
         structure Format = Ponyo.Format
         structure String = Ponyo.String
     in
-        val fileRoot = "./dist/templates"
+        val fileRoot = "./dist"
         val fileCache = ref (String.Dict.new ())
 
         fun serveFile (path: string) : Router.t =
@@ -32,13 +33,23 @@ struct
                     then fileCache := String.Dict.insert (!fileCache) path file
                 else ();
 
-                fn (_: Request.t) => Response.init (file)
+                fn (_: Request.t) =>
+                   let
+                       val extension = Path.extension (path)
+                       val mimetype = valOf (Mime.get Mime.types extension)
+                       val headers = String.Dict.new ()
+                       val headers = String.Dict.insert headers "Content-Type" mimetype
+                       val rsp = Response.initWithHeaders file headers
+                   in
+                       Format.println ["Serving from path: ", path];
+                       rsp
+                   end
             end
 
-        fun serveDocumentation (request: Request.t) : Response.t =
+        fun serveReference (request: Request.t) : Response.t =
             let
                 val path = Request.path (request)
-                val file = case String.substringToEnd (path, String.length "/documentation/") of
+                val file = case String.substringToEnd (path, String.length "/reference/") of
                     "string" => "String/String"
                   | "container/list" => "Container/List"
                   | "container/map" => "Container/Map"
@@ -48,28 +59,31 @@ struct
 
                val filePath = if file = ""
                    then ""
-                   else Path.join ["documentation/src/", file ^ ".html"]
+                   else Path.join ["reference/src/", file ^ ".html"]
             in
-                print (filePath ^ "\n");
-                serveFile filePath request
+                serveFile (Path.join ["templates", filePath]) request
             end
 
         fun serveHtml (request: Request.t) : Response.t =
-            serveFile (Request.path request ^ ".html") request
+            serveFile ("templates" ^ Request.path request ^ ".html") request
+
+        fun serveStatic (request: Request.t) : Response.t =
+            serveFile (Request.path request) request
 
         fun get (path: string, router: Router.t) : Method.t * string * Router.t =
             (Method.Get, path, router)
 
         fun main () =
             Server.listenAndServe "" 4334 (Router.basic [
-                get ("/",                serveFile "index.html"),
-                get ("/downloads",       serveFile "downloads.html"),
-                get ("/documentation",   serveFile "documentation.html"),
-                get ("/documentation/*", serveDocumentation),
-                get ("/handbook",        serveFile "handbook.html"),
-                get ("/handbook/*",      serveHtml),
-                get ("/news",            serveFile "news.html"),
-                get ("/news/*",          serveHtml)
+                get ("/",            serveFile "templates/index.html"),
+                get ("/reference",   serveFile "templates/reference.html"),
+                get ("/reference/*", serveReference),
+                get ("/guides",      serveFile "templates/guides.html"),
+                get ("/guides/*",    serveHtml),
+                get ("/blog",        serveFile "templates/blog.html"),
+                get ("/blog/*",      serveHtml),
+                get ("/js/*",        serveStatic),
+                get ("/css/*",       serveStatic)
             ])
     end
 end
