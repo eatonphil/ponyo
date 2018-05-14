@@ -13,6 +13,7 @@ sig
 
     val new : string -> int -> string -> string Ponyo_String.Dict.t -> string -> t
     val init : string -> t
+    val initWithHeaders : string -> string Ponyo_String.Dict.t -> t
 
     val NotFound : t
     val MethodNotAllowed : t

@@ -37,12 +37,15 @@ struct
           headers = headers,
           body    = body }
 
+    fun initWithHeaders (body: string) (headers: string Headers.t) : t =
+        new "HTTP/1.1" 200 "OK" headers body
+
     fun init (body: string) : t =
         let
             val contentLength = Int.toString (String.length body)
             val headers = Headers.insert (Headers.new ()) "Content-Length" contentLength
         in
-            new "HTTP/1.1" 200 "OK" headers body
+            initWithHeaders body headers
         end
 
     fun makeGenericResponse (status: int) (reason: string) : t =

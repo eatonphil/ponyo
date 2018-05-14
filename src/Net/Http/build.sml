@@ -3,6 +3,7 @@ use "src/Net/Http/Header.sml";
 use "src/Net/Http/Method.sml";
 use "src/Net/Http/Connection.sml";
 use "src/Net/Http/Response.sig";
+use "src/Net/Http/Mime.sml";
 use "src/Net/Http/Response.sml";
 use "src/Net/Http/Request.sig";
 use "src/Net/Http/Request.sml";

@@ -1,11 +1,11 @@
 OUTPUT_DIR=dist/bin
 
-.PHONY: all static $(OUTPUT_DIR)/server documentation deploy configure clean
+.PHONY: all static $(OUTPUT_DIR)/server reference deploy configure clean
 
 all:
 	$(MAKE) $(OUTPUT_DIR)/server
 	$(MAKE) static
-	$(MAKE) documentation
+	$(MAKE) reference
 
 static:
 	(cd $$(pwd)/static && ./node_modules/.bin/gulp)
@@ -14,9 +14,9 @@ $(OUTPUT_DIR)/server: server/server.sml
 	@mkdir -p $(OUTPUT_DIR)
 	ponyo make $< -o $@
 
-documentation:
-	ponyo doc ../ -o dist/templates/documentation \
-            -p dist/templates/documentation/signature.html \
+reference:
+	ponyo doc ../ -o dist/templates/reference \
+            -p dist/templates/reference/signature.html \
 	    -r github.com/eatonphil/ponyo
 
 deploy:

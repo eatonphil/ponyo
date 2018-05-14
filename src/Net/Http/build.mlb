@@ -10,6 +10,7 @@ Header.sig
 Header.sml
 Method.sml
 Connection.sml
+Mime.sml
 Response.sig
 Response.sml
 Request.sig
