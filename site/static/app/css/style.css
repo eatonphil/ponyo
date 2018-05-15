@@ -1,7 +1,9 @@
-/* https://coolors.co/app/2f1847-624763-c62e65-f9b3d1-d63af9 */
-
 a {
     color: #e00000;
+}
+
+a:hover {
+    color: #a50000;
 }
 
 .container {
@@ -17,7 +19,20 @@ pre,
 pre code,
 .hljs {
     max-width: 750px;
-    background: white !important;
+}
+
+pre {
+    background: #fcfcfc !important;
+    border-radius: 0;
+    border: 1px solid #ddd !important;
+}
+
+pre:last-child {
+    margin-bottom: 0;
+}
+    
+code.hljs {
+    background: none !important;
 }
 
 .nav {
@@ -87,4 +102,9 @@ footer {
 .sidebar {
     border: 1px solid #ccc;
     padding: 30px;
+}
+
+.subheader {
+    color: #777;
+    margin-bottom: 10px;
 }

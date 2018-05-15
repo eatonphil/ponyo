@@ -2,28 +2,18 @@
     max-width: 650px;
 }
 
-.ponyo-signature a {
-    color: #333;
-}
-
-pre {
-    background: #fcfcfc !important;
-    border: 1px solid #ddd !important;
-}
-    
-code.hljs {
-    background: none !important;
-}
-
 .ponyo-signature pre {
-    border-radius: 0;
     border: 1px solid #ccc;
 }
 
 .ponyo-generic {
-    margin: 30px 0;
+    margin-bottom: 15px;
     padding: 30px;
     border: 1px solid #ccc;
+}
+
+.ponyo-generic:first-of-type {
+    margin-top: 15px;
 }
 
 .ponyo-generic-signature {
@@ -41,5 +31,5 @@ code.hljs {
 
 .ponyo-signature-description,
 .ponyo-generic-description {
-    padding: 10px 0;
+    padding-top: 10px;
 }

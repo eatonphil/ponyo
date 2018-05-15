@@ -1,12 +1,12 @@
 structure Main =
 struct
     local
-        structure Method   = Ponyo.Net.Http.Method
-        structure Mime     = Ponyo.Net.Http.Mime
-        structure Request  = Ponyo.Net.Http.Request
+        structure Method = Ponyo.Net.Http.Method
+        structure Mime = Ponyo.Net.Http.Mime
+        structure Request = Ponyo.Net.Http.Request
         structure Response = Ponyo.Net.Http.Response
-        structure Router   = Ponyo.Net.Http.Router
-        structure Server   = Ponyo.Net.Http.Server
+        structure Router = Ponyo.Net.Http.Router
+        structure Server = Ponyo.Net.Http.Server
 
         structure Filesystem = Ponyo.Os.Filesystem
         structure File = Ponyo.Os.Filesystem.File
@@ -45,21 +45,15 @@ struct
                    end
             end
 
-        fun serveReference (request: Request.t) : Response.t =
+        fun serveReference (subsection: string) (request: Request.t) : Response.t =
             let
                 val path = Request.path (request)
-                val file = case String.substringToEnd (path, String.length "/reference/") of
-                    "string" => "String/String"
-                  | "container/list" => "Container/List"
-                  | "container/map" => "Container/Map"
-                  | "os/path" => "Os/Path"
-                  | "format" => "Format/Format"
-                  | _ => ""
-
-               val filePath = if file = ""
-                   then ""
-                   else Path.join ["reference/src/", file ^ ".html"]
+                val page = String.substringToEnd (path, String.length ("/reference/" ^ subsection ^ "/"))
+                val mapped = if String.hasSubstring (page, "/") then page else page ^ "/" ^ page
+                (* TODO: fix reference for Standard ML pages *)
+                val filePath = Path.join ["reference/src/", mapped ^ ".html"]
             in
+                Format.println ["Serving from path: ", filePath];
                 serveFile (Path.join ["templates", filePath]) request
             end
 
@@ -74,15 +68,16 @@ struct
 
         fun main () =
             Server.listenAndServe "" 4334 (Router.basic [
-                get ("/",            serveFile "templates/index.html"),
-                get ("/reference",   serveFile "templates/reference.html"),
-                get ("/reference/*", serveReference),
-                get ("/guides",      serveFile "templates/guides.html"),
-                get ("/guides/*",    serveHtml),
-                get ("/blog",        serveFile "templates/blog.html"),
-                get ("/blog/*",      serveHtml),
-                get ("/js/*",        serveStatic),
-                get ("/css/*",       serveStatic)
+                get ("/", serveFile "templates/index.html"),
+                get ("/reference", serveFile "templates/reference.html"),
+                get ("/reference/ponyo/*", serveReference "ponyo"),
+                get ("/reference/standardml/*", serveReference "standardml"),
+                get ("/guides", serveFile "templates/guides.html"),
+                get ("/guides/*", serveHtml),
+                get ("/blog", serveFile "templates/blog.html"),
+                get ("/blog/*", serveHtml),
+                get ("/js/*", serveStatic),
+                get ("/css/*", serveStatic)
             ])
     end
 end
