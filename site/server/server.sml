@@ -41,7 +41,6 @@ struct
                        val headers = String.Dict.insert headers "Content-Type" mimetype
                        val rsp = Response.initWithHeaders file headers
                    in
-                       Format.println ["Serving from path: ", path];
                        rsp
                    end
             end

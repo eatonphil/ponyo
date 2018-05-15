@@ -25,7 +25,7 @@ html(lang="en")
         meta(name="theme-color" content="#ffffff")
         
         block css
-            link(href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css", rel="stylesheet")
+            link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css")
             link(rel="stylesheet", href="/css/vendor/highlightjs/default.css")
             link(href="/css/style.css", rel="stylesheet")
 
@@ -34,7 +34,7 @@ html(lang="en")
 
     body
         header
-            .container
+            .container(style="margin-top: 0; margin-bottom: 0;")
                 .nav
                     a(href="/") Ponyo
                 .nav
@@ -65,7 +65,6 @@ html(lang="en")
 
         block js
             script("https://code.jquery.com/jquery-2.2.3.min.js", crossorigin="anonymous")
-            script("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js", crossorigin="anonymous")
             script(src="/js/vendor/highlightjs/highlight.pack.js")
             script hljs.initHighlightingOnLoad();
             
@@ -77,3 +76,38 @@ html(lang="en")
 
             ga('create', 'UA-75341607-1', 'auto');
             ga('send', 'pageview');
+
+        script.
+            window.onload = function () {
+                const sidebarContainer = document.querySelector(".sidebar-container");
+                if (!sidebarContainer) {
+                    return;
+                }
+
+                const majorHeaders = Array.from(sidebarContainer.querySelectorAll("h4"));
+                const sidebarColumn = document.createElement("div");
+                sidebarColumn.className = "col-3";
+
+                const sidebar = document.createElement("div");
+                sidebar.className = "sidebar";
+                sidebarColumn.appendChild(sidebar);
+
+                const sidebarHeader = document.createElement("h4");
+                sidebarHeader.textContent = "Contents";
+                sidebar.appendChild(sidebarHeader);
+    
+                majorHeaders.forEach(function (header) {
+                    const section = document.createElement("div");
+
+                    const id = header.textContent.toLowerCase().replace(" ", "-");
+                    header.id = id;
+
+                    const sectionHeader = document.createElement("a");
+                    sectionHeader.textContent = header.textContent;
+                    sectionHeader.href = "#" + id;
+                    section.appendChild(sectionHeader);
+
+                    sidebar.appendChild(section);
+                });
+                sidebarContainer.querySelector(".row").appendChild(sidebarColumn);
+            }

@@ -4,9 +4,13 @@ a {
     color: #e00000;
 }
 
+.container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
 .container-small {
     max-width: 650px;
-    margin: 20px 0;
 }
 
 pre,
@@ -78,4 +82,9 @@ body > .header2 iframe {
 footer {
     border-top: 1px solid #ccc;
     padding: 50px 0;
+}
+
+.sidebar {
+    border: 1px solid #ccc;
+    padding: 30px;
 }

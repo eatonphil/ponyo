@@ -2,39 +2,41 @@ extends ../tmpl/base.jade
 
 block body
     .container
-        .container-small
-            header
-                h2 Tests, JSON support, and HTTP requests over SSL
-                h4 September 28, 2016 by Phil Eaton
-            article
-                p.
-                    It's been a while since I last posted an update on Ponyo and
-                    I've got some really exciting features to announce. In the past
-                    few months, we've added a simple testing framework and begun
-                    writing tests. We've added a JSON parsing and marshalling functions
-                    to help transform JSON strings into Standard ML records. And in the
-                    last week, I added rudimentary support for active SSL sockets by
-                    hooking into OpenSSL.
-                p.
-                    The test framework simply collects lists of boolean values and
-                    indicates where one is false. These tests can contain other
-                    groups of tests that are collected and reported back as a boolean.
-                    See the <a href="https://github.com/eatonphil/ponyo/blob/master/test/Ponyo_String_Test.sml">String</a>
-                    test module for an example. Using this method I found and fixed
-                    a number of bugs in the String module. The Ponyo repo is now hooked
-                    up to <a href="https://travis-ci.org/eatonphil/ponyo">Travis CI</a> so pull requests
-                    can begin to be tested automatically before being merged.
-                p.
-                    Right now, the test modules must be collected
-                    <a href="https://github.com/eatonphil/ponyo/blob/master/test/build.sml">manually</a>.
-                    The goal is to replace this with a test runner that calls a
-                    function in every .sml file in a directory.
-                p.
-                    With the addition of JSON parsing and HTTP clients talking over
-                    SSL, you can finally begin one of the things I've been most excited
-                    for: consuming real APIs. Check out this <a href="https://gist.github.com/eatonphil/ba660a7594dec2fb601a1cb1ac0208eb">example</a>
-                    that uses these recent additions to parse and print out a list
-                    of Linode datacenters.
-                p.
-                    Disclaimer: even though this stuff is functional, it's just barely so.
-                    Don't use this for anything serious.
+        .row
+            .col-6
+                header
+                    | Blog
+                    h2 Tests, JSON support, and HTTP requests over SSL
+                    | September 28, 2016 by Phil Eaton
+                article
+                    p.
+                        It's been a while since I last posted an update on Ponyo and
+                        I've got some really exciting features to announce. In the past
+                        few months, we've added a simple testing framework and begun
+                        writing tests. We've added a JSON parsing and marshalling functions
+                        to help transform JSON strings into Standard ML records. And in the
+                        last week, I added rudimentary support for active SSL sockets by
+                        hooking into OpenSSL.
+                    p.
+                        The test framework simply collects lists of boolean values and
+                        indicates where one is false. These tests can contain other
+                        groups of tests that are collected and reported back as a boolean.
+                        See the <a href="https://github.com/eatonphil/ponyo/blob/master/test/Ponyo_String_Test.sml">String</a>
+                        test module for an example. Using this method I found and fixed
+                        a number of bugs in the String module. The Ponyo repo is now hooked
+                        up to <a href="https://travis-ci.org/eatonphil/ponyo">Travis CI</a> so pull requests
+                        can begin to be tested automatically before being merged.
+                    p.
+                        Right now, the test modules must be collected
+                        <a href="https://github.com/eatonphil/ponyo/blob/master/test/build.sml">manually</a>.
+                        The goal is to replace this with a test runner that calls a
+                        function in every .sml file in a directory.
+                    p.
+                        With the addition of JSON parsing and HTTP clients talking over
+                        SSL, you can finally begin one of the things I've been most excited
+                        for: consuming real APIs. Check out this <a href="https://gist.github.com/eatonphil/ba660a7594dec2fb601a1cb1ac0208eb">example</a>
+                        that uses these recent additions to parse and print out a list
+                        of Linode datacenters.
+                    p.
+                        Disclaimer: even though this stuff is functional, it's just barely so.
+                        Don't use this for anything serious.
