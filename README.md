@@ -41,7 +41,6 @@ Add the following lines to your ~/.profile:
 
 ```bash
 PONYO_ROOT=~/vendor/ponyo
-PATH=$PATH:$PONYO_ROOT/bin
 ```
 
 Now, download and install Ponyo to the path.
@@ -51,6 +50,7 @@ $ cd ~/vendor
 $ git clone https://github.com/eatonphil/ponyo
 $ cd ponyo
 $ make
+$ sudo make install
 ```
 
 ## License

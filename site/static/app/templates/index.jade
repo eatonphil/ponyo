@@ -23,17 +23,15 @@ block body
                     <a href="https://www.reddit.com/r/sml/wiki">wiki</a> is a great source
                     of information for getting started in Standard ML. Additionally, someone
                     is always available on Freenode at #sml.
-                p Features:
+                p Major features include:
                 ul
+                    li Datastructures: Hashtable, Red Black Tree, etc.
                     li HTTP server/client
-                    li SSL sockets
-                    li Cli tools
+                    li CLI argument parser
                     li Standard ML parser/lexer
-                    li JSON support
+                    li JSON encoder/decoder
                     li Enhanced build tool and top-level
                     li Documentation generator
-                    li Much more on the <a href="https://github.com/eatonphil/ponyo/blob/master/ROADMAP.md">roadmap</a>
-
     .page#hello-world
         .container
             .container-small
@@ -71,10 +69,10 @@ block body
                     code(class="bash").
                         # Ponyo path settings.
                         export PONYO_ROOT="<path-to-git-repo>"
-                        export PATH=$PATH:$PONYO_ROOT/bin
 
                 p Then, build Ponyo from git:
                 pre
                     code(class="bash").
                         $ git clone https://github.com/eatonphil/ponyo && cd ponyo
                         $ make
+                        $ sudo make install

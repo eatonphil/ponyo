@@ -41,6 +41,12 @@ all:
 	$(MAKE) bin/ponyo-top
 	$(MAKE) bin/ponyo-doc
 
+install:
+	ln -s bin/* /usr/local/bin
+
+uninstall:
+	rm /usr/local/bin/ponyo*
+
 test: test/*.sml bin/ponyo-test
 	@mkdir -p bin
 	ponyo-test -b $(SML_BACKEND)
