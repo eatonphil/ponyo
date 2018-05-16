@@ -108,5 +108,8 @@ html(lang="en")
 
                     sidebar.appendChild(section);
                 });
-                sidebarContainer.querySelector(".row").appendChild(sidebarColumn);
+
+                if (majorHeaders.length) {
+                    sidebarContainer.querySelector(".row").appendChild(sidebarColumn);
+                }
             }

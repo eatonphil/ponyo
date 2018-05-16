@@ -1,0 +1,132 @@
+extends ../../tmpl/base.jade
+
+block body
+    .container
+        .sidebar-container
+            .row
+                .col-6
+                    | Guides &bull; Learn Standard ML &bull; Chapter 2
+                    h2 The REPL
+                    .subheader
+                        a(href="https://github.com/eatonphil/ponyo/blob/master/site/static/app/templates/guides/learn-standardml/the-repl.jade") Source
+                    p.
+                        Standard ML was originally intended to be in interactive language,
+                        but not all major implementations have a REPL. For this section
+                        we will use Poly/ML because it does have a REPL. If you have not
+                        installed Poly/ML, please see the
+                        <a href="/guides/learn-standardml/getting-started">Getting Started</a>
+                        chapter.
+                    p.
+                        We will begin by bringing up the Poly/ML REPL, an interactive
+                        "top-level" environment where we can begin to explore Standard ML.
+                    p.note.
+                        The Poly/ML REPL does not support readline functionality like
+                        arrow keys for navigation or general command history. You can get
+                        these features by installing
+                        <a href="https://github.com/hanslub42/rlwrap">rlwrap</a> and
+                        calling poly with it: `rlwrap poly`.
+                    pre
+                        code.
+                            $ poly
+                            Poly/ML 5.7.1 Release
+                            >
+                    p.
+                        This top-level environment provides complete access to the
+                        language. We can type simple expressions and press [Enter] to
+                        have the expression evaluated. As you can see, the result is
+                        stored into a value "it".
+                    pre
+                        code.
+                            > 1 + 1;
+                            val it = 2: int
+                            > 1.0 + 1.0;
+                            val it = 2.0: real
+                    p.
+                        In Standard ML (unlike OCaml), integers and floats share the
+                        same operators.
+                    p.note.
+                        The semicolon in the Standard ML top-level is used to
+                        delimit top-level "declarations". Outside of the top-level,
+                        it is primarily used to disambiguate the end of an expression.
+                        We'll see more of this in the future.
+                    p String concatenation, however, uses another operator.
+                    pre
+                        code.
+                            > "foo" ^ "bar";
+                            val it = "foobar": string
+                    p.
+                        We can store values in the top-level easily as well.
+                    p.note.
+                        Outside of the top-level, variables will need to be declared
+                        inside of a `let ... in ... end` block.
+                    pre
+                        code.
+                            > val i = 1 + 1;
+                            val i = 2: int
+                            > val s = "foo";
+                            val s = "foo": string
+                    p.
+                        In the event of an ambiguous right-hand expression, or just
+                        to provide extra clarity, we can annotate the type of the value
+                        we are declaring.
+                    pre
+                        code.
+                            > val i : int = 1 + 1;
+                            val i = 2: int
+                            > val s : string = "foo";
+                            val s = "foo": string
+                    p.
+                        In fact, we can annotate the type of basically anything anywhere.
+                        This can be incredibly useful as assertions during debugging. For
+                        instance, when tracking down a type error it can be helpful to
+                        explicitly and verbosely annotate types to pinpoint the exact
+                        location of the type error.
+                    pre
+                        code.
+                            > val i = (((2 + 2): int) - 1): int;
+                            val i = 3: int
+                    p.
+                        Standard ML provides some basic vector types in addition to the
+                        previously demonstrated scalar types. We will focus primarily on
+                        lists and tuples here.
+                    pre
+                        code.
+                            > val tuple = (1, 2);
+                            val tuple = (1, 2): int * int
+                            > val list = [1, 2];
+                            val list = [1, 2]: int list
+                            > [];
+                            val it = []: 'a list
+                    p.
+                        An asterisk between two types always indicates a tuple. `list`
+                        is a special kind of type we call "polymorphic". A generic
+                        list might have type `'a list` where each element of the list is
+                        of the type variable `'a`. In the previous example, the elements
+                        of the list `list` are of type int. The empty list has no elements
+                        so the type cannot yet guess or assign the type variable `'a` so
+                        it remains unresolved.
+                    p.
+                        Standard ML provides special tools for deconstructing elements
+                        of tuples and lists.
+                    pre
+                        code.
+                            > val (a, b) = (1, 2);
+                            val a = 1: int
+                            val b = 2: int
+                            > val (hd :: tl) = [1, 2];
+                            val hd = 1: int
+                            val tl = [2]: int list
+                    p.
+                        This deconstructing is very powerful and will show up in many
+                        places. For now, we'll go one step further and introduce
+                        arbitrarily nested deconstructing of tuples and lists.
+                    pre
+                        code.
+                            > val (a, b) :: ((c, d) :: tl) = [(1, 2), (3, 4), (5, 6)];
+                            val a = 1: int
+                            val b = 2: int
+                            val c = 3: int
+                            val d = 4: int
+                            val tl = [(5, 6)]: (int * int) list
+                    p
+                        a(href="/guides/learn-standardml/functions") Chapter 3. Functions

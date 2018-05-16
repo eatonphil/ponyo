@@ -108,3 +108,25 @@ footer {
     color: #777;
     margin-bottom: 10px;
 }
+
+.note {
+    background: #e6f6ff;
+    border: #aae0ff 1px solid;
+    padding: 10px;
+    font-size: .8rem;
+}
+
+ol.chapters {
+  counter-reset: number;
+}
+
+ol.chapters li {
+  list-style: none;
+  counter-increment: number;
+}
+
+ol.chapters li::before {
+  content: "Chapter " counter(number) ".";
+  position: relative;
+  left: -5px;
+}
