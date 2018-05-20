@@ -1,0 +1,115 @@
+extends ../../tmpl/base.jade
+
+block body
+    .container
+        | Guides &bull; Learn Standard ML &bull; Chapter 1
+        h1 Getting Started
+        .subheader
+            a(href="https://github.com/eatonphil/ponyo/blob/master/site/static/app/templates/guides/learn-standardml/getting-started.jade") Source
+    .container
+        .sidebar-container
+            .row
+                .col-md-6
+                    p.
+                        To start using Standard ML, you must pick an implementation.
+                        Unlike Python, with a default implementation (CPython), Standard
+                        ML has no default implementation. The most useful for development,
+                        in no particular order, include
+                        <a href="https://www.smlnj.org/">SML/NJ</a>,
+                        <a href="http://mlton.org">MLton</a>,
+                        <a href="http://www.elsman.com/mlkit/">MLKit</a>,
+                        <a href="http://polyml.org">Poly/ML</a>,
+                        and <a href="http://www.pllab.riec.tohoku.ac.jp/smlsharp/">SML#</a>.
+                        It is a goal of Ponyo, the project, to be able to support
+                        each of these implementations. But in the meantime we will focus on
+                        MLton and Poly/ML because they are the only fully-supported
+                        implementations.
+                    p.
+                        Note: although MLton is fully-supported, Ponyo must be bootstrapped
+                        with Poly/ML.
+                    h3 Installing Poly/ML
+                    p.
+                        Ponyo requires at least Poly/ML v5.7.1. Many systems only have
+                        an older version of Poly/ML available. If this is the case and you
+                        have already installed Poly/ML, you should uninstall it. You will
+                        need to build Poly/ML
+                        <a href="#install-polyml-from-source">from source</a>.
+                    h4 Ubuntu Linux
+                    p.
+                        Recent versions of Ubuntu (17.04+) provide Poly/ML 5.7.1.
+                    pre
+                        code $ sudo apt install polyml
+                    h4 Debian Linux
+                    p.
+                        Debian testing provides Poly/ML 5.7.1. If you are not using
+                        Debian testing or you do not know what that means. You will
+                        need to build Poly/ML
+                        <a href="#install-polyml-from-source">from source</a>.
+                    pre
+                        code $ sudo apt install polyml
+                    h4 Arch Linux
+                    pre
+                        code $ sudo pacman -S polyml
+                    h4 macOS
+                    pre
+                        code $ brew install polyml
+                    h4#install-polyml-from-source From Source
+                    p.
+                        You will need GNU Make, gcc, and git.
+                    pre
+                        code.
+                            $ git clone https://github.com/polyml/polyml
+                            $ git checkout v5.7.1
+                            $ cd polyml
+                            $ ./configure
+                            $ make
+                            $ make compiler
+                            $ sudo make install
+                            $ poly -v
+                            Poly/ML 5.7.1 Release    RTS version: X86_64-5.7.1
+                    h3 Installing MLton
+                    p.
+                        Ponyo requires at least MLton 20180207 (this may not actually
+                        be the case but is a safe bet). Many systems only have an
+                        older version of MLton available. If this is the case and
+                        you have already installed MLton, you should uninstall it.
+                        You will need to build MLton
+                        <a href="#install-mlton-from-source">from source</a>.
+                    h4 Ubuntu Linux
+                    p No versions of Ubuntu Linux provide an up-to-date MLton.
+                    h4 Debian Linux
+                    p No versions of Debian Linux provide an up-to-date MLton.
+                    h4 Arch Linux
+                    pre
+                        code $ sudo pacman -S mlton
+                    h4 macOS
+                    pre
+                        code $ brew install mlton
+                    h4#install-mlton-from-source From Source
+                    p.
+                        The MLton build steps are complicated and best-documented on
+                        the <a href="https://github.com/mlton/mlton#build-and-install-from-source">MLton README</a>.
+                    h3 Compiling your first program
+                    pre
+                        code.
+                            $ echo 'fun main () = print "Hello World!\\n";' > hello.sml
+                            $ polyc -o hello hello.sml
+                            $ ./hello
+                            Hello World!
+                            $ echo 'main ();' >> hello.sml
+                            $ mlton hello.sml
+                            $ ./hello
+                            Hello World!
+                    p.
+                        Poly/ML requires an un-called <code>main</code> function as
+                        an entry point. However, MLton simplies calls whatever is at
+                        the top-level and will not look for the <code>main</code>
+                        function unless it is called.
+                    p.
+                        You will notice that Poly/ML compiles much faster than MLton
+                        does. For this reason, and because MLton produces highly optimized
+                        code, MLton is often reserved for production deploys while a
+                        faster compiler that produces slower code (like Poly/ML or SML/NJ)
+                        is often used for development.
+                    p
+                        a(href="/guides/learn-standardml/the-repl") Chapter 2. The REPL

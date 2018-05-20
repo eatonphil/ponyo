@@ -1,0 +1,22 @@
+extends ../../tmpl/base.jade
+
+block body
+    .container
+        | Guides &bull; Learn Standard ML &bull; Chapter 4
+        h1 Functions
+        .subheader
+            a(href="https://github.com/eatonphil/ponyo/blob/master/site/static/app/templates/guides/learn-standardml/functions.jade") Source
+    .container
+        .sidebar-container
+            .row
+                .col-md-6
+                    p This chapter is WIP.
+                    h3 Infix functions
+                    p.
+                        Any function can be marked infix. This infix marking lasts for the
+                        current scope. If you attempt to use a function that has been
+                        marked infix in its declared scope, and that scope was not the
+                        top-level scope, you will need to redeclare infixi-ity in some
+                        new scope.
+                    p
+                        a(href="/guides/learn-standardml/lists-and-tuples") Chapter 5. Lists and Tuples

@@ -1,44 +1,45 @@
 extends ./tmpl/base.jade
 
 block body
-    style header { background: white !important; } header .nav a { color: #333 !important; }
+    style.
+        header {
+            background: white !important;
+        }
+
+        header .nav a {
+            color: #333 !important;
+        }
+
+        body {
+            font-family: sans-serif;
+        }
+
+        p, li {
+            font-size: 1rem;
+        }
     .header2
         .container
             h1 Ponyo
             h3 Library and Toolkit for Standard ML
             iframe(src="https://ghbtns.com/github-btn.html?user=eatonphil&repo=ponyo&type=star&count=true&size=large", frameborder="0", scrolling="0", width="160px", height="30px")
 
-    .page#about
+    .page#features
         .container
             .container-small
-                p.
-                    Ponyo is a modern, high-level, comprehensive library for Standard ML.
-                    It is also a set of tools for working with Standard ML projects.
-                p.
-                    Ponyo is a work in progress, so keep tuned for <a href="/blog">news</a>!
-                    If you have any questions, feel free to open an issue.
-                p.
-                    To follow the Standard ML community in general, check out
-                    <a href="https://reddit.com/r/sml">/r/sml</a>. The /r/sml
-                    <a href="https://www.reddit.com/r/sml/wiki">wiki</a> is a great source
-                    of information for getting started in Standard ML. Additionally, someone
-                    is always available on Freenode at #sml.
-                p Features:
+                h2 Features
                 ul
+                    li Datastructures: Hashtable, Red Black Tree, etc.
                     li HTTP server/client
-                    li SSL sockets
-                    li Cli tools
+                    li CLI argument parser
                     li Standard ML parser/lexer
-                    li JSON support
+                    li JSON encoder/decoder
                     li Enhanced build tool and top-level
                     li Documentation generator
-                    li Much more on the <a href="https://github.com/eatonphil/ponyo/blob/master/ROADMAP.md">roadmap</a>
-
+                p And much more on the roadmap! Keep tuned for <a href="/blog">news</a>!
     .page#hello-world
         .container
             .container-small
                 h2 Hello world!
-
                 pre
                     code.ocaml.sml.
                         fun main () =
@@ -47,7 +48,6 @@ block body
                     code(class="bash").
                         $ ponyo make helloworld.sml -o helloworld
                         $ ./helloworld
-
                 p.
                     For more examples, check out the Ponyo
                     <a href="https://github.com/eatonphil/ponyo/tree/master/tool/ponyo">tool</a>
@@ -59,7 +59,6 @@ block body
         .container
             .container-small
                 h2 Installation
-
                 p.
                     Ponyo is a Standard ML library. Ponyo requires
                     <a href="https://github.com/polyml/polyml">Poly/ML</a> to bootstrap but can
@@ -70,11 +69,21 @@ block body
                 pre
                     code(class="bash").
                         # Ponyo path settings.
-                        export PONYO_ROOT="<path-to-git-repo>"
-                        export PATH=$PATH:$PONYO_ROOT/bin
+                        export PONYO_ROOT="/path/to/ponyo/repo"
 
                 p Then, build Ponyo from git:
                 pre
                     code(class="bash").
                         $ git clone https://github.com/eatonphil/ponyo && cd ponyo
                         $ make
+                        $ sudo make install
+    .page#standard-ml
+        .container
+            .container-small
+                h2 Standard ML
+                p.
+                    To follow the Standard ML community in general, check out
+                    <a href="https://reddit.com/r/sml">/r/sml</a>. The /r/sml
+                    <a href="https://www.reddit.com/r/sml/wiki">wiki</a> is a great source
+                    of information for getting started in Standard ML. Additionally, someone
+                    is always available on Freenode at #sml.

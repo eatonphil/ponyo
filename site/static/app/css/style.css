@@ -1,19 +1,55 @@
-/* https://coolors.co/app/2f1847-624763-c62e65-f9b3d1-d63af9 */
+body {
+    font-family: serif;
+}
 
 a {
     color: #e00000;
 }
 
+a:hover {
+    color: #a50000;
+}
+
+h1, h2 {
+    font-family: sans-serif;
+}
+
+h3 {
+    font-size: 1.4rem;
+}
+
+h4 {
+    font-size: 1.2rem;
+    margin: 30px 0 15px;
+}
+
+.container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
 .container-small {
     max-width: 650px;
-    margin: 20px 0;
 }
 
 pre,
 pre code,
 .hljs {
     max-width: 750px;
-    background: white !important;
+}
+
+pre {
+    background: #fcfcfc !important;
+    border-radius: 0;
+    border: 1px solid #ddd !important;
+}
+
+pre:last-child {
+    margin-bottom: 0;
+}
+    
+code.hljs {
+    background: none !important;
 }
 
 .nav {
@@ -26,8 +62,8 @@ pre code,
 
 p,
 li {
-    font-size: 16px;
-    line-height: 30px;
+    font-size: 1.1rem;
+    line-height: 1.6rem;
 }
 
 .nav:first-of-type a {
@@ -42,6 +78,7 @@ body > header {
 
 body > header .nav a {
     color: white;
+    font-family: sans-serif;
 }
 
 body > .header2 {
@@ -78,4 +115,62 @@ body > .header2 iframe {
 footer {
     border-top: 1px solid #ccc;
     padding: 50px 0;
+}
+
+.sidebar-container h3 {
+    border-bottom: 1px solid #ccc;
+}
+
+.sidebar-container h4 {
+    border-bottom: 1px solid #eee;
+}
+
+.sidebar {
+    border: 1px solid #ccc;
+    padding: 15px;
+}
+
+.sidebar h4 {
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.sidebar-section:not(:last-child) {
+    margin-bottom: 5px;
+}
+
+.sidebar ul {
+    margin: 0;
+}
+
+.sidebar li, .sidebar p {
+    font-size: .9rem;
+    line-height: 1.2rem;
+}
+
+.subheader {
+    color: #777;
+    margin-bottom: 10px;
+}
+
+.note {
+    background: #e6f6ff;
+    border: #aae0ff 1px solid;
+    padding: 10px;
+    font-size: .8rem;
+}
+
+ol.chapters {
+  counter-reset: number;
+}
+
+ol.chapters li {
+  list-style: none;
+  counter-increment: number;
+}
+
+ol.chapters li::before {
+  content: "Chapter " counter(number) ".";
+  position: relative;
+  left: -5px;
 }

@@ -3,7 +3,7 @@ html(lang="en")
     head
         meta(charset="utf-8")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        meta(name="description", content="Library and toolkit for Standard ML.")
+        meta(name="description", content="Library and Toolkit for Standard ML.")
         meta(name="author", content="Ponyo")
         meta(name="copyright", content="2016-2018")
 
@@ -25,16 +25,16 @@ html(lang="en")
         meta(name="theme-color" content="#ffffff")
         
         block css
-            link(href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css", rel="stylesheet")
+            link(rel="stylesheet", href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css")
             link(rel="stylesheet", href="/css/vendor/highlightjs/default.css")
             link(href="/css/style.css", rel="stylesheet")
 
         block title
-            title Ponyo - Library and toolkit for Standard ML
+            title Ponyo - Library and Toolkit for Standard ML
 
     body
         header
-            .container
+            .container(style="margin-top: 0; margin-bottom: 0;")
                 .nav
                     a(href="/") Ponyo
                 .nav
@@ -44,7 +44,7 @@ html(lang="en")
                 .nav
                     a(href="/blog") Blog
                 .nav
-                    a(href="https://github.com/eatonphil/ponyo") Github
+                    a(href="https://github.com/eatonphil/ponyo") Source
         block body
         block footer
             footer
@@ -52,8 +52,7 @@ html(lang="en")
                     nav
                         .nav &copy; 2016-2018 Ponyo.
                         .nav
-                            a(href="/")
-                                Ponyo
+                            a(href="/") Ponyo
                         .nav
                             a(href="/guides") Guides
                         .nav
@@ -61,11 +60,10 @@ html(lang="en")
                         .nav
                             a(href="/blog") Blog
                         .nav
-                            a(href="https://github.com/eatonphil/ponyo") Github
+                            a(href="https://github.com/eatonphil/ponyo") Source
 
         block js
             script("https://code.jquery.com/jquery-2.2.3.min.js", crossorigin="anonymous")
-            script("https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js", crossorigin="anonymous")
             script(src="/js/vendor/highlightjs/highlight.pack.js")
             script hljs.initHighlightingOnLoad();
             
@@ -77,3 +75,69 @@ html(lang="en")
 
             ga('create', 'UA-75341607-1', 'auto');
             ga('send', 'pageview');
+
+        script.
+            window.onload = function () {
+                const sidebarContainer = document.querySelector(".sidebar-container");
+                if (!sidebarContainer) {
+                    return;
+                }
+
+                const majorHeaders = Array.from(sidebarContainer.querySelectorAll("h3, h4"));
+                const sidebarColumn = document.createElement("div");
+                sidebarColumn.className = "col-md-3 order-first order-md-last mb-3 mb-md-0";
+
+                const sidebar = document.createElement("div");
+                sidebar.className = "sidebar";
+                sidebarColumn.appendChild(sidebar);
+
+                const sidebarHeader = document.createElement("h4");
+                sidebarHeader.textContent = "Contents";
+                sidebar.appendChild(sidebarHeader);
+
+                function insertLinkFromHeader(parent, header) {
+                    const id = header.textContent.toLowerCase().replace(" ", "-");
+                    header.id = id;
+
+                    const link = document.createElement("a");
+                    link.textContent = header.textContent;
+                    link.href = "#" + id;
+                    parent.appendChild(link);
+                }
+
+                let section;
+                let subheaders = [];
+                for (let i = 0; i < majorHeaders.length; i++) {
+                    const header = majorHeaders[i];
+                    const tagName = header.tagName.toLowerCase();
+                    const isLastHeader = i === majorHeaders.length - 1;
+
+                    if (section && subheaders.length && (tagName === "h3" || isLastHeader)) {
+                        if (tagName !== "h3" && isLastHeader) {
+                            subheaders.push(header);
+                        }
+
+                        const subheaderList = document.createElement("ul");
+                        subheaders.forEach(function (subheader) {
+                            const li = document.createElement("li");
+                            insertLinkFromHeader(li, subheader);
+                            subheaderList.appendChild(li);
+                        });
+                        section.appendChild(subheaderList);
+                        subheaders = [];
+                    }
+
+                    if (tagName === "h3") {
+                        section = document.createElement("div");
+                        section.className = "sidebar-section";
+                        insertLinkFromHeader(section, header);
+                        sidebar.appendChild(section);
+                    } else {
+                        subheaders.push(header);
+                    }
+                }
+
+                if (majorHeaders.length) {
+                    sidebarContainer.querySelector(".row").appendChild(sidebarColumn);
+                }
+            }

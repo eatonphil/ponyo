@@ -9,6 +9,7 @@ struct
             val d = String.Dict.insert d "js" "application/javascript"
             val d = String.Dict.insert d "css" "text/css"
             val d = String.Dict.insert d "html" "text/html"
+            val d = String.Dict.insert d "png" "image/png"
         in
             d
         end
