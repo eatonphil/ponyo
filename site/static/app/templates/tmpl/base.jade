@@ -113,7 +113,7 @@ html(lang="en")
                     const isLastHeader = i === majorHeaders.length - 1;
 
                     if (section && subheaders.length && (tagName === "h3" || isLastHeader)) {
-                        if (isLastHeader) {
+                        if (tagName !== "h3" && isLastHeader) {
                             subheaders.push(header);
                         }
 
