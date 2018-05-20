@@ -2,13 +2,14 @@ extends ../../tmpl/base.jade
 
 block body
     .container
+        | Guides &bull; Learn Standard ML &bull; Chapter 1
+        h1 Getting Started
+        .subheader
+            a(href="https://github.com/eatonphil/ponyo/blob/master/site/static/app/templates/guides/learn-standardml/getting-started.jade") Source
+    .container
         .sidebar-container
             .row
-                .col-6
-                    | Guides &bull; Learn Standard ML &bull; Chapter 1
-                    h2 Getting Started
-                    .subheader
-                        a(href="https://github.com/eatonphil/ponyo/blob/master/site/static/app/templates/guides/learn-standardml/getting-started.jade") Source
+                .col-md-6
                     p.
                         To start using Standard ML, you must pick an implementation.
                         Unlike Python, with a default implementation (CPython), Standard
@@ -26,19 +27,19 @@ block body
                     p.
                         Note: although MLton is fully-supported, Ponyo must be bootstrapped
                         with Poly/ML.
-                    h4 Installing Poly/ML
+                    h3 Installing Poly/ML
                     p.
                         Ponyo requires at least Poly/ML v5.7.1. Many systems only have
                         an older version of Poly/ML available. If this is the case and you
                         have already installed Poly/ML, you should uninstall it. You will
                         need to build Poly/ML
                         <a href="#install-polyml-from-source">from source</a>.
-                    h5 Ubuntu Linux
+                    h4 Ubuntu Linux
                     p.
                         Recent versions of Ubuntu (17.04+) provide Poly/ML 5.7.1.
                     pre
                         code $ sudo apt install polyml
-                    h5 Debian Linux
+                    h4 Debian Linux
                     p.
                         Debian testing provides Poly/ML 5.7.1. If you are not using
                         Debian testing or you do not know what that means. You will
@@ -46,13 +47,13 @@ block body
                         <a href="#install-polyml-from-source">from source</a>.
                     pre
                         code $ sudo apt install polyml
-                    h5 Arch Linux
+                    h4 Arch Linux
                     pre
                         code $ sudo pacman -S polyml
-                    h5 macOS
+                    h4 macOS
                     pre
                         code $ brew install polyml
-                    h5#install-polyml-from-source From Source
+                    h4#install-polyml-from-source From Source
                     p.
                         You will need GNU Make, gcc, and git.
                     pre
@@ -66,7 +67,7 @@ block body
                             $ sudo make install
                             $ poly -v
                             Poly/ML 5.7.1 Release    RTS version: X86_64-5.7.1
-                    h4 Installing MLton
+                    h3 Installing MLton
                     p.
                         Ponyo requires at least MLton 20180207 (this may not actually
                         be the case but is a safe bet). Many systems only have an
@@ -74,19 +75,41 @@ block body
                         you have already installed MLton, you should uninstall it.
                         You will need to build MLton
                         <a href="#install-mlton-from-source">from source</a>.
-                    h5 Ubuntu Linux
+                    h4 Ubuntu Linux
                     p No versions of Ubuntu Linux provide an up-to-date MLton.
-                    h5 Debian Linux
+                    h4 Debian Linux
                     p No versions of Debian Linux provide an up-to-date MLton.
-                    h5 Arch Linux
+                    h4 Arch Linux
                     pre
                         code $ sudo pacman -S mlton
-                    h5 macOS
+                    h4 macOS
                     pre
                         code $ brew install mlton
-                    h5#install-mlton-from-source From Source
+                    h4#install-mlton-from-source From Source
                     p.
                         The MLton build steps are complicated and best-documented on
                         the <a href="https://github.com/mlton/mlton#build-and-install-from-source">MLton README</a>.
+                    h3 Compiling your first program
+                    pre
+                        code.
+                            $ echo 'fun main () = print "Hello World!\\n";' > hello.sml
+                            $ polyc -o hello hello.sml
+                            $ ./hello
+                            Hello World!
+                            $ echo 'main ();' >> hello.sml
+                            $ mlton hello.sml
+                            $ ./hello
+                            Hello World!
+                    p.
+                        Poly/ML requires an un-called <code>main</code> function as
+                        an entry point. However, MLton simplies calls whatever is at
+                        the top-level and will not look for the <code>main</code>
+                        function unless it is called.
+                    p.
+                        You will notice that Poly/ML compiles much faster than MLton
+                        does. For this reason, and because MLton produces highly optimized
+                        code, MLton is often reserved for production deploys while a
+                        faster compiler that produces slower code (like Poly/ML or SML/NJ)
+                        is often used for development.
                     p
                         a(href="/guides/learn-standardml/the-repl") Chapter 2. The REPL

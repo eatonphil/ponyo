@@ -83,9 +83,9 @@ html(lang="en")
                     return;
                 }
 
-                const majorHeaders = Array.from(sidebarContainer.querySelectorAll("h4"));
+                const majorHeaders = Array.from(sidebarContainer.querySelectorAll("h3, h4"));
                 const sidebarColumn = document.createElement("div");
-                sidebarColumn.className = "col-3";
+                sidebarColumn.className = "col-md-3 order-first order-md-last mb-3 mb-md-0";
 
                 const sidebar = document.createElement("div");
                 sidebar.className = "sidebar";
@@ -94,20 +94,48 @@ html(lang="en")
                 const sidebarHeader = document.createElement("h4");
                 sidebarHeader.textContent = "Contents";
                 sidebar.appendChild(sidebarHeader);
-    
-                majorHeaders.forEach(function (header) {
-                    const section = document.createElement("div");
 
+                function insertLinkFromHeader(parent, header) {
                     const id = header.textContent.toLowerCase().replace(" ", "-");
                     header.id = id;
 
-                    const sectionHeader = document.createElement("a");
-                    sectionHeader.textContent = header.textContent;
-                    sectionHeader.href = "#" + id;
-                    section.appendChild(sectionHeader);
+                    const link = document.createElement("a");
+                    link.textContent = header.textContent;
+                    link.href = "#" + id;
+                    parent.appendChild(link);
+                }
 
-                    sidebar.appendChild(section);
-                });
+                let section;
+                let subheaders = [];
+                for (let i = 0; i < majorHeaders.length; i++) {
+                    const header = majorHeaders[i];
+                    const tagName = header.tagName.toLowerCase();
+                    const isLastHeader = i === majorHeaders.length - 1;
+
+                    if (section && subheaders.length && (tagName === "h3" || isLastHeader)) {
+                        if (isLastHeader) {
+                            subheaders.push(header);
+                        }
+
+                        const subheaderList = document.createElement("ul");
+                        subheaders.forEach(function (subheader) {
+                            const li = document.createElement("li");
+                            insertLinkFromHeader(li, subheader);
+                            subheaderList.appendChild(li);
+                        });
+                        section.appendChild(subheaderList);
+                        subheaders = [];
+                    }
+
+                    if (tagName === "h3") {
+                        section = document.createElement("div");
+                        section.className = "sidebar-section";
+                        insertLinkFromHeader(section, header);
+                        sidebar.appendChild(section);
+                    } else {
+                        subheaders.push(header);
+                    }
+                }
 
                 if (majorHeaders.length) {
                     sidebarContainer.querySelector(".row").appendChild(sidebarColumn);
