@@ -47,8 +47,7 @@ struct
 
         fun serveReference (subsection: string) (request: Request.t) : Response.t =
             let
-                val path = Request.path (request)
-                val page = String.substringToEnd (path, String.length ("/reference/" ^ subsection ^ "/"))
+                val page = String.substringToEnd (#path request, String.length ("/reference/" ^ subsection ^ "/"))
                 val mapped = if String.hasSubstring (page, "/") then page else page ^ "/" ^ page
                 (* TODO: fix reference for Standard ML pages *)
                 val filePath = Path.join ["reference/src/", mapped ^ ".html"]
@@ -58,10 +57,10 @@ struct
             end
 
         fun serveHtml (request: Request.t) : Response.t =
-            serveFile ("templates" ^ Request.path request ^ ".html") request
+            serveFile ("templates" ^ #path request ^ ".html") request
 
         fun serveStatic (request: Request.t) : Response.t =
-            serveFile (Request.path request) request
+            serveFile (#path request) request
 
         fun get (path: string, router: Router.t) : Method.t * string * Router.t =
             (Method.Get, path, router)
