@@ -18,12 +18,6 @@ struct
 	       headers : string Headers.t,
 	       body    : string }
 
-    fun method  (request: t) = #method request
-    fun path    (request: t) = #path request
-    fun version (request: t) = #version request
-    fun headers (request: t) = #headers request
-    fun body    (request: t) = #body request
-
     fun new (method: Method.t) (path: string) (version: string) (headers: string Headers.t) (body: string) =
         { method  = method,
           path    = path,
@@ -39,7 +33,7 @@ struct
             new (Method.Unknown "") "" "HTTP/1.1" headers body
         end
 
-    fun parseFirstLine (line: string) (request: Connection.t) : t =
+    fun parseFirstLine (line: string) ({ headers, body, ... }: Connection.t) : t =
         case String.split (line, " ") of
             [] => raise MalformedRequest (line)
           | list => if length (list) <> 3
@@ -48,8 +42,8 @@ struct
                   method  = Method.fromString (List.nth (list, 0)),
                   path    = List.nth (list, 1),
                   version = List.nth (list, 2),
-                  headers = #headers request,
-                  body    = #body request
+                  headers = headers,
+                  body    = body
               }
 
     fun read (socket: socket) : t =
@@ -59,14 +53,12 @@ struct
             parseFirstLine (#firstLine request) request
         end
 
-    fun marshall (request: t) : string =
+    fun marshall ({ version, path, headers, body, method }: t) : string =
         let
-	    val method = Method.toString (#method request)
-	    val path = #path request
-	    val intro = method ^ " " ^ path ^ " HTTP/1.1\r\n"
-	    val marshalled = map Header.marshall (Headers.toList (#headers request))
+	    val method = Method.toString (method)
+	    val intro = method ^ " " ^ path ^ " " ^ version ^"\r\n"
+	    val marshalled = map Header.marshall (Headers.toList headers)
 	    val headers = foldl (fn (a, b) => String.join ([a, b], "\r\n")) "" marshalled
-	    val body = #body request
 	in
 	    intro ^ headers ^ "\r\n" ^ body
         end

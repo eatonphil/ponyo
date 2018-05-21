@@ -24,12 +24,6 @@ struct
 
     type t = complete
 
-    fun version (response: t) = #version response
-    fun status (response: t) = #status response
-    fun reason (response: t) = #reason response
-    fun headers (response: t) = #headers response
-    fun body (response: t) = #body response
-
     fun new (version: string) (status: int) (reason: string) (headers: string Headers.t) (body: string) : t =
         { version = version,
           status  = status,
@@ -50,9 +44,9 @@ struct
 
     fun makeGenericResponse (status: int) (reason: string) : t =
         let
-            val r = init (Int.toString status ^ " " ^ reason)
+            val { version, body, headers, ... } = init (Int.toString status ^ " " ^ reason)
         in
-            new (version r) status reason (headers r) (body r)
+            new version status reason headers body
         end
 
     val NotFound = makeGenericResponse 404 "Not Found"
@@ -65,15 +59,15 @@ struct
     val ServiceUnavailable = makeGenericResponse 503 "Service Unavailable"
     val GatewayTimeout = makeGenericResponse 504 "Gateway Timeout"
 
-    fun parseFirstLine (line: string) (response: Connection.t) : t =
+    fun parseFirstLine (line: string) ({ headers, body, ... }: Connection.t) : t =
         case String.splitN (line, " ", 2) of
             [version, status, reason] =>
               {
                   version = version,
                   status  = valOf (Int.fromString status),
                   reason  = reason,
-                  headers = #headers response,
-                  body    = #body response
+                  headers = headers,
+                  body    = body
               }
           | _ =>  raise MalformedResponse (line)
 
@@ -84,17 +78,14 @@ struct
             parseFirstLine (#firstLine response) response
         end
 
-    fun marshall (response: t) : string =
+    fun marshall ({ version, status, headers, reason, body }: t) : string =
         let
-            val version = #version response
-            val status = Int.toString (#status response)
-            val reason = #reason response
+            val status = Int.toString (status)
             val intro = Format.sprintf "% % %\r\n" [version, status, reason]
-            val marshalled = map Header.marshall (Headers.toList (#headers response))
+            val marshalled = map Header.marshall (Headers.toList headers)
             val headers = if length marshalled > 1
                     then foldl (fn (a, b) => String.join ([a, b], "\r\n")) "" marshalled
                 else hd marshalled
-            val body = #body response
         in
             intro ^ headers ^ "\r\n\r\n" ^ body
         end

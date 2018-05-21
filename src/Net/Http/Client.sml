@@ -25,15 +25,15 @@ struct
             val (domain, path) = case String.splitN (address, "/", 1) of
                 [domain, path] => (domain, "/" ^ path)
               | _ => raise InvalidRequestAddress (address)
-            val request = case request' of
+            val { version, body, headers, ... } = case request' of
                 SOME request => request
               | _ => Request.init (Headers.new ()) ""
             val request = {
                 method  = method,
                 path    = path,
-                headers = Headers.insert (Request.headers request) "Host" domain,
-                version = Request.version request,
-                body    = Request.body request
+                headers = Headers.insert headers "Host" domain,
+                version = version,
+                body    = body
             }
             val socket = Socket.connect (domain, Port.port);
         in

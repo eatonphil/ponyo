@@ -23,8 +23,8 @@ struct
      *)
     fun parse (response: incomplete, stream: string) : incomplete =
         let
-            val rspBody = #response response
-	    val stream = (#store response) ^ stream;
+            val { response = { firstLine, headers, body }, store, headersComplete } = response
+	    val stream = store ^ stream
 
             (* -parseHeaderLine: Parses a header line and returns the header. *)
             fun parseHeaderLine (line: string) : Header.t option =
@@ -33,7 +33,7 @@ struct
                   | [badValue] => NONE
                   | header :: field => SOME (Header.unmarshall (line))
 
-	    fun doParse (stream: string, response as {response=rspBody, ...}: incomplete) : incomplete =
+	    fun doParse (stream: string, response as { response = rspBody, ... }: incomplete) : incomplete =
 	        case String.indexOf (stream, "\r\n") of
 		    (* No complete line to read yet. *)
 		      ~1 => { 
@@ -86,14 +86,14 @@ struct
 			    doParse (stream, response)
 			end
         in
-	    if #headersComplete response
+	    if headersComplete
 		then {
 		    headersComplete = true,
 		    store           = "",
 		    response        = {
-                        firstLine = #firstLine rspBody,
-		        headers   = #headers rspBody,
-		        body      = #body rspBody ^ stream
+                        firstLine = firstLine,
+		        headers   = headers,
+		        body      = body ^ stream
 	            }
 		}
 	    else
@@ -114,14 +114,14 @@ struct
 
             fun doRead (response: incomplete) : incomplete =
 	        let
+                    val { headersComplete, response = { body, headers, ... }, ... } = response;
                     val bytes = Socket.read (conn)
 		    val len = Word8Vector.length bytes
 		    val read = Byte.bytesToString (bytes)
                     val response = parse (response, read)
 
-                    val rspBody = (#response response)
-                    val bodyLength = String.length (#body rspBody)
-		    val contentLength = Headers.get (#headers rspBody) "content-length"
+                    val bodyLength = String.length (body)
+		    val contentLength = Headers.get headers "content-length"
 		    val contentRemains = case contentLength of
                         NONE => false
 		      | SOME contentLengthValue => case Int.fromString (contentLengthValue) of
@@ -132,8 +132,10 @@ struct
 		in
 		    if readMore then doRead (response) else response
 		end;
+
+            val { response = r, ... } = doRead (response)
 	in
-	    #response (doRead (response))
+            r
         end
 
     fun write (conn: ('a, Basis.Socket.active Basis.Socket.stream) Socket.t, output: string) : unit =

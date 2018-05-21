@@ -38,7 +38,7 @@ struct
             fun handler (request, path) =
                 case String.Dict.get routes path of
                     SOME (method, routeHandler) =>
-                      if Request.method request <> method
+                      if #method request <> method
                           then Response.MethodNotAllowed
                       else routeHandler (request)
                   | NONE =>
@@ -48,7 +48,7 @@ struct
                           then handler (request, String.substring (path, 0, ~1))
                       else handler (request, pathToSlashStar path)
         in
-            fn (request) => handler (request, Request.path request)
+            fn (request) => handler (request, #path request)
         end
 
     end
