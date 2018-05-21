@@ -12,25 +12,30 @@ block body
                 .col-md-6
                     h3 Expressions
                     p.
-                        An expression is a chunk of code that returns
-                        a value. An expression can always be assigned to a variable. A
-                        statement is a chunk of code that does not return a value. A
-                        statement cannot be assigned to a variable. Most parts of Standard ML
-                        are expressions, not statements. Expressions consist of one of
-                        the following:
+                        An expression is a chunk of code that returns a value. An expression
+                        can always be assigned to a variable. On the other hand, a statement
+                        is a chunk of code that does not return a value. A statement cannot be
+                        assigned to a variable. Most parts of Standard ML are expressions,
+                        not statements. Expressions consist of one of <the following:
                     ul
                         li Literals (e.g. <code>1</code>, <code>"foo"</code>)
                         li Variable references (e.g. <code>a</code>, <code>theVariable</code>)
                         li Expressions combined by an infix operator (e.g. <code>a + b</code>, <code>1 + theVariable</code>)
-                        li If / then (e.g. <code>if a then b else c</code>)
-                        li Case statements (e.g. <code>case a of 2 => true | 3 => false</code>)
+                        li If blocks (e.g. <code>if a then b else c</code>)
+                        li Case blocks (e.g. <code>case a of 2 => true | 3 => false</code>)
                         li Lambda functions (e.g. <code>fn a => a</code>)
                         li Function calls (e.g. <code>split "foo" "o"</code>)
                         li Let blocks (e.g. <code>let val i = 1 in i end</code>)
+                        li Local blocks (e.g. <code>local val i = 1 in i end</code>)
                         li Compound expressions (e.g. <code>1; a + b</code>)
                         li Any expression in parenthesis (e.g. <code>(1)</code>, <code>(theVariable)</code>)
                     p The following are <strong>not</strong> expressions:
-                        li Function declarations
+                        li Val declarations (e.g. the <code>val i = 1</code> part of <code>let val i = 1 in i end</code>)
+                        li Named function declarations (e.g. <code>fun a b => b</code>)
+                        li Type declarations (e.g. <code>type a = int</code>, <code>datatype b = Int of int | String of string</code>)
+                        li Structures (declarations and references)
+                        li Signatures (declarations and references)
+                        li Functors (declarations and references)
                     h4 Literals
                     p.
                         The following types can be expressed as literal values:
@@ -42,11 +47,15 @@ block body
                         li Booleans (e.g. <code>true</code>, <code>false</code>)
                         li Tuples (e.g. <code>(1, 2)</code>, <code>(x, 4.0, (12, 1))</code>)
                         li Lists (e.g. <code>[1, 2]</code>, <code>[(1, 2), (3, 4)]</code>)
-                        li Records (e.g. <code>{ foo=1, bar=2.0 }</code>)                            
+                        li Records (e.g. <code>{ foo=1, bar=2.0 }</code>)
+                    p.note.
+                        Some Standard ML implementations (including MLton, but not Poly/ML)
+                        additionally have support for vector literals (e.g. <code>\#[1, 2, 3]</code>)
+                        as part of Successor ML, informally agreed upon extensions to the standard.
                     h4 Parenthesis, semi-colons and compound expressions
                     p.
                         Semi-colons are mostly optional, except for in compound expressions.
-                        Semi-colons are often necessary to disambiguate the end of a function
+                        But semi-colons are often necessary to disambiguate the end of a function
                         call. Here is an example:
                     pre
                         code.
@@ -71,10 +80,17 @@ block body
                                 foo "bar";
                                 goo "baz"
                             end
+                    p.note.
+                        Standard ML officially requires there be no trailing semi-colon in
+                        a compound expression. Simarily, a comma must not follow the last
+                        element in a tuple, list, or record. Some Standard ML implementations
+                        (including MLton, but not Poly/ML) relax this requirement as part of
+                        Successor ML.
                     p.
                         The <code>in ... end</code> block actually takes a single expression. But compound
                         expressions are expressions too and provide a way to evaluate multiple
-                        expressions for side-effects while only returning the last.
+                        expressions for side-effects while only returning the value of the last
+                        expression.
                     p.
                         Parenthesis are typically allowed anywhere, surrounding an expression.
                         But outside of the <code>in ... end</code> block of a let block, you will need to
@@ -85,9 +101,11 @@ block body
                             val i = 8: int
                     h4 Conditional logic
                     p.
-                        There are two ways to conditionally evaluate expressions: <code>if ... then ... else</code>
-                        and <code>case ... of ...</code> blocks. Both return a value. An if block
-                        operates on booleans, but case blocks provide generic pattern matching.
+                        There are two primary ways to conditionally evaluate expressions:
+                        <code>if ... then ... else</code> and <code>case ... of ...</code> blocks.
+                        Both return a value. An if block operates only on booleans. There is
+                        no coercion of types like in C so you cannot test an int directly. You
+                        must first compare the int to something to produce a boolean value.
                         Here is a simple example of an if block that returns <code>3</code>:
                     pre
                         code.
@@ -116,7 +134,7 @@ block body
                             > val j = if true then (if false then 12 else 14) else 15;
                             val j = 14: int
                     p.
-                        Case statements provide generic pattern matching. You can match
+                        Case blocks provide generic pattern matching. You can match
                         on any values and can destructure here like anwhere else. Here
                         are a few examples:
                     pre
@@ -248,7 +266,7 @@ block body
                         The <code>!</code> operator dereferences the ref cell to get its value.
                         The type of <code>a</code> and <code>b</code> is <code>ref int</code>.
                     p.
-                        Arrays also mutable values (as opposed to vectors), but we'll get into
+                        Arrays are also mutable values (as opposed to vectors), but we'll get into
                         those in a later chapter.
                     p
                         a(href="/guides/learn-standardml/functions") Chapter 4. Functions
