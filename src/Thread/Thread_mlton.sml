@@ -1,3 +1,6 @@
+(* Adapted from http://www.mlton.org/MLtonThread *)
+(* TODO: refactor into separate Queue ADT *)
+
 structure Ponyo_Thread_Queue:
    sig
       type 'a t
