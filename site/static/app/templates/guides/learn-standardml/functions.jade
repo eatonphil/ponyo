@@ -10,8 +10,162 @@ block body
         .sidebar-container
             .row
                 .col-md-6
-                    p This chapter is WIP.
-                    h3 Infix functions
+                    p.
+                        Functions can be declared in the top-level, within structures (more
+                        on that later), and within let and local blocks. A function takes
+                        one, yes just one, argument. The equivalent of passing no arguments is
+                        to pass the unit literal <code>()</code>. The equivalent of passing
+                        multiple arguments is to pass a single tuple argument or to curry
+                        function arguments (which, in other languages, might be complicated
+                        but Standard ML has nice syntax for this). Functions can be declared
+                        with a name as a statement, or they can be created as an expression
+                        without a name (a lambda). Let's start from the top.
+                    pre
+                        code.
+                            > fun main () = print "hello world!\n";
+                            val main = fn: unit -> unit
+                            > main ();
+                            hello world
+                            val it = (): unit
+                    p.
+                        In this example, we declare a function <code>main</code> that takes
+                        the unit literal. It must declare and be passed the unit literal.
+                        If we do not include the unit literal in the function declaration,
+                        the compiler will produce a syntax error:
+                    pre
+                        code.
+                            > fun main = print "foo";
+                            poly: : error: Syntax error: fun binding is not an identifier applied to one or more
+                            patterns.
+                            Static Errors
+                    p.
+                        Additionally, if we do not pass the unit literal to <code>main</code>,
+                        the function will not be invoked -- just referenced.
+                    pre
+                        code.
+                            > fun main () = print "hello world!\n";
+                            val main = fn: unit -> unit
+                            > main;
+                            val it = fn: unit -> unit
+                    h3 Function literals
+                    p.
+                        Although functions are first-class citizens, Standard ML breaks
+                        functions into two groups: literals and declarations. Literals
+                        can be immediately assigned to a value. Function declarations must be declared
+                        and only afterward can their name be assigned a value. For instance,
+                        the following will not compile:
+                    pre
+                        code.
+                            > val main = fun main () = print "hello world\n";
+                            poly: : error: Expression expected but fun was found
+                            Static Errors
+                            > val main = (fun main () = print "hello world\n");
+                            poly: : error: Expression expected but fun was found
+                            poly: : error: ) expected but fun was found
+                            poly: : error: ; expected but ) was found
+                            Static Errors
+                            > val main = fun () = print "hello world\n";
+                            poly: : error: Expression expected but fun was found
+                            poly: : error: Syntax error: fun binding is not an identifier applied to one or more
+                            patterns.
+                            Static Errors
+                            > fun main () = print "hello world\n";
+                            val main = fn: unit -> unit
+                            > val main2 = main;
+                            val main2 = fn: unit -> unit
+                    p.
+                        For whatever reason, function literals (or lambda functions)
+                        have a different syntax and keyword identifier. We use <code>fn</code>
+                        instead of <code>fun</code>. Although the difference might seem slight,
+                        it is rarely hard to distinguish between the two because function declarations
+                        can only appear in certain places. Here is the previous example using function
+                        literal syntax:
+                    pre
+                        code.
+                            > val main = fn () => print "hello world!\n";
+                            val main = fn: unit -> unit
+                            > main ();
+                            hello world
+                            val it = (): unit
+                    h3 Passing multiple arguments
+                    p.
+                       As mentioned before, Standard ML really only allows you to pass one
+                       argument to a function at a time. However, we can work around that
+                       by passing a tuple or by currying. Let's look look at these techniques.
+                    pre
+                        code.
+                            > fun sum (a, b) = a + b;
+                            val sum = fn: int * int -> int
+                            > sum (1, 2);
+                            val it = 3: int
+                            > fun minus a b = a - b;
+                            val minus = fn: int -> int -> int
+                            > minus 2 1;
+                            val it = 1: int;
+                    p.
+                        The <code>sum</code> function accepts one argument, a two-tuple of ints.
+                        We call it once and pass our two-tuple of ints. The result is <code>3</code>.
+                        On the other hand, the <code>minus</code> function transforms into
+                        a function that is called twice with one int argument each time. To
+                        understand this clearer, let's call the same <code>minus</code>
+                        a different way.
+                    pre
+                        code.
+                            > fun minus a b = a - b;
+                            val minus = fn: int -> int -> int
+                            > minus 2;
+                            val it = fn: int -> int
+                            > it 1;
+                            val it = 1: int
+                    p.
+                        This is called currying, and Standard ML does it for you by default in
+                        every function. For each "argument", it creates a new function that
+                        can be applied again. This allows us to store each progressive function
+                        for future use (like we did in this second example) or ignore the multiple
+                        functions and get a response at once (like we did in the first example).
+                    p.
+                        This currying feature is very powerful, but leads to an immediate question
+                        on which to use. Historically, Standard ML implementations have optimized
+                        tuple passing whereas OCaml has optimized currying. Generally speaking,
+                        Standard ML and OCaml libraries prefer tuple passing and currying,
+                        respectively. It would be worth benchmarking modern Standard ML
+                        versions to see if any obvious differences in performance remain.
+                    h3 Destructuring arguments
+                    p.
+                        Just like variable declarations, functions give you a chance to
+                        destructure arguments. Here are a few examples.
+                    h3 Pattern matching
+                    p.
+                        Let's write a function to calculate powers.
+                    pre
+                        code.
+                            > fun pow (base, exp) =
+                            #     if exp = 0
+                            #         then 1
+                            #     else
+                            #         base * pow (base, exp - 1);
+                            > val pow = fn: int * int -> int
+                    p.
+                        We could also write this using a <code>case</code> block:
+                    pre
+                        code.
+                            > fun pow (base, exp) =
+                            #     case exp of
+                            #         0 => 1
+                            #       | _ => base * pow (base, exp - 1);
+                            val pow = fn: int * int -> int
+                    p.
+                        As it turns out, this last case has a special shorthand syntax:
+                    pre
+                        code.
+                            > fun pow (base, 0) = 1
+                            #   | pow (base, exp) = base * pow (base, exp - 1);
+                            val pow = fn: int * int -> int
+                    p.
+                        It looks just like the <code>case</code> block except for that
+                        instead of the "fat-arrow" <code>=></code> we use a single <code>=</code>
+                        like a regular function declaration.
+                    h3 Operators and infix functions
                     p.
                         Any function can be marked infix. This infix marking lasts for the
                         current scope. If you attempt to use a function that has been
