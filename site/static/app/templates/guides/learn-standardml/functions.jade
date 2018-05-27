@@ -10,13 +10,287 @@ block body
         .sidebar-container
             .row
                 .col-md-6
-                    p This chapter is WIP.
-                    h3 Infix functions
                     p.
-                        Any function can be marked infix. This infix marking lasts for the
-                        current scope. If you attempt to use a function that has been
-                        marked infix in its declared scope, and that scope was not the
-                        top-level scope, you will need to redeclare infixi-ity in some
-                        new scope.
+                        Functions can be declared in the top-level, within structures (more
+                        on that later), and within let and local blocks. A function takes
+                        one, yes just one, argument. The equivalent of passing no arguments is
+                        to pass the unit literal <code>()</code>. The equivalent of passing
+                        multiple arguments is to pass a single tuple argument or to curry
+                        function arguments (which, in other languages, might be complicated
+                        but Standard ML has nice syntax for this). Functions can be declared
+                        with a name as a statement, or they can be created as an expression
+                        without a name (a lambda). Let's start from the top.
+                    pre
+                        code.
+                            > fun main () = print "hello world!\n";
+                            val main = fn: unit -> unit
+                            > main ();
+                            hello world
+                            val it = (): unit
+                    p.
+                        In this example, we declare a function <code>main</code> that takes
+                        the unit literal. It must declare and be passed the unit literal.
+                        If we do not include the unit literal in the function declaration,
+                        the compiler will produce a syntax error:
+                    pre
+                        code.
+                            > fun main = print "foo";
+                            poly: : error: Syntax error: fun binding is not an identifier applied to one or more
+                            patterns.
+                            Static Errors
+                    p.
+                        Additionally, if we do not pass the unit literal to <code>main</code>,
+                        the function will not be invoked -- just referenced.
+                    pre
+                        code.
+                            > fun main () = print "hello world!\n";
+                            val main = fn: unit -> unit
+                            > main;
+                            val it = fn: unit -> unit
+                    h3 Function literals
+                    p.
+                        Although functions are first-class citizens, Standard ML breaks
+                        functions into two groups: literals and declarations. Literals
+                        can be immediately assigned to a value. Function declarations must be declared
+                        and only afterward can their name be assigned a value. For instance,
+                        the following will not compile:
+                    pre
+                        code.
+                            > val main = fun main () = print "hello world\n";
+                            poly: : error: Expression expected but fun was found
+                            Static Errors
+                            > val main = (fun main () = print "hello world\n");
+                            poly: : error: Expression expected but fun was found
+                            poly: : error: ) expected but fun was found
+                            poly: : error: ; expected but ) was found
+                            Static Errors
+                            > val main = fun () = print "hello world\n";
+                            poly: : error: Expression expected but fun was found
+                            poly: : error: Syntax error: fun binding is not an identifier applied to one or more
+                            patterns.
+                            Static Errors
+                            > fun main () = print "hello world\n";
+                            val main = fn: unit -> unit
+                            > val main2 = main;
+                            val main2 = fn: unit -> unit
+                    p.
+                        For whatever reason, function literals (or lambda functions)
+                        have a different syntax and keyword identifier. We use <code>fn</code>
+                        instead of <code>fun</code>. Although the difference might seem slight,
+                        it is rarely hard to distinguish between the two because function declarations
+                        can only appear in certain places. Here is the previous example using function
+                        literal syntax:
+                    pre
+                        code.
+                            > val main = fn () => print "hello world!\n";
+                            val main = fn: unit -> unit
+                            > main ();
+                            hello world
+                            val it = (): unit
+                    h3 Passing multiple arguments
+                    p.
+                       As mentioned before, Standard ML really only allows you to pass one
+                       argument to a function at a time. However, we can work around that
+                       by passing a tuple or by currying. Let's look look at these techniques.
+                    pre
+                        code.
+                            > fun sum (a, b) = a + b;
+                            val sum = fn: int * int -> int
+                            > sum (1, 2);
+                            val it = 3: int
+                            > fun minus a b = a - b;
+                            val minus = fn: int -> int -> int
+                            > minus 2 1;
+                            val it = 1: int;
+                    p.
+                        The <code>sum</code> function accepts one argument, a two-tuple of ints.
+                        We call it once and pass our two-tuple of ints. The result is <code>3</code>.
+                        On the other hand, the <code>minus</code> function transforms into
+                        a function that returns another function and is called with one int
+                        argument each time. To understand this clearly, let's call the same
+                        <code>minus</code> a different way.
+                    pre
+                        code.
+                            > fun minus a b = a - b;
+                            val minus = fn: int -> int -> int
+                            > minus 2;
+                            val it = fn: int -> int
+                            > it 1;
+                            val it = 1: int
+                    p.
+                        This is called currying, and Standard ML does it for you by default in
+                        every function. For each "argument", it creates a new function that
+                        can be applied again. This allows us to store each progressive function
+                        for future use (like we did in this second example) or ignore the multiple
+                        functions and get a response at once (like we did in the first example).
+                    p.
+                        This currying feature is very powerful, but leads to an immediate question
+                        on which to use. Historically, Standard ML implementations have optimized
+                        tuple passing whereas OCaml has optimized currying. Generally speaking,
+                        Standard ML and OCaml libraries prefer tuple passing and currying,
+                        respectively. It would be worthwhile benchmarking modern Standard ML
+                        versions to see if any obvious differences in performance remain.
+                    h3 Destructuring arguments
+                    p.
+                        Just like variable declarations, functions give you a chance to
+                        destructure arguments. We've already seen an example of this in the
+                        tuple-passing <code>minus</code> function. Let's rewrite it without
+                        destructuring.
+                    pre
+                        code.
+                            > fun minus (t: int * int) = (#1 t) - (#0 t);
+                            > val minus = fn: int * int -> int
+                            > minus (2, 1);
+                            > val it = 1: int
+                    p.
+                        This signature for this function is identical to the previous, we
+                        just didn't destructure. We did have to provide the exact type for
+                        <code>t</code> though so that the type checker could resolve exactly
+                        what is passed. (It knew it would be a tuple with two elements, but
+                        couldn't assert there were only two elements, so we needed to specify
+                        the argument's type explicitly.)
+                    p.
+                        In another example, we can pull out 3 elements from a list passed in
+                        as arguments, skipping the third element of the list:
+                    pre
+                        code.
+                            > fun minus [a, b, _, c] = c - b - a;
+                            val minus = fn: int list -> int
+                            > minus [3, 2, 4, 1];
+                            val it = ~4: int
+                    h3 Pattern matching
+                    p.
+                        Let's write a function to calculate powers.
+                    pre
+                        code.
+                            > fun pow (base, exp) =
+                            #     if exp = 0
+                            #         then 1
+                            #     else
+                            #         base * pow (base, exp - 1);
+                            > val pow = fn: int * int -> int
+                    p.
+                        We could also write this using a <code>case</code> block:
+                    pre
+                        code.
+                            > fun pow (base, exp) =
+                            #     case exp of
+                            #         0 => 1
+                            #       | _ => base * pow (base, exp - 1);
+                            val pow = fn: int * int -> int
+                    p.
+                        As it turns out, this last example has a special shorthand syntax:
+                    pre
+                        code.
+                            > fun pow (base, 0) = 1
+                            #   | pow (base, exp) = base * pow (base, exp - 1);
+                            val pow = fn: int * int -> int
+                    p.
+                        It looks just like the <code>case</code> block except for that
+                        instead of the "fat-arrow" <code>=></code> we use a single <code>=</code>
+                        like a regular function declaration. We use a combination of destructuring
+                        and holding some elements constant (the <code>0</code>) to describe
+                        patterns and expressions to be evaluated when the input matches.
+                    h3 Operators and infix functions
+                    p.
+                        Any function that accepts a two-tuple can be marked infix. This infix
+                        marking lasts for the current scope. If you attempt to use a function
+                        that has been marked infix in its declared scope, and that scope was not the
+                        top-level scope, you will need to redeclare infix in some new scope.
+                    p.
+                        Let's create <code>&&</code> and <code>||</code> functions and mark them
+                        infix to get C-like boolean operators.
+                    pre
+                        code.
+                            > fun && (a, b) = a andalso b;
+                            val && = fn: bool * bool -> bool
+                            > && (true, false);
+                            val it = false: bool
+                            > infix &&;
+                            infix 0 &&
+                            > true && false;
+                            val it = false: bool
+                            > fun || (a, b) = a orelse b;
+                            val && = fn: bool * bool -> bool
+                            > || (true, false);
+                            val it = true: bool
+                            > infix ||;
+                            infix 0 ||
+                            > true || false;
+                            val it = true: bool
+                    p.
+                        The <code>infix</code> declaration takes an optional first argument:
+                        the stickiness of the fixity. It defaults to 0 which is most sticky
+                        and goes up to 9. The Standard ML basis library declares the following:
+                    pre
+                        code.
+                            infix 7 * / div mod
+                            infix 6 + - ^
+                            infixr 5 :: @
+                            infix 4 = <> > >= < <=
+                            infix 3 := o
+                            infix 0 before
+                    p.
+                        <code>infixr</code> declares right-associative fixity.
+                    h4 Resolving infix ambiguities in higher-order functions
+                    p.
+                        When it is ambiguous whether an infixed function is meant to be passed
+                        or called, you will need to prefix it with <code>op</code>. Here is an
+                        example:
+                    pre
+                        code.
+                            > fun pass (operator, a, b) = a op operator b;
+                            poly: : warning: (o) has infix status but was not preceded by op.
+                            val pass = fn: 'a * ('a -> 'b -> 'c) * 'b -> 'c
+                            > pass (+, 1, 2);
+                            val it = 3: int
+                    p.
+                        In this situation, we can call <code>pass</code> without declaring
+                        <code>op+</code>. Let's try a curried-argument version:
+                    pre
+                        code.
+                            > fun pass operator a b = a op operator b;
+                            val pass = fn: ('a * 'b -> 'c) -> 'a -> 'b -> 'c
+                    p.
+                        This time when we want to call it, passing a naked <code>+</code>
+                        will create ambiguity resulting in a type error:
+                    pre
+                        code.
+                            > pass + 1 2;
+                            poly: : error: Type error in function application.
+                                Function: 1 : int
+                                Argument: 2 : int
+                                Reason: Value being applied does not have a function type
+                            Found near pass + 1 2
+                            poly: : error: Type error in function application.
+                                Function: + : int * int -> int
+                                Argument: (pass, 1 2) : ('a -> ('a -> 'b -> 'c) -> 'b -> 'c) * bad
+                                Reason:
+                                    Can't unify int to 'a -> ('a -> 'b -> 'c) -> 'b -> 'c
+                                        (Incompatible types)
+                            Found near pass + 1 2
+                            Static Errors
+                            > pass op+ 1 2;
+                            val it = 3: int
+                    p.
+                        We prefix <code>+</code> with <code>op</code> to resolve the ambiguity.
+                    h4 Local infix declaration
+                    p.
+                        As noted previously, infixity lasts only in the current scope and only
+                        after infixity has been declared. If we create a <code>pass</code> function
+                        and want to use the <code>operator</code> argument as an infix function, we
+                        can declare that locally once and avoid having to prefix each infix use of
+                        it with <code>op</code>:
+                    pre
+                        code.
+                            > fun pass operator a b =
+                            #     let
+                            #         infix operator
+                            #     in
+                            #         a operator b
+                            #     end
+                            val pass = fn: ('a * 'b -> 'c) -> 'a -> 'b -> 'c
+                            > pass op+ 1 2;
+                            val it = 3: int
                     p
                         a(href="/guides/learn-standardml/lists-and-tuples") Chapter 5. Lists and Tuples
