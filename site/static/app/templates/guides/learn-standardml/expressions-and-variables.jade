@@ -28,7 +28,7 @@ block body
                         li Let blocks (e.g. <code>let val i = 1 in i end</code>)
                         li Local blocks (e.g. <code>local val i = 1 in i end</code>)
                         li Compound expressions (e.g. <code>1; a + b</code>)
-                        li Any expression in parenthesis (e.g. <code>(1)</code>, <code>(theVariable)</code>)
+                        li Any expression in parentheses (e.g. <code>(1)</code>, <code>(theVariable)</code>)
                     p The following are <strong>not</strong> expressions:
                         li Val declarations (e.g. the <code>val i = 1</code> part of <code>let val i = 1 in i end</code>)
                         li Named function declarations (e.g. <code>fun a b => b</code>)
@@ -54,7 +54,7 @@ block body
                         Some Standard ML implementations (including MLton, but not Poly/ML)
                         additionally have support for vector literals (e.g. <code>\#[1, 2, 3]</code>)
                         as part of Successor ML, informally agreed upon extensions to the standard.
-                    h4 Parenthesis, semi-colons and compound expressions
+                    h4 Parentheses, semi-colons and compound expressions
                     p.
                         Semi-colons are mostly optional, except for in compound expressions.
                         But semi-colons are often necessary to disambiguate the end of a function
@@ -94,9 +94,9 @@ block body
                         expressions for side-effects while only returning the value of the last
                         expression.
                     p.
-                        Parenthesis are typically allowed anywhere, surrounding an expression.
+                        Parentheses are typically allowed anywhere, surrounding an expression.
                         But outside of the <code>in ... end</code> block of a let block, you will need to
-                        surround a compound expression in parenthesis to disambiguate:
+                        surround a compound expression in parentheses to disambiguate:
                     pre
                         code.
                             > val i = (1 + 2; 8);
@@ -126,9 +126,9 @@ block body
                             val it = 23: int
                     p.
                         If you need an if block inside the then block, you will need to wrap it
-                        in parenthesis to disambiguate the ending else. But if an if block follows
+                        in parentheses to disambiguate the ending else. But if an if block follows
                         another if block in the <code>else</code> section, you don't need
-                        parenthesis:
+                        parentheses:
                     pre
                         code.
                             > val i = if true then 1 else if false then 11 else 14;
@@ -154,7 +154,7 @@ block body
                     p.
                         Case blocks have the same ambiguities as if blocks when it comes to
                         nested case blocks. If a case block follows another case block as
-                        the ending case, it doesn't need to be wrapped in parenthesis. Otherwise,
+                        the ending case, it doesn't need to be wrapped in parentheses. Otherwise,
                         it does.
                     h3 Variables
                     p.
