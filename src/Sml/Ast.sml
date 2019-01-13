@@ -2,7 +2,7 @@ structure Ponyo_Sml_Ast =
 struct
     local
         structure Token = Ponyo_Sml_Token
-        structure Format = Ponyo_Format
+        structure Format = Ponyo_Format_String
         structure String = Ponyo_String
     in
 

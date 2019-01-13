@@ -7,7 +7,7 @@ struct
         structure Cli = Ponyo.Os.Cli
         structure File = Ponyo.Os.Filesystem.File
 
-        structure Format = Ponyo.Format
+        structure Format = Ponyo.Format_String
         structure String = Ponyo.String
     in
 

@@ -4,6 +4,7 @@ struct
         open Ponyo
 
         structure Cli        = Os.Cli
+	structure Format     = Format.String
         structure Filesystem = Os.Filesystem
         structure File       = Filesystem.File
         structure Path       = Os.Path

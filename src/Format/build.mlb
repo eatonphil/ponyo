@@ -1,5 +1,10 @@
 $(SML_LIB)/basis/basis.mlb
 ../String/build.mlb
 
+String.sig
+String.sml
+
 Format.sig
 Format.sml
+
+Format_export.sml

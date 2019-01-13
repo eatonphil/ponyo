@@ -2,7 +2,7 @@ functor Ponyo_Net_Http_Response (Socket: PONYO_NET_SOCKET) : PONYO_NET_HTTP_RESP
 struct
     local
         structure String = Ponyo_String
-        structure Format = Ponyo_Format
+        structure Format = Ponyo_Format_String
 
         structure Header     = Ponyo_Net_Http_Header
         structure Headers    = String.Dict

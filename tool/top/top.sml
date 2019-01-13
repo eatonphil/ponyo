@@ -1,4 +1,4 @@
-structure Format = Ponyo.Format
+structure Format = Ponyo.Format.String
 structure String = Ponyo.String
 
 structure Cli = Ponyo.Os.Cli

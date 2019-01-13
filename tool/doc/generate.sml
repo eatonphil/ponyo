@@ -1,7 +1,7 @@
 structure Generate =
 struct
     local
-        structure Format = Ponyo.Format
+        structure Format = Ponyo.Format_String
 
         structure Filesystem = Ponyo.Os.Filesystem
         structure File = Ponyo.Os.Filesystem.File

@@ -2,7 +2,7 @@ structure Ponyo_Sml_Lexer =
 struct
     local
         structure String = Ponyo_String
-        structure Format = Ponyo_Format
+        structure Format = Ponyo_Format_String
         structure Token = Ponyo_Sml_Token
         structure StringList = Ponyo_Container_List (String)
     in

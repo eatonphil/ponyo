@@ -2,12 +2,11 @@ structure Main =
 struct
     local
 
-    open Ponyo
+      open Ponyo
 
-    structure Os = Os
-    structure Cli = Os.Cli
-    structure File = Os.Filesystem.File
-
+      structure Format = Format.String
+      structure Cli    = Os.Cli
+      structure File   = Os.Filesystem.File
     in
 
     val mainFlag       = Cli.Flag.Anon "main"

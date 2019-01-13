@@ -5003,7 +5003,7 @@ val a = [
 
 fun p f profile =
     if profile then
-        P.profile P.ProfileTime f () handle e => Format.println [exnName e, exnMessage e]
+        P.profile P.ProfileTime f () handle e => Format.String.println [exnName e, exnMessage e]
     else
         f ()
 

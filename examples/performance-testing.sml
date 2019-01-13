@@ -11010,7 +11010,7 @@ val a = [
 ]
 
 fun p (f) =
-    P.profile P.ProfileTime f () handle e => Ponyo.Format.println [exnName e, exnMessage e]
+    P.profile P.ProfileTime f () handle e => Ponyo.Format.String.println [exnName e, exnMessage e]
 
 fun t () =
     let

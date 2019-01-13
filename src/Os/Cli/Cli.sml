@@ -1,7 +1,7 @@
 structure Ponyo_Os_Cli =
 struct
     local
-        structure Format = Ponyo_Format
+        structure Format = Ponyo_Format_String
         structure String = Ponyo_String
     in
 

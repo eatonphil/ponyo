@@ -1,7 +1,7 @@
 structure Ponyo_Test =
 struct
     local
-        structure Format = Ponyo_Format
+        structure Format = Ponyo_Format_String
     in
         fun test (description: string) (testResults: bool list) : bool =
             let

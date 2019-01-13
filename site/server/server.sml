@@ -53,7 +53,7 @@ struct
                 (* TODO: fix reference for Standard ML pages *)
                 val filePath = Path.join ["reference/src/", mapped ^ ".html"]
             in
-                Format.println ["Serving from path: ", filePath];
+                Format.String.println ["Serving from path: ", filePath];
                 serveFile (Path.join ["templates", filePath]) request
             end
 

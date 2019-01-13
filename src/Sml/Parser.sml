@@ -1,7 +1,7 @@
 structure Ponyo_Sml_Parser =
 struct
     local
-        structure Format = Ponyo_Format
+        structure Format = Ponyo_Format_String
         structure Ast = Ponyo_Sml_Ast
         structure Token = Ponyo_Sml_Token
         structure Symbol =

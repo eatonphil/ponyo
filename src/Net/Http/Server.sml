@@ -1,7 +1,7 @@
 structure Ponyo_Net_Http_Server : PONYO_NET_HTTP_SERVER =
 struct
     local
-        structure Format = Ponyo_Format
+        structure Format = Ponyo_Format_String
         structure Socket = Ponyo_Net_Socket
         structure String = Ponyo_String
         structure Thread = Ponyo_Thread

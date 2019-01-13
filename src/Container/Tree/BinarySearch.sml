@@ -12,7 +12,7 @@ struct
     (* -insert: Creates a new tree from the original with the given
      *  key-val pair.
      *)
-    fun insert (bst: 'a t) (newKey: elt, newVal: 'a) : 'a t =
+    fun insert (bst: 'a t) (newKey: elt) (newVal: 'a) : 'a t =
     	case bst of
 	    Leaf => Node (Leaf, newKey, newVal, Leaf)
 	  | Node (l, k, v, r) =>
