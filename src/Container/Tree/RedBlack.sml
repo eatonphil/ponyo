@@ -61,9 +61,9 @@ struct
         let
             fun doFromList root l =
                 case l of
-                    [] => new
+                    [] => root
                   | (k, v) :: tail =>
-                doFromList (insert root k v) l
+                doFromList (insert root k v) tail
         in
             doFromList new l
         end
