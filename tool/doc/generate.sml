@@ -1,7 +1,7 @@
 structure Generate =
 struct
     local
-        structure Format = Ponyo.Format_String
+        structure Format = Ponyo.Format.String
 
         structure Filesystem = Ponyo.Os.Filesystem
         structure File = Ponyo.Os.Filesystem.File
@@ -44,28 +44,28 @@ struct
 
             fun cleanComment (comment: string) : string =
                 let
-                    val lines = String.split (comment, "*")
+                    val lines = String.split comment "*"
                     val lines = map String.stripWhitespace lines
                 in
-                    String.join (lines, "\n")
+                    String.join lines "\n"
                 end
 
             val comments = map cleanComment comments
 
             fun cleanDescription (desc: string) : string =
-                String.replace (String.stripWhitespace desc, "\n", " ")
+                String.replace (String.stripWhitespace desc) "\n" " "
 
             fun parseComment (comment: string) : comment option =
-                case String.splitN (comment, ":", 1) of
+                case String.splitN comment ":" 1 of
                     [] => NONE
                   | name :: [comment] => (
-                    case String.splitN (comment, "Ex:", 1) of
+                    case String.splitN comment "Ex:" 1 of
                         [] => SOME (String.stripWhitespace name,
                                     cleanDescription comment, [])
                       | description :: [examples] =>
                           SOME (String.stripWhitespace name,
                                 cleanDescription description,
-                                map String.stripWhitespace (String.split (String.stripWhitespace examples, "\n")))
+                                map String.stripWhitespace (String.split (String.stripWhitespace examples) "\n"))
                       | _ => SOME (String.stripWhitespace name,
                                    cleanDescription comment, []))
                   | _ => NONE
@@ -85,8 +85,8 @@ struct
 
     fun parseFile (path: string) : Ast.t * comment String.Dict.t =
         let
-            val file = String.join (File.readFrom path, "")
-            val file = String.replace (file, "\n", " ")
+            val file = String.join (File.readFrom path) ""
+            val file = String.replace file "\n" " "
             val stream = TextIO.openString (file)
             fun lex () = Lexer.lex (fn () => TextIO.input1 stream)
 
@@ -133,7 +133,7 @@ struct
                         name,
                         source,
                         description,
-                        String.join (examples, "\n"),
+                        String.join examples "\n",
                         generatePage (body, comments, source)
                     ]
                 in
@@ -171,7 +171,7 @@ struct
                         name,
                         if ty = Ast.NoType then "" else Ast.tyToString ty,
                         description,
-                        String.join (examples, "\n")
+                        String.join examples "\n"
                     ]
                 in
                     Format.sprintf valueHtml valueValues
@@ -179,11 +179,11 @@ struct
         in
             case ast of
                 Ast.Root (children) =>
-                String.join (map (fn child => generatePage (child, comments, source)) children, "")
+                String.join (map (fn child => generatePage (child, comments, source)) children) ""
               | Ast.Signature (name, body) =>
                   generateSignature (name, body)
               | Ast.SignatureBody (children) =>
-                  String.join (map (fn child => generatePage (child, comments, source)) children, "")
+                  String.join (map (fn child => generatePage (child, comments, source)) children) ""
               | Ast.ValueDec (name, (Ast.Type ty)) => generateGeneric ("val", name, ty)
               | Ast.TypeDec (name, (Ast.Type ty)) => generateGeneric ("type", name, ty)
               | Ast.EqtypeDec (name) => generateGeneric ("eqtype", name, Ast.NoType)
@@ -228,7 +228,7 @@ struct
             then asts
         else String.Dict.insert
              asts
-             (String.substringToEnd (path, String.length (!inDirectory)))
+             (String.substringToEnd path (String.length (!inDirectory)))
              (parseFile path)
 
     fun generateDocumentation () : unit =

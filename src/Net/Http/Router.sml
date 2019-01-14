@@ -25,14 +25,14 @@ struct
             (* Turn a path "/foo/bar" into "/foo/*". *)
             fun pathToSlashStar (path: string) : string =
                 let
-                    val split = String.split (path, "/")
-                    val last = if String.hasSuffix (path, "*") then 2 else 1
+                    val split = String.split path "/"
+                    val last = if String.hasSuffix path "*" then 2 else 1
                     val butLast = List.take (split, length split - last)
-                    val joined = String.join (butLast, "/")
-                    val prefix = if String.hasPrefix (joined, "/") then "" else "/"
+                    val joined = String.join butLast "/"
+                    val prefix = if String.hasPrefix joined "/" then "" else "/"
                 in
                     if length split = 1 then "/*"
-                    else prefix ^ String.join ([joined, "*"], "/")
+                    else prefix ^ String.join [joined, "*"] "/"
                 end
 
             fun handler (request, path) =
@@ -44,8 +44,8 @@ struct
                   | NONE =>
                       if path = "/*" orelse path = "//*"
                           then Response.NotFound
-                      else if String.hasSuffix (path, "/")
-                          then handler (request, String.substring (path, 0, ~1))
+                      else if String.hasSuffix path "/"
+                          then handler (request, String.substring path 0 ~1)
                       else handler (request, pathToSlashStar path)
         in
             fn (request) => handler (request, Request.path request)

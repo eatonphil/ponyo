@@ -40,7 +40,7 @@ struct
         end
 
     fun parseFirstLine (line: string) (request: Connection.t) : t =
-        case String.split (line, " ") of
+        case String.split line " " of
             [] => raise MalformedRequest (line)
           | list => if length (list) <> 3
                   then raise MalformedRequest (line)
@@ -65,7 +65,7 @@ struct
 	    val path = #path request
 	    val intro = method ^ " " ^ path ^ " HTTP/1.1\r\n"
 	    val marshalled = map Header.marshall (Headers.toList (#headers request))
-	    val headers = foldl (fn (a, b) => String.join ([a, b], "\r\n")) "" marshalled
+	    val headers = foldl (fn (a, b) => String.join [a, b] "\r\n") "" marshalled
 	    val body = #body request
 	in
 	    intro ^ headers ^ "\r\n" ^ body

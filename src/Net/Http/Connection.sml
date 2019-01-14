@@ -28,13 +28,13 @@ struct
 
             (* -parseHeaderLine: Parses a header line and returns the header. *)
             fun parseHeaderLine (line: string) : Header.t option =
-                case String.split (line, ":") of
+                case String.split line ":" of
                     [] => NONE
                   | [badValue] => NONE
                   | header :: field => SOME (Header.unmarshall (line))
 
 	    fun doParse (stream: string, response as {response=rspBody, ...}: incomplete) : incomplete =
-	        case String.indexOf (stream, "\r\n") of
+	        case String.indexOf stream "\r\n" of
 		    (* No complete line to read yet. *)
 		      ~1 => { 
 		            headersComplete = false,
@@ -48,13 +48,13 @@ struct
 			    response        = {
                                 firstLine = #firstLine rspBody,
                                 headers   = #headers rspBody,
-				body      = String.substringToEnd(stream, 2)
+				body      = String.substringToEnd stream 2
                             }
                         }
 	            (* Line can be read. *)
 		    | j =>
 		        let
-		            val (line, stream) = case String.splitN (stream, "\r\n", 1) of
+		            val (line, stream) = case String.splitN stream "\r\n" 1 of
 		            	[] => (stream, "") (* This case shouldn't be possible. *)
 	                      | [stream] => (stream, "") (* Likewise shouldn't be possible. *)
 		              | line :: (stream :: _) => (line, stream)

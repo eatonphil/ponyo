@@ -33,7 +33,7 @@ struct
                 case t of
                     Leaf => Node (Leaf, Red, key, value, Leaf)
                   | Node (left, color, childKey, childValue, right) =>
-                case D.compare (key, childKey) of
+                case D.compare key childKey of
                     LESS => balance (Node (insertHelper left, color, childKey, childValue, right))
                   | EQUAL => Node (left, color, childKey, childValue, right)
                   | GREATER => balance (Node (left, color, childKey, childValue, insertHelper right))
@@ -45,7 +45,7 @@ struct
         case root of
             Leaf => NONE
           | Node (l, _, k, v, r) =>
-        case D.compare (key, k) of
+        case D.compare key k of
             LESS => get l key
           | EQUAL => SOME v
           | GREATER => get r key

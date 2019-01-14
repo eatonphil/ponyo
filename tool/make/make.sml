@@ -44,7 +44,7 @@ struct
         end
 
     fun exec (program: string, args: string list) : Basis.OS.Process.status =
-        Basis.OS.Process.system (program ^ " " ^ String.join(args, " "));
+        Basis.OS.Process.system (program ^ " " ^ String.join args " ");
     
     fun writeTmpAndMake (buildFile: string, buildScript: string, doMake, saveTmp: bool) : unit =
         let
@@ -72,7 +72,7 @@ struct
                     Os.Path.join [ponyoRoot, "build.sml"] :: libraries
                 else
                     libraries
-            val librariesList = String.join (libraries @ sources, "\",\"")
+            val librariesList = String.join (libraries @ sources) "\",\""
             val buildScript =
                 Format.sprintf "map PolyML.make [\"%\"]; oldUse \"%\""
                                (librariesList :: [main])
@@ -97,14 +97,14 @@ struct
                     Os.Path.join [ponyoRoot, "build.mlb"] :: libraries
                 else
                     libraries
-            val librariesList = String.join (libraries, "\n")
+            val librariesList = String.join libraries "\n"
             val sources =
                 (map (fn (source) =>
-                    if String.charAt (source, 0) = #"/"
+                    if String.charAt source 0 = #"/"
                         then source
                     else
                         Os.Path.join [Basis.OS.FileSys.getDir (), source]) (sources @ [main]))
-            val buildScript = String.join (librariesList :: sources @ [mainShim], "\n")
+            val buildScript = String.join (librariesList :: sources @ [mainShim]) "\n"
     
             fun make () =
                 exec ("mlton", ["-output", binaryName, buildFile])

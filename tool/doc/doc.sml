@@ -7,7 +7,7 @@ struct
         structure Cli = Ponyo.Os.Cli
         structure File = Ponyo.Os.Filesystem.File
 
-        structure Format = Ponyo.Format_String
+        structure Format = Ponyo.Format.String
         structure String = Ponyo.String
     in
 
@@ -58,12 +58,12 @@ struct
             val [debug] = getNamed (debugFlag)
             val [pageTemplateFile] = getNamed (pageTemplateFlag)
             val [repository] = getNamed (repositoryFlag)
-            val (host, namespace, project) = case String.split (repository, "/") of
+            val (host, namespace, project) = case String.split repository "/" of
                 host :: (namespace :: (project :: [])) => (host, namespace, project)
               | _ => (Format.println ["ERROR: Bad repository.\n\n"];
                       Cli.doHelp (spec); ("", "", ""))
 
-            val pageTemplate = String.join (File.readFrom (pageTemplateFile), "") handle
+            val pageTemplate = String.join (File.readFrom (pageTemplateFile)) "" handle
                 _ => pageTemplateDefault
         in
             if debug = "true"

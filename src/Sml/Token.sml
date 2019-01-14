@@ -15,7 +15,7 @@ struct
           | Symbol s  => s
           | Comment s => s
 
-    fun compare (a: t, b: t) : order =
+    fun compare (a: t) (b: t) : order =
         case (a, b) of
             (String a, String b)   => String.compare (a, b)
           | (Number a, Number b)   => String.compare (a, b)

@@ -4,12 +4,12 @@ struct
         structure Cli = Ponyo.Os.Cli
 
         structure String = Ponyo.String
-        structure Format = Ponyo.Format
+        structure Format = Ponyo.Format.String
     in
 
     fun ponyo (program: string, args: string list) : unit =
         let in
-            Basis.OS.Process.system ("ponyo-" ^ program ^ " " ^ String.join(args, " "));
+            Basis.OS.Process.system ("ponyo-" ^ program ^ " " ^ String.join args " ");
             ()
         end
 

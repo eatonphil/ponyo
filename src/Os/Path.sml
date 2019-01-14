@@ -24,14 +24,14 @@ struct
         Basis.OS.Path.file (path)
 
     fun filename (path: string) : string =
-        String.substring (file path, 0, ~1 * (1 + String.length (extension path)))
+        String.substring (file path) 0 (~1 * (1 + String.length (extension path)))
 
     fun join (paths: string list) =
         case paths of
             [] => ""
           | [path] => path
           | path :: paths =>
-             String.join ([String.stripRight (clean path, "/"),
-                           String.stripLeft (join paths, "/")], "/")
+             String.join [String.stripRight (clean path) "/",
+                           String.stripLeft (join paths) "/"] "/"
     end
 end

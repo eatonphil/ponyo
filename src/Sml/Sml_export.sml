@@ -23,9 +23,9 @@ struct
 
     fun parseFile (path: string) : Ast.t =
         let
-            val file = String.join (File.readFrom path, "")
+            val file = String.join (File.readFrom path) ""
         in
-            parseString (String.replace (file, "\n", " "))
+            parseString (String.replace file "\n" " ")
         end
 
     end

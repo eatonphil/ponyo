@@ -19,10 +19,10 @@ struct
 
     fun go (method: Method.t, address: string, request': request option) : response =
     	let
-            val address = if String.hasSubstring (address, "://")
-                then (List.nth (String.split (address, "://"), 1))
+            val address = if String.hasSubstring address "://"
+                then (List.nth (String.split address "://", 1))
                 else address
-            val (domain, path) = case String.splitN (address, "/", 1) of
+            val (domain, path) = case String.splitN address "/" 1 of
                 [domain, path] => (domain, "/" ^ path)
               | _ => raise InvalidRequestAddress (address)
             val request = case request' of

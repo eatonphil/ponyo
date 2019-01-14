@@ -79,6 +79,6 @@ signature PONYO_CONTAINER_LIST_DOMAIN =
 sig
     eqtype t
 
-    val compare : t * t -> order
+    val compare : t -> t -> order
     val toString : t -> string
 end

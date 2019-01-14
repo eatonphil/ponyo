@@ -35,7 +35,7 @@ struct
             fun next () =
                 if !streamed = "" then NONE
                 else let val c = SOME (String.toChar (!streamed)) in
-                    streamed := String.substringToEnd (!streamed, 1);
+                    streamed := String.substringToEnd (!streamed) 1;
                     c
                 end
         in
@@ -110,8 +110,8 @@ struct
             val seen = ref ""
             val illegal = (Format.sprintf "Illegal newline in string: {}." [!seen])
 
-            fun lastChar () = String.charAt (!seen, String.length (!seen) - 2)
-            fun firstChar () = String.charAt (!seen, 0)
+            fun lastChar () = String.charAt (!seen) (String.length (!seen) - 2)
+            fun firstChar () = String.charAt (!seen) 0
 
             fun isString (c: char) : bool = (
                 seen := !seen ^ (if c = #"\"" then "\"" else charToString c);
@@ -127,7 +127,7 @@ struct
             )
 
             fun stringMinusMarkers () =
-                String.substring (!seen, 1, String.length (!seen) - 2)
+                String.substring (!seen) 1 (String.length (!seen) - 2)
         in
             readChars (reader, isString) >>=
             (fn (reader as {stream, store}, string) =>
@@ -141,14 +141,14 @@ struct
             val seen = ref ""
 
             fun lastChar () : string =
-                String.substringToEnd (!seen, String.length (!seen) - 1)
+                String.substringToEnd (!seen) (String.length (!seen) - 1)
 
             fun butLastChar () : string =
-                String.substring (!seen, 0, String.length (!seen) - 1)
+                String.substring (!seen) 0 (String.length (!seen) - 1)
 
             fun isPrefix () : bool =
                 foldl (fn (word, isPrefix) =>
-                    isPrefix orelse String.hasPrefix (word, !seen)) false reservedWords
+                    isPrefix orelse String.hasPrefix word (!seen)) false reservedWords
 
             fun charTypeChanged () : bool =
                 if String.isAlphaNum (butLastChar ()) andalso
@@ -181,7 +181,7 @@ struct
             fun isAlphaNumeric (c: char) : bool =
                 Char.isAlphaNum (c) orelse Char.contains "'_." c
             fun isSymbolic (c: char) : bool = Char.contains "!%&$#+-/:<=>?@\\~'^|*" c
-            fun firstChar () = if !seen = "" then #" " else String.charAt (!seen, 0)
+            fun firstChar () = if !seen = "" then #" " else String.charAt (!seen) 0
 
             fun isIdent (c: char) : bool = (
                 seen := !seen ^ (charToString c);
@@ -202,8 +202,8 @@ struct
             fun seenLen () = String.length (!seen)
 
             fun firstChar () = String.toChar (!seen)
-            fun secondChar () = String.charAt (!seen, 1)
-            fun lastChar () = String.charAt (!seen, String.length (!seen) - 2)
+            fun secondChar () = String.charAt (!seen) 1
+            fun lastChar () = String.charAt (!seen) (String.length (!seen) - 2)
 
             fun isComment (c: char) : bool = (
                 seen := !seen ^ charToString (c);
@@ -215,7 +215,7 @@ struct
             )
 
             fun commentsMinusMarkers () =
-                String.substring (!seen, 2, seenLen () - 4)
+                String.substring (!seen) 2 (seenLen () - 4)
         in
             readChars (reader, isComment) >>=
             (fn (reader as {stream, store}, comment) =>
@@ -232,7 +232,7 @@ struct
             val seen = ref ""
 
             fun lastChar () =
-                String.charAt (!seen, String.length (!seen) - 1)
+                String.charAt (!seen) (String.length (!seen) - 1)
 
             fun isEscape () : bool =
                 let

@@ -11,16 +11,16 @@ struct
      *      sprintf "%: %" ["12/2/24", "ERROR"] = "12/2/24: ERROR"
      *      sprintf "% + % = %" [int 1, int 2, int (1 + 2)] = "1 + 2 = 3"
      *)
-    fun sprintf (fmt: string) (args : string list) : string =
+    fun sprintf (fmt: string) (args: string list) : string =
 	let
 	    val formatVariable = !formatVariable
 
 	    fun isEscape (index: int) : bool =
 		String.length (fmt) > index + 1 andalso
-		String.hasPrefix (String.substringToEnd (fmt, index + 1), formatVariable)
+		String.hasPrefix (String.substringToEnd fmt (index + 1)) formatVariable
 
 	    fun sprintfNext (index: int, args) : string =
-		sprintf (String.substringToEnd (fmt, index)) args
+		sprintf (String.substringToEnd fmt index) args
 
 	    fun escapedLength (start: int) : int =
 		start + 2 * (String.length formatVariable)
@@ -36,9 +36,9 @@ struct
 		    replacement ^ sprintfNext (offset, args)
 		end
 	in
-	    case String.indexOf (fmt, formatVariable) of
+	    case String.indexOf fmt formatVariable of
 	        ~1 => fmt
-	       | i => String.substring (fmt, 0, i) ^
+	       | i => String.substring fmt 0 i ^
 	           (if isEscape (i)
 		        then formatVariable ^ sprintfNext (escapedLength (i), args)
                     else

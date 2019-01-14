@@ -6,7 +6,7 @@ struct
     type t = string * string
 
     fun unmarshall (line: string) : string * string =
-        case String.splitN (line, ":", 1) of
+        case String.splitN line ":" 1 of
 	    [] => raise MalformedHeader ("no header present: " ^ line)
 	  | badValue :: [] => raise MalformedHeader (line)
 	  | field :: (value :: _) => let

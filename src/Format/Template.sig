@@ -6,9 +6,9 @@
  *        open Ponyo
  *      in
  *        val parsed = Format.Template.parse "{{ a }} = {{ b }}";
- *        val map = String.Map.new;
- *        val map = String.Map.insert map "a" 1;
- *        val map = String.Map.insert map "b" 1;
+ *        val map = String.Dict.new;
+ *        val map = String.Dict.insert map "a" 1;
+ *        val map = String.Dict.insert map "b" 1;
  *        val result = Format.Template.generate parsed map;
  *      end
  *)
@@ -25,5 +25,5 @@ sig
      *  generate: This takes an internal template representation and a map
      *  and produces a string.
      *)
-    val generate: t -> Ponyo_String_Map -> string
+    val generate: t -> string Ponyo_String.Dict.t -> string
 end

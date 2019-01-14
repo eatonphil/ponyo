@@ -29,7 +29,7 @@ struct
             val (anonSpecHelp, anonSpecUsage) =
                 ListPair.unzip (genAnonHelp (anonSpecs, []))
             val (anonSpecHelp, anonSpecUsage) =
-                (String.join (anonSpecHelp, " "), String.join (anonSpecUsage, "\n\t"))
+                (String.join anonSpecHelp " ", String.join anonSpecUsage "\n\t")
 
             fun genNamedHelp (specs: namedSpec list, usage: (string * string) list)
                     : (string * string) list =
@@ -53,7 +53,7 @@ struct
             val (namedSpecHelp, namedSpecUsage) =
                 ListPair.unzip (genNamedHelp (namedSpecs, []))
             val (namedSpecHelp, namedSpecUsage) =
-                (String.join (namedSpecHelp, " "), String.join (namedSpecUsage, "\n\t"))
+                (String.join namedSpecHelp " ", String.join namedSpecUsage "\n\t")
 
             fun helpString () : string =
                 let
@@ -91,7 +91,7 @@ struct
         case args of
             [] => ([], parsed, specs)
           | arg :: args =>
-        case String.hasPrefix (arg, "-") of
+        case String.hasPrefix arg "-" of
             true => (arg :: args, parsed, specs)
           | false =>
         case specs of
@@ -141,7 +141,7 @@ struct
                 case args of
                     [] => ([], unmatched, specs, (arg, parsed))
                   | nextArg :: args =>
-                if String.hasPrefix (nextArg, "-")
+                if String.hasPrefix nextArg "-"
                     then (nextArg :: args, unmatched, specs, (arg, parsed))
                 else case n of
                     0  => (nextArg :: args, unmatched, specs, (arg, parsed))
@@ -168,7 +168,7 @@ struct
     fun missingRequired (specs: anonSpec list) : unit =
         let
             val missingNames =
-                String.join (map (fn (name, _, _) => name) specs, ", ")
+                String.join (map (fn (name, _, _) => name) specs) ", "
         in
             raise Fail
                 (Format.sprintf "Missing required arguments [%]." [missingNames])
@@ -179,7 +179,7 @@ struct
         case args of
             [] => ([], parsed, specs)
           | (arg: string) :: args =>
-        case String.hasPrefix (arg, "-") of
+        case String.hasPrefix arg "-" of
             false => (arg :: args, parsed, specs)
           | true =>
         case specs of

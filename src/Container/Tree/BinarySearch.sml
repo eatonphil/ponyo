@@ -17,10 +17,10 @@ struct
 	    Leaf => Node (Leaf, newKey, newVal, Leaf)
 	  | Node (l, k, v, r) =>
 	      let in
-		  case D.compare (k, newKey) of
-		      LESS => Node (insert l (newKey, newVal), k, v, r)
-		    | EQUAL => Node (l, k, v, insert r (newKey, newVal))
-	            | GREATER => Node (l, k, v, insert r (newKey, newVal))
+		  case D.compare k newKey of
+		      LESS => Node (insert l newKey newVal, k, v, r)
+		    | EQUAL => Node (l, k, v, insert r newKey newVal)
+	            | GREATER => Node (l, k, v, insert r newKey newVal)
 	      end
 
     (* -get: Searches the tree for the key and returns the value if it
@@ -31,20 +31,20 @@ struct
 	    Leaf => NONE
 	  | Node (l, k, v, r) =>
 	      let in
-	          case D.compare (k, theKey) of
+	          case D.compare k theKey of
 		      LESS => get l theKey
 		    | EQUAL => SOME v
 		    | GREATER => get r theKey
               end
 
-    fun fromList (list: (elt * 'a) list) : 'a t =
+    fun fromList (l: (elt * 'a) list) : 'a t =
         let
-            fun doFromList (list, tree) =
-                case list of
+            fun doFromList (l, tree): 'a t =
+                case l of
                     [] => tree
-                  | hd :: tl => doFromList (tl, insert tree hd)
+                  | (key, value) :: tl => doFromList (tl, insert tree key value)
         in
-            doFromList (list, new)
+            doFromList (l, new)
         end
 
     (* -toList: Runs the search tree from left to right and returns the

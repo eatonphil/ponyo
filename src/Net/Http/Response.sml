@@ -66,7 +66,7 @@ struct
     val GatewayTimeout = makeGenericResponse 504 "Gateway Timeout"
 
     fun parseFirstLine (line: string) (response: Connection.t) : t =
-        case String.splitN (line, " ", 2) of
+        case String.splitN line " " 2 of
             [version, status, reason] =>
               {
                   version = version,
@@ -92,7 +92,7 @@ struct
             val intro = Format.sprintf "% % %\r\n" [version, status, reason]
             val marshalled = map Header.marshall (Headers.toList (#headers response))
             val headers = if length marshalled > 1
-                    then foldl (fn (a, b) => String.join ([a, b], "\r\n")) "" marshalled
+                    then foldl (fn (a, b) => String.join [a, b] "\r\n") "" marshalled
                 else hd marshalled
             val body = #body response
         in

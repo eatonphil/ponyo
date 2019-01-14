@@ -4,7 +4,7 @@ struct
         open Ponyo
 
         structure Cli        = Os.Cli
-	structure Format     = Format.String
+	    structure Format     = Format.String
         structure Filesystem = Os.Filesystem
         structure File       = Filesystem.File
         structure Path       = Os.Path
@@ -26,10 +26,10 @@ struct
 
     (* TODO: crash on failure *)
     fun exec (program: string) (args: string list) : Basis.OS.Process.status =
-        Basis.OS.Process.system (program ^ " " ^ String.join(args, " "));
+        Basis.OS.Process.system (program ^ " " ^ String.join args " ");
 
     fun findFiles (currentPath: string) (foundFiles: string list) : string list =
-        if String.hasSuffix (currentPath, "_Test.sml")
+        if String.hasSuffix currentPath "_Test.sml"
             then currentPath :: foundFiles
         else foundFiles
 
@@ -41,7 +41,7 @@ struct
             fun generateRun (file: string) : string =
                 Format.sprintf "test \"%\" (%.run ())" [Path.filename file, Path.filename file]
         in
-            String.join (map generateRun files, ",\n")
+            String.join (map generateRun files) ",\n"
         end
 
     fun generateFile (files: string list, backend: string) : string =

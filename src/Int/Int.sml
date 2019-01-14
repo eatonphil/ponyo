@@ -4,6 +4,9 @@ struct
 
     open Int
 
+    fun compare (l: int) (r: int) =
+        Int.compare (l, r)
+
     (* http://burtleburtle.net/bob/hash/integer.html *)
     fun hash2 (i: int) : Word64.word =
         let

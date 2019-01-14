@@ -22,9 +22,9 @@ struct
      *  current HOME is set.
      *)
     fun expand (path: string) =
-        if not (String.hasPrefix (path, "~/")) then path
+        if not (String.hasPrefix path "~/") then path
         else case Basis.OS.Process.getEnv "HOME" of
-            SOME home => Path.join [home, String.substringToEnd (path, 2)]
+            SOME home => Path.join [home, String.substringToEnd path 2]
           | NONE => path
 
     fun makeDirectory (path: string) : unit =
@@ -65,7 +65,7 @@ struct
 
     fun which (executable: string) : string option =
         let
-            fun splitPaths (paths: string) : string list = String.split (paths, ":")
+            fun splitPaths (paths: string) : string list = String.split paths ":"
 
             val executablePath = ref ""
 
