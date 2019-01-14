@@ -56,4 +56,15 @@ struct
      * values as a list on the structure itself creates a big perf hit. *)
     fun toList ((table, _): 'a t) : (D.t * 'a) list =
         Array.foldr (fn (kvs, allKvs) => (T.toList (kvs) @ allKvs)) [] table
+
+    fun fromList (l: (elt * 'a) list) : 'a t =
+        let
+            fun doFromList root l =
+                case l of
+                    [] => new ()
+                  | (k, v) :: tail =>
+                doFromList (insert root k v) l
+        in
+            doFromList (new ()) l
+        end
 end

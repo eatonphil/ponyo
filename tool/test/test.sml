@@ -49,11 +49,11 @@ struct
         ("local open Ponyo; val test = Test.test in\n" ^
         "fun main () =\n" ^
         "    let\n" ^
-        "        val _ = Format.println [\"Beginning tests with %.\"]\n" ^
-        "        val tests = test \"All\" [%] handle e => (Format.println [exnName e, exnMessage e]; false)\n" ^
+        "        val _ = Format.String.println [\"Beginning tests with %.\"]\n" ^
+        "        val tests = test \"All\" [%] handle e => (Format.String.println [exnName e, exnMessage e]; false)\n" ^
         "    in\n" ^
-        "        if tests then Format.println [\"All tests passed!\"]\n" ^
-        "        else (Format.println [\"Tests failed.\"]; Basis.OS.Process.exit (Basis.OS.Process.failure); ())\n" ^
+        "        if tests then Format.String.println [\"All tests passed!\"]\n" ^
+        "        else (Format.String.println [\"Tests failed.\"]; Basis.OS.Process.exit (Basis.OS.Process.failure); ())\n" ^
         "    end\n" ^
         "end") (backend :: [generateTests files])
 

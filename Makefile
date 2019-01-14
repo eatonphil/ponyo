@@ -40,6 +40,7 @@ all:
 	$(MAKE) bin/ponyo
 	$(MAKE) bin/ponyo-top
 	$(MAKE) bin/ponyo-doc
+	$(MAKE) bin/ponyo-test
 
 install:
 	ln -s bin/* /usr/local/bin
