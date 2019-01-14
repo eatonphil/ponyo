@@ -11,7 +11,8 @@ struct
                 val g = fn (s) => Template.generate (#1 (Template.parse s)) c
             in [
                 "123" = g "{{ foo }}",
-                "a 123" = g "a {{ foo }}"
+                "a 123" = g "a {{ foo }}",
+                "a 123 b" = g "a {{ foo }} b"
             ] end
         ]
     end

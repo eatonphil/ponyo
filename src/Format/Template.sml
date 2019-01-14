@@ -64,13 +64,13 @@ struct
     
         fun iterator (state: state ref) : char -> unit =
             let
-                fun h (c: char) : state =
+                fun inner (c: char) : state =
                     case c of
                         #"{" => handleControlStart (!state)
                       | #"}" => handleControlEnd (!state)
                       | _ => handleGeneric (!state) (c)
             in
-                fn (c) => state := h (c)
+                fn (c: char) => state := inner c
             end
     in
         type t = ast
@@ -88,7 +88,8 @@ struct
 
                 val _ = String.iterate template (iterator state)
 
-                val { error = error, result = result, ... } = !state
+                val { error = error, result = AST result, current = current, ... } = !state
+                val result = if current = "" then AST result else AST (result @ [String current])
             in
                 (result, error)
             end
