@@ -49,7 +49,7 @@ struct
         ("local open Ponyo; val test = Test.test in\n" ^
         "fun main () =\n" ^
         "    let\n" ^
-        "        val _ = Format.String.println [\"Beginning tests with %.\"]\n" ^
+        "        val _ = Format.String.println [\"Beginning tests with %.\\n\"]\n" ^
         "        val tests = test \"All\" [%] handle e => (Format.String.println [exnName e, exnMessage e]; false)\n" ^
         "    in\n" ^
         "        if tests then Format.String.println [\"All tests passed!\"]\n" ^

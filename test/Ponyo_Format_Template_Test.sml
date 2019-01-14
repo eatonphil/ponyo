@@ -5,16 +5,14 @@ struct
         structure Dict = Ponyo.String.Dict
         val test = Ponyo.Test.test
     in
-        fun run () =
-            let
-                val g = fn (s) => Template.generate (#1 (Template.parse s))
-            in
-                [
-                    test "Template.parse" [
-                        "a 123 b" = g "a {{ foo }} b" (Dict.fromList [("foo", "123")]),
-                        "123" = g "{{ foo }}" (Dict.fromList [("foo", "123")])
-                    ]
-                ]
-            end
+        fun run () = [
+            test "Template.parse" let
+                val c = Dict.fromList [("foo", "123")]
+                val g = fn (s) => Template.generate (#1 (Template.parse s)) c
+            in [
+                "123" = g "{{ foo }}",
+                "a 123" = g "a {{ foo }}"
+            ] end
+        ]
     end
 end

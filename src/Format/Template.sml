@@ -31,7 +31,7 @@ struct
             controlStartChar = not sc, (* case: {{{ *)
             inControl = sc,
             current = "",
-            result = AST (result @ [String current]),
+            result = if current = "" then AST result else AST (result @ [String current]),
             error = ""
         }
 
@@ -44,7 +44,7 @@ struct
             controlEndChar = not ec, (* case: }}} *)
             controlStartChar = false,
             inControl = ec,
-            result = AST (result @ [Variable (current)]),
+            result = if current = "" then AST result else AST (result @ [Variable (String.stripWhitespace current)]),
             current = "",
             error = ""
         }
