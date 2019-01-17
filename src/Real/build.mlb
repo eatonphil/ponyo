@@ -1,6 +1,5 @@
 $(SML_LIB)/basis/basis.mlb
 ../Container/build.mlb
 
-Int.sig
-Int.sml
-Int_export.sml
+Real.sig
+Real.sml

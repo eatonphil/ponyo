@@ -4,7 +4,7 @@ struct
 
     exception IndexError of string * int * int
 
-    val unitialized = ""
+    val uninitialized = ""
 
     val WS = [" ", "\t", "\r", "\n", "\v", "\f"]
     

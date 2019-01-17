@@ -1,4 +1,4 @@
-structure Ponyo_Int_internal =
+structure Ponyo_Int_internal : PONYO_INT =
 struct
     type t = int
 
@@ -32,6 +32,6 @@ struct
      * However, the distribution of keys in the hash table should be worse.
      * Worth more investigation.
      *)
-    fun hash (i) = Word64.fromInt (i)
-    val unitialized = 0
+    fun hash (i: int) = Word64.fromInt (i)
+    val uninitialized = 0
 end

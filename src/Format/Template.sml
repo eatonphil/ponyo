@@ -1,16 +1,22 @@
-structure Ponyo_Format_Template : PONYO_FORMAT_TEMPLATE =
-struct
-    local
-        structure String = Ponyo_String
+local
+    structure String = Ponyo_String
 
-        datatype astElement =
-             String of string
-           | Variable of string
-           | Loop of { body: ast, variable: string }
+    datatype astElement =
+         String of string
+       | Variable of string
+       | Loop of { body: ast, control: string }
 
-        and ast = AST of astElement list
+    and ast = AST of astElement list
 
-        type context = string String.Dict.t
+
+    structure Control =
+    struct
+        fun parse (c: string) = Variable c
+    end
+
+    structure Template =
+    struct
+        type t = ast
 
         type state = {
             inControl: bool,
@@ -31,7 +37,7 @@ struct
             controlStartChar = not sc, (* case: {{{ *)
             inControl = sc,
             current = "",
-            result = if current = "" then AST result else AST (result @ [String current]),
+            result = if current = "" then AST result else AST (String current :: result),
             error = ""
         }
 
@@ -44,7 +50,7 @@ struct
             controlEndChar = not ec, (* case: }}} *)
             controlStartChar = false,
             inControl = ec,
-            result = if current = "" then AST result else AST (result @ [Variable (String.stripWhitespace current)]),
+            result = if current = "" then AST result else AST (Control.parse current :: result),
             current = "",
             error = ""
         }
@@ -72,9 +78,7 @@ struct
             in
                 fn (c: char) => state := inner c
             end
-    in
-        type t = ast
-    
+
         fun parse (template: string) : (t * string) =
             let
                 val state = ref {
@@ -89,10 +93,16 @@ struct
                 val _ = String.iterate template (iterator state)
 
                 val { error = error, result = AST result, current = current, ... } = !state
-                val result = if current = "" then AST result else AST (result @ [String current])
+                val AST result = if current = "" then AST result else AST (String current :: result)
             in
-                (result, error)
+                (AST (rev result), error)
             end
+    end
+
+    structure Generator =
+    struct
+        type t = ast
+        type context = string String.Dict.t
 
         fun generateVariable (v: string) (c: context) : string =
             case String.Dict.get c v of
@@ -100,10 +110,18 @@ struct
               | _ => ""
 
         fun generateElement (String s) (context: context) : string = s
-          | generateElement (Variable v) (context: context) = generateVariable v context
-          | generateElement (_ : astElement) (_: context) = ""
+           | generateElement (Variable v) (context: context) = generateVariable v context
+           | generateElement (_ : astElement) (_: context) = ""
 
         fun generate (AST l: t) (context: context) : string =
             String.join (map (fn e => (generateElement e context)) l) ""
+    end
+in
+    structure Ponyo_Format_Template : PONYO_FORMAT_TEMPLATE =
+    struct
+        type t = ast
+    
+        val generate = Generator.generate
+        val parse = Template.parse
     end
 end

@@ -9,5 +9,5 @@ struct
     fun hash (c: char) =
         Word64.fromInt (ord c)
 
-    val unitialized = chr (0)
+    val uninitialized = chr (0)
 end

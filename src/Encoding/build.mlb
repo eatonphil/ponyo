@@ -6,5 +6,6 @@ $(SML_LIB)/basis/basis.mlb
 ../Format/build.mlb
 
 Json.sml
+Json.sig
 Base64.sml
 Encoding_export.sml

@@ -324,6 +324,6 @@ sig
     val toUpper : string -> string
 
     val hash : string -> Word64.word
-    val unitialized : string
+    val uninitialized : string
     val toString : string -> string
 end
