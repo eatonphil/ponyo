@@ -14,7 +14,7 @@ signature PONYO_ENCODING_JSON =
 sig
     type t
 
-    val >>= : 'a * ('b -> 'a -> 'a) -> 'a
+    val >>= : 'a option * ('a -> 'a option) -> 'a option
 
     (*
      *  decode: Takes a JSON string and returns an internal object

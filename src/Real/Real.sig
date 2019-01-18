@@ -3,6 +3,7 @@ sig
     type t = real
 
     val compare : real -> real -> order
-    val uninitialized : real
+    val fromString : string -> real option
     val toString : real -> string
+    val uninitialized : real
 end

@@ -59,17 +59,17 @@ local
 
         and lexString (starter: char, json: char list, l: Token.t list) : Token.t list =
             case json of
-                [] => raise MalformedString []
+                [] => raise Exceptions.MalformedString []
               | _ =>
             let
                 fun lexStringHelper (s: char list, accum: char list) : char list * char list =
                     case s of
-                        [] => raise MalformedString (accum) (* json string ended without closing a string *)
+                        [] => raise Exceptions.MalformedString (accum) (* json string ended without closing a string *)
                       | first :: rest =>
                     if first = starter
                         then (List.rev accum, rest)
                     else if rest = []
-                        then raise MalformedString (accum) (* json string ended without closing a string *)
+                        then raise Exceptions.MalformedString (accum) (* json string ended without closing a string *)
                     else if first = #"\\" andalso Char.List.contains ([#"'", #"\""], List.hd rest) (* TODO: \\ *)
                         then lexStringHelper (List.tl rest, List.hd rest :: accum)
                     else lexStringHelper (rest, first :: accum)
@@ -82,7 +82,7 @@ local
 
         and lexNumber (json: char list, l: Token.t list) : Token.t list =
             case json of
-                [] => raise MalformedNumber []
+                [] => raise Exceptions.MalformedNumber []
               | _ =>
             let
                 fun lexNumberHelper (n: char list, accum: char list) : char list * char list =
@@ -100,7 +100,7 @@ local
                       | _ =>
                     case Real.fromString (String.implode n) of
                         SOME r => Token.Real (r)
-                      | _ => raise MalformedNumber (n)
+                      | _ => raise Exceptions.MalformedNumber (n)
             in
                 lex (rest, t :: l)
             end
@@ -108,15 +108,15 @@ local
         and lexTrue (json: char list, l: Token.t list) : Token.t list =
             case json of
                 #"r" :: (#"u" :: (#"e" :: rest)) => lex (rest, Token.True :: l)
-              | _ => raise MalformedTrue
+              | _ => raise Exceptions.MalformedTrue
 
         and lexFalse (json: char list, l: Token.t list) : Token.t list =
             case json of
                 #"a" :: (#"l" :: (#"s" :: (#"e" :: rest))) => lex (rest, Token.False :: l)
-              | _ => raise MalformedFalse
+              | _ => raise Exceptions.MalformedFalse
     end
 
-    structure Decoder =
+    structure AST =
     struct
         datatype t =
             String of string
@@ -126,19 +126,22 @@ local
           | False
           | List of t list
           | Object of (string * t) list
+    end
 
+    structure Decoder =
+    struct
         infix >>=
         fun a >>= b =
             b (a)
 
-        fun decode (json: string) : t =
-            case lex (String.explode json, []) of
-                [] => raise MalformedJson ([], "Lexing error")
+        fun decode (json: string) : AST.t =
+            case Lexer.lex (String.explode json, []) of
+                [] => raise Exceptions.MalformedJson ([], "Lexing error")
               | tokens =>
             case decodeJson (tokens) of
                 (t, _) => t
 
-        and decodeJson (json: Token.t list) : t * Token.t list =
+        and decodeJson (json: Token.t list) : AST.t * Token.t list =
             case json of
                 Token.Real r :: rest => (Real r, rest)
               | Token.Int r :: rest => (Int r, rest)
@@ -148,47 +151,47 @@ local
               | Token.Symbol s :: rest =>
               (if s = Token.LCBracket
                   then decodeObject (rest)
-              else if s = Token.LBracket then decodeList (rest) else raise MalformedJson (json, "Expected ending bracket"))
-              | _ => raise MalformedJson (json, "Expected json value")
+              else if s = Token.LBracket then decodeList (rest) else raise Exceptions.MalformedJson (json, "Expected ending bracket"))
+              | _ => raise Exceptions.MalformedJson (json, "Expected json value")
 
         and decodeSymbol (json: Token.t list, s: string) : Token.t list =
             case json of
                 Token.Symbol first :: rest => if first = s then rest else []
-              | _ => raise MalformedJson (json, "Expected symbol " ^ s)
+              | _ => raise Exceptions.MalformedJson (json, "Expected symbol " ^ s)
 
         and decodeString (json: Token.t list) : string * Token.t list =
             case json of
                 Token.String first :: rest => (first, rest)
-              | _ => raise MalformedKey (json)
+              | _ => raise Exceptions.MalformedKey (json)
 
-        and decodeList (json: Token.t list): t * Token.t list =
+        and decodeList (json: Token.t list): AST.t * Token.t list =
             decodeListElements (json, []) >>= (fn (elements, json) =>
             case decodeSymbol (json, Token.RBracket) of
-                [] => raise MalformedList (json)
+                [] => raise Exceptions.MalformedList (json)
               | json => (List elements, json))
 
-        and decodeListElements (json: Token.t list, elements: t list) : t list * Token.t list =
+        and decodeListElements (json: Token.t list, elements: AST.t list) : AST.t list * Token.t list =
             decodeJson (json) >>= (fn (e, json) =>
             case decodeSymbol (json, Token.Comma) of
                 [] => (List.rev (e :: elements), json)
               | json => decodeListElements (json, e :: elements))
 
-        and decodeObject (json: Token.t list) : t * Token.t list =
+        and decodeObject (json: Token.t list) : AST.t * Token.t list =
             decodePairs (json, []) >>= (fn (pairs, json) =>
             case decodeSymbol (json, Token.RCBracket) of
                 [] => (Object (pairs), json)
               | json => (Object (pairs), json))
 
-        and decodePairs (json: Token.t list, pairs: (string * t) list) : (string * t) list * Token.t list =
+        and decodePairs (json: Token.t list, pairs: (string * AST.t) list) : (string * AST.t) list * Token.t list =
             decodePair (json) >>= (fn (pair, json) =>
             case decodeSymbol (json, Token.Comma) of
                 [] => (List.rev (pair :: pairs), json)
               | json => decodePairs (json, pair :: pairs))
 
-        and decodePair (json: Token.t list) : (string * t) * Token.t list =
+        and decodePair (json: Token.t list) : (string * AST.t) * Token.t list =
             decodeString (json) >>= (fn (string, json) =>
             case decodeSymbol (json, Token.Colon) of
-                [] => raise MalformedJson (json, "Expected symbol " ^ Token.Colon)
+                [] => raise Exceptions.MalformedJson (json, "Expected symbol " ^ Token.Colon)
               | json =>
             decodeJson (json) >>= (fn (t, json) =>
             ((string, t), json)))
@@ -196,52 +199,58 @@ local
 
     structure Encoder =
     struct
-        fun encode (String s) : string = "\"" ^ s "\""
-          | encode (Int i) : string = Int.toString (i)
-          | encode (Real r) : string = Real.toString (r)
-          | encode (True) : string = "true"
-          | encode (False) : string = "false"
-          | encode (List l) : string = "[" ^ (String.join (map encode l) ",") ^ "]"
-          | encode (Object obj) : string = "{" ^ (String.join (map (fn (key, value) => "\"" ^ key ^ "\":" ^ (encode value)) obj) ",") ^ "}"
+        fun encode (AST.String s) : string = "\"" ^ s ^ "\""
+          | encode (AST.Int i) : string = Int.toString (i)
+          | encode (AST.Real r) : string = Real.toString (r)
+          | encode (AST.True) : string = "true"
+          | encode (AST.False) : string = "false"
+          | encode (AST.List l) : string = "[" ^ (String.join (map encode l) ",") ^ "]"
+          | encode (AST.Object obj) : string = "{" ^ (String.join (map (fn (key, value) => "\"" ^ key ^ "\":" ^ (encode value)) obj) ",") ^ "}"
     end
 
     structure Marshal =
     struct
+        type t = AST.t
+
         fun a >>= b =
             case a of
                 SOME v => b (v)
              | _ => raise Fail "Marshalling error"
 
-        fun marshal (Object pairs: t, key: string) : (t * t) option =
+        fun marshal (AST.Object object: t, key: string) : (t * t) option =
             let
-                fun findKey (pairs, key) =
-                    case pairs of
-                        (someKey, someVal) :: pairs => if someKey = key then SOME (object, someVal) else findKey (pairs, key)
-                      | [] => NONE
+                (* Once the key is found, pass back an object that doesn't contain
+                 * the key. So future attempts in a chain can fail on duplicates. *)
+                fun findKey ((someKey, someVal) :: pairs, key, past) =
+                    if someKey = key then
+                        SOME (AST.Object (pairs @ past), someVal)
+                    else
+                        findKey (pairs, key, (someKey, someVal) :: past)
+                  | findKey ([], _, _) = NONE
             in
-                findKey (pairs, key)
+                findKey (object, key, [])
             end
           | marshal _ = (raise Fail "Cannot marshal non-object"; NONE)
 
         fun marshalString (object: t, key: string) : (t * string) option =
             case marshal (object, key) of
-                SOME (object, String v) => SOME (object, v)
+                SOME (object, AST.String v) => SOME (object, v)
               | _ => NONE
 
         fun marshalInt (object: t, key: string) : (t * int) option =
             case marshal (object, key) of
-                SOME (object, Int v) => SOME (object, v)
+                SOME (object, AST.Int v) => SOME (object, v)
               | _ => NONE
 
         fun marshalBool (object: t, key: string) : (t * bool) option =
             case marshal (object, key) of
-                SOME (object, True) => SOME (object, true)
-              | SOME (object, False) => SOME (object, false)
+                SOME (object, AST.True) => SOME (object, true)
+              | SOME (object, AST.False) => SOME (object, false)
               | _ => NONE
 
         fun marshalReal (object: t, key: string) : (t * real) option =
             case marshal (object, key) of
-                SOME (object, Real r) => SOME (object, r)
+                SOME (object, AST.Real r) => SOME (object, r)
               | _ => NONE
 
         fun 'a marshalList (object: t, key: string, marshalFunc: t -> (t * 'a) option) : (t * 'a list) option =
@@ -255,7 +264,7 @@ local
                       | _ => NONE
             in
                 case marshal (object, key) of
-                    SOME (object, List l) => doMarshalList (l, [])
+                    SOME (object, AST.List l) => doMarshalList (l, [])
                   | _ => NONE
             end
     end
@@ -263,17 +272,31 @@ in
     structure Ponyo_Encoding_Json : PONYO_ENCODING_JSON =
     struct
         open Exceptions
-        open Decoder
-        open Encoder
         open Marshal
+        open AST
 
-        fun equals (String aS, String bS) : bool = aS = bS
-          | equals (Int aI, Int bI) = aI = bI
-          | equals (Real aR, Real bR) = false (* TODO: fix this *)
-          | equals (True, True) = true
-          | equals (False, False) = true
-          | equals (List aL, List bL) = List.all (fn a => a = true) (List.map equals (ListPair.zip (aL, bL)))
-          | equals (Object aO, Object bO) = List.all (fn a => a = true) (List.map (fn ((s1, l1), (s2, l2)) => s1 = s2 andalso equals (l1, l2)) (ListPair.zip (aO, bO)))
+        type t = AST.t
+
+        val decode = AST.decode
+        val encode = Encoder.encode
+
+        fun equals (AST.String aS, AST.String bS) : bool = aS = bS
+          | equals (AST.Int aI, AST.Int bI) = aI = bI
+          | equals (AST.Real aR, AST.Real bR) = false (* TODO: fix this *)
+          | equals (AST.True, AST.True) = true
+          | equals (AST.False, AST.False) = true
+          | equals (AST.List aL, AST.List bL) = List.all (fn a => a = true) (List.map equals (ListPair.zip (aL, bL)))
+          (* TODO: This will only be equal if the keys happen to all be in the same order. *)
+          | equals (AST.Object object1, AST.Object object2) =
+              let
+                  fun matchTrue (a) =
+                      a = true
+
+                  fun pairEquals ((key1, value1), (key2, value2)) =
+                      key1 = key2 andalso equals (value1, value2)
+              in
+                  List.all matchTrue (List.map pairEquals (ListPair.zip (object1, object2)))
+              end
           | equals _ = false
     end
 end
