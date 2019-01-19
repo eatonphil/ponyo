@@ -8,7 +8,6 @@ local
 
     and ast = AST of astElement list
 
-
     structure Control =
     struct
         fun parse (c: string) = Variable c
