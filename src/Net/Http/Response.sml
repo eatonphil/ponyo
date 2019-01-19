@@ -84,25 +84,25 @@ struct
             parseFirstLine (#firstLine response) response
         end
 
-    fun marshall (response: t) : string =
+    fun marshal (response: t) : string =
         let
             val version = #version response
             val status = Int.toString (#status response)
             val reason = #reason response
             val intro = Format.sprintf "% % %\r\n" [version, status, reason]
-            val marshalled = map Header.marshall (Headers.toList (#headers response))
-            val headers = if length marshalled > 1
-                    then foldl (fn (a, b) => String.join [a, b] "\r\n") "" marshalled
-                else hd marshalled
+            val marshaled = map Header.marshal (Headers.toList (#headers response))
+            val headers = if length marshaled > 1
+                    then foldl (fn (a, b) => String.join [a, b] "\r\n") "" marshaled
+                else hd marshaled
             val body = #body response
         in
             intro ^ headers ^ "\r\n\r\n" ^ body
         end
 
     fun write (conn: socket) (response: t) : unit =
-        Connection.write (conn, marshall response)
+        Connection.write (conn, marshal response)
 
-    val toString = marshall
+    val toString = marshal
 
     end
 end

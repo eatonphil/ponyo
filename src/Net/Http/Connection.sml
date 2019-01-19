@@ -31,7 +31,7 @@ struct
                 case String.split line ":" of
                     [] => NONE
                   | [badValue] => NONE
-                  | header :: field => SOME (Header.unmarshall (line))
+                  | header :: field => SOME (Header.unmarshal (line))
 
 	    fun doParse (stream: string, response as {response=rspBody, ...}: incomplete) : incomplete =
 	        case String.indexOf stream "\r\n" of

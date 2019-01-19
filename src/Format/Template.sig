@@ -2,15 +2,12 @@
  *  PONYO_FORMAT_TEMPLATE: This is a string template library.
  *
  *  Ex:
- *      local
- *        open Ponyo
- *      in
- *        val parsed = Format.Template.parse "{{ a }} = {{ b }}";
- *        val map = String.Dict.new;
- *        val map = String.Dict.insert map "a" 1;
- *        val map = String.Dict.insert map "b" 1;
- *        val result = Format.Template.generate parsed map;
- *      end
+ *      open Ponyo
+ *      val parsed = Format.Template.parse "{{ a }} = {{ b }}";
+ *      val map = String.Dict.new;
+ *      val map = String.Dict.insert map "a" 1;
+ *      val map = String.Dict.insert map "b" 1;
+ *      val result = Format.Template.generate parsed map;
  *)
 signature PONYO_FORMAT_TEMPLATE =
 sig

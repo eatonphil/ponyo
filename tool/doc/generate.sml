@@ -17,10 +17,17 @@ struct
         type comment = string * string * string list
     in
 
+    val debug        = ref false
     val inDirectory  = ref ""
     val outDirectory = ref ""
     val pageTemplate = ref ""
     val repository   = ref ("", "", "")
+
+    fun debugPrint (format: string) (args: string list) =
+        if !debug then
+            Format.printf ("INFO " ^ format ^ "\r\n") args
+        else
+            ()
 
     fun sourceLink (path: string) : string =
         let
@@ -85,6 +92,7 @@ struct
 
     fun parseFile (path: string) : Ast.t * comment String.Dict.t =
         let
+            val _ = debugPrint "[%] parsing" [path]
             val file = String.join (File.readFrom path) ""
             val file = String.replace file "\n" " "
             val stream = TextIO.openString (file)
@@ -93,10 +101,16 @@ struct
             val tokens = lex () handle
                 Fail reason => (Format.println [reason]; [])
 
+            val _ = debugPrint "[%] done lexing" [path]
+
             val ast = Parser.parse (tokens) handle
-                Fail reason => (Format.printf "FAILURE [%]: %\n" [path, reason]; Ast.Root [])
+                Fail reason => (Format.printf "FAILURE [%]: %\r\n" [path, reason]; Ast.Root [])
+
+            val _ = debugPrint "[%] done parsing" [path]
 
             val commentsByName = parseComments (tokens)
+
+            val _ = debugPrint "[%] done comments" [path]
         in
             (ast, commentsByName)
         end
@@ -198,9 +212,10 @@ struct
                        
             val pageDir = Path.directory (path)
         in
-            if Filesystem.exists (pageDir)
-                then ()
-            else Filesystem.makeDirectory (pageDir);
+            if Filesystem.exists (pageDir) then
+                ()
+            else
+                Filesystem.makeDirectory (pageDir);
             File.writeTo (path, page)
         end
 
@@ -222,11 +237,12 @@ struct
         end
 
     fun parseSignature (path: string) (asts: (Ast.t * comment String.Dict.t) String.Dict.t) : (Ast.t * comment String.Dict.t) String.Dict.t =
-        if Path.extension (path) <> "sig"
-            then asts
-        else if Path.file (path) = "ml_bind.ML"
-            then asts
-        else String.Dict.insert
+        if Path.extension (path) <> "sig" then
+            asts
+        else if Path.file (path) = "ml_bind.ML" then
+             asts
+        else
+            String.Dict.insert
              asts
              (String.substringToEnd path (String.length (!inDirectory)))
              (parseFile path)
@@ -237,6 +253,5 @@ struct
         in
             generateHtml asts
         end
-
     end
 end

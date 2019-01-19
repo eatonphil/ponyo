@@ -22,7 +22,7 @@ struct
             let
                 val path = if path = "" then "" else Path.join [fileRoot, path]
                 fun exists () = Filesystem.exists (path)
-                fun getFile () = String.join (File.readFrom path, "")
+                fun getFile () = String.join (File.readFrom path) ""
 
                 val newFile = ref true
                 val file = case String.Dict.get (!fileCache) path of
@@ -48,9 +48,8 @@ struct
         fun serveReference (subsection: string) (request: Request.t) : Response.t =
             let
                 val path = Request.path (request)
-                val page = String.substringToEnd (path, String.length ("/reference/" ^ subsection ^ "/"))
-                val mapped = if String.hasSubstring (page, "/") then page else page ^ "/" ^ page
-                (* TODO: fix reference for Standard ML pages *)
+                val page = String.substringToEnd path (String.length ("/reference/" ^ subsection ^ "/"))
+                val mapped = if String.hasSubstring page "/" then page else page ^ "/" ^ page
                 val filePath = Path.join ["reference/src/", mapped ^ ".html"]
             in
                 Format.String.println ["Serving from path: ", filePath];

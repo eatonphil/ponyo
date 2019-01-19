@@ -1,13 +1,13 @@
-import gulp from "gulp";
-import jade from "gulp-jade";
-import minifyCss from "gulp-minify-css";
-import gulpWebpack from "gulp-webpack";
-import webpack from "webpack";
+const gulp = require("gulp");
+const jade = require("gulp-jade");
+const minifyCss = require("gulp-minify-css");
+const gulpWebpack = require("gulp-webpack");
+const webpack = require("webpack");
 
 let dist = "../dist";
 
 gulp.task("templates", () => {
-    gulp.src("./app/templates/**/*.jade")
+    return gulp.src("./app/templates/**/*.jade")
 	.pipe(jade())
 	.pipe(gulp.dest(`${dist}/templates`));
 });
@@ -43,4 +43,4 @@ gulp.task("favicon", () => {
 	.pipe(gulp.dest(`${dist}/`));
 });
 
-gulp.task("default", ["templates", "css", "css-vendor", "bootstrap", "js-vendor", "img", "favicon"]);
+exports.default = gulp.task("default", gulp.parallel("templates", "css", "css-vendor", "bootstrap", "js-vendor", "img", "favicon"));

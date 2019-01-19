@@ -50,6 +50,7 @@ pre:last-child {
     
 code.hljs {
     background: none !important;
+    padding: 30px !important;
 }
 
 .nav {
