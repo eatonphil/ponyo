@@ -26,7 +26,7 @@ struct
 
     (* TODO: crash on failure *)
     fun exec (program: string) (args: string list) : Basis.OS.Process.status =
-        Basis.OS.Process.system (program ^ " " ^ String.join args " ");
+        Basis.OS.Process.system (String.join (program :: args) " ");
 
     fun findFiles (currentPath: string) (foundFiles: string list) : string list =
         if String.hasSuffix currentPath "_Test.sml"
@@ -53,7 +53,7 @@ struct
         "        val tests = test \"All\" [%] handle e => (Format.String.println [exnName e, exnMessage e]; false)\n" ^
         "    in\n" ^
         "        if tests then Format.String.println [\"All tests passed!\"]\n" ^
-        "        else (Format.String.println [\"Tests failed.\"]; Basis.OS.Process.exit (Basis.OS.Process.failure); ())\n" ^
+        "        else (Format.String.println [Os.Terminal.colorize \"Tests failed.\" Os.Terminal.Red]; Basis.OS.Process.exit (Basis.OS.Process.failure); ())\n" ^
         "    end\n" ^
         "end") (backend :: [generateTests files])
 

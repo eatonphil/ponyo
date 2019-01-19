@@ -12,7 +12,14 @@
  *)
 signature PONYO_ENCODING_JSON =
 sig
-    type t
+    datatype t =
+        String of string
+      | Int of int
+      | Real of real
+      | True
+      | False
+      | List of t list
+      | Object of (string * t) list
 
     val >>= : 'a option * ('a -> 'a option) -> 'a option
 
@@ -27,7 +34,7 @@ sig
     val marshal : (t * string) -> (t * t) option
     val marshalString : (t * string) -> (t * string) option
     val marshalInt : (t * string) -> (t * int) option
-    val marshalList : (t * string) -> (t * t list) option
+    val marshalList : (t * string * (t -> (t * 'a) option)) -> (t * 'a list) option
     val marshalReal : (t * string) -> (t * real) option
     val marshalBool : (t * string) -> (t * bool) option
 end
