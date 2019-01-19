@@ -149,16 +149,13 @@ struct
                     base64Encode (i + 3, data, dataLength, accumulator ^ next)
                 end
     in
-        structure Encode =
-        struct
-            fun fromWord8Vector (data: Word8Vector.vector) = base64Encode(0, data, Word8Vector.length data, "")
+        fun fromWord8Vector (data: Word8Vector.vector) =
+            base64Encode(0, data, Word8Vector.length data, "")
 
-            val fromWord8List = fromWord8Vector o Word8Vector.fromList
+        val fromWord8List = fromWord8Vector o Word8Vector.fromList
 
-            val fromString = fromWord8List o
-                                (List.map (Word8.fromInt o Char.ord)) o
-                                    String.explode;
-        end
+        val fromString = fromWord8List o
+                            (List.map (Word8.fromInt o Char.ord)) o
+                                String.explode;
     end
-
 end
