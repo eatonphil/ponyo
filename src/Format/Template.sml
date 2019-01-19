@@ -94,7 +94,7 @@ local
                 val { error = error, result = AST result, current = current, ... } = !state
                 val AST result = if current = "" then AST result else AST (String current :: result)
             in
-                (AST (rev result), error)
+                (AST (List.rev result), error)
             end
     end
 

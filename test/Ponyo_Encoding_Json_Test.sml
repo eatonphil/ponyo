@@ -23,6 +23,12 @@ struct
             test "Json.encode" let
                 val e = Json.encode
             in [
+                e (Json.Object [("foo", Json.True)]) = "{\"foo\":true}",
+                e (Json.Object [("foo", Json.False)]) = "{\"foo\":false}",
+                e (Json.Object [("foo", Json.Real 1.0)]) = "{\"foo\":1.0}",
+                e (Json.Object [("foo", Json.Int 12)]) = "{\"foo\":12}",
+                e (Json.Object [("foo", Json.Object [("bar", Json.True)])]) = "{\"foo\":{\"bar\":true}}",
+                e (Json.Object [("foo", Json.List [Json.True])]) = "{\"foo\":[true]}",
                 e (Json.Object [("foo", Json.Int 1), ("bar", Json.String "crazy")]) = "{\"foo\":1,\"bar\":\"crazy\"}",
                 e (Json.Object [("foo", Json.Int 1), ("bar", Json.List [Json.String "crazy"])]) = "{\"foo\":1,\"bar\":[\"crazy\"]}"
             ] end

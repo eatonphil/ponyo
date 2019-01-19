@@ -80,14 +80,21 @@ struct
 
             fun makeAbsolutePath (test) =
                 Os.Path.join [Basis.OS.FileSys.getDir (), test]
+
+            val testFileName = "/tmp/test.sml"
+            val testProgramName = "/tmp/test"
+
+            fun cleanup () =
+                List.map Filesystem.remove [testFileName, testProgramName]
+
             val tests = map makeAbsolutePath (testFiles "test")
             val testFile = generateFile (tests, backend)
-            val testFileName = "/tmp/test.sml"
         in
+            cleanup ();
             writeFile testFileName testFile;
-            exec "ponyo-make" ([testFileName, "-I"] @ tests @ ["-b", backend, "-o", "/tmp/test"]);
-            (* TODO: delete tmp files on success *)
-            exec "/tmp/test" [];
+            exec "ponyo-make" ([testFileName, "-I"] @ tests @ ["-b", backend, "-o", testProgramName]);
+            exec testProgramName [];
+            cleanup ();
             ()
         end
 

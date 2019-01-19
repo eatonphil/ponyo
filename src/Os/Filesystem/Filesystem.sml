@@ -9,19 +9,16 @@ struct
 
     structure File = Ponyo_Os_Filesystem_File;
 
-    (* -exists: returns true if the path given is a valid file, directory,
-     *  or symbolic link.
-     *)
     fun exists (path: string) : bool =
-        FileSys.isDir (path) orelse
-          FileSys.isLink (path) orelse
-          FileSys.fileSize (path) > ~1 handle
-            Basis.OS.SysErr _ => false
+        let
+            val expanded = expand (path)
+        in
+            FileSys.isDir (path) orelse
+            FileSys.isLink (path) orelse
+            FileSys.fileSize (path) > ~1 handle Basis.OS.SysErr _ => false
+        end
 
-    (* -expand: expands paths beginning with a tilde if the 
-     *  current HOME is set.
-     *)
-    fun expand (path: string) =
+    and expand (path: string) =
         if not (String.hasPrefix path "~/") then path
         else case Basis.OS.Process.getEnv "HOME" of
             SOME home => Path.join [home, String.substringToEnd path 2]
@@ -29,17 +26,24 @@ struct
 
     fun makeDirectory (path: string) : unit =
         let
-            val directory = Path.directory (path) 
+            val directory = Path.directory (expand path) 
         in
             if not (exists directory) then makeDirectory (directory) else ();
-            Basis.OS.FileSys.mkDir (path)
+            FileSys.mkDir (path)
         end
 
-    (* TODO: better name? *)
+    fun remove (path: string) : bool =
+        (FileSys.remove (expand path); true) handle _ => false
+
+    fun removeDirectory (path: string) : bool =
+        (FileSys.rmDir (expand path); true) handle _ => false
+
     fun walkWith (root: string) (walkFun: string -> 'a -> 'a) (init: 'a) : 'a =
         let
+            val expanded = expand (root)
+
             fun withRoot (child: string) =
-                Path.join [root, child]
+                Path.join [expanded, child]
 
             fun walkRoot (rootDir: FileSys.dirstream) (accum: 'a) : 'a =
                 case FileSys.readDir (rootDir) of
@@ -54,9 +58,9 @@ struct
                     walkRoot rootDir newAccum
                 end
         in
-            if FileSys.isDir (root)
-               then walkRoot (Basis.OS.FileSys.openDir root) init handle
-                   Basis.OS.SysErr _ => init
+            if FileSys.isDir (expanded) then
+                walkRoot (Basis.OS.FileSys.openDir expanded) init
+                    handle Basis.OS.SysErr _ => init
             else init
         end
 
