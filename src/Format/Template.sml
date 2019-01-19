@@ -10,7 +10,7 @@ local
 
     structure Control =
     struct
-        fun parse (c: string) = Variable c
+        fun parse (c: string) = Variable (String.stripWhitespace c)
     end
 
     structure Template =
