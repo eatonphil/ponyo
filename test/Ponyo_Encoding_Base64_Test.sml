@@ -6,8 +6,8 @@ struct
     in
 
     fun run () = [
-        test "Json.parse" let
-            val e = Base64.Encode.fromString
+        test "Base64.fromString" let
+            val e = Base64.fromString
         in [
             e "" = "",
             e "f" = "Zg==",

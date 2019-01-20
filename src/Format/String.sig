@@ -1,4 +1,4 @@
-signature PONYO_FORMAT =
+signature PONYO_FORMAT_STRING =
 sig
     (*
      *  sprintf: This returns a new string from the format string and

@@ -34,34 +34,34 @@ sig
      *  length of the string results in an IndexError.
      *
      *  Ex:
-     *      charAt ("ponyo.org", 0)   = #"p"
-     *      charAt ("ponyo.org", 1)   = #"o"
-     *      charAt ("ponyo.org", ~1)  = #"g"
-     *      charAt ("ponyo.org", ~11) = #"r"
+     *      charAt "ponyo.org" 0   = #"p"
+     *      charAt "ponyo.org" 1   = #"o"
+     *      charAt "ponyo.org" ~1  = #"g"
+     *      charAt "ponyo.org" ~11 = #"r"
      *)
-    val charAt : string * int -> char
+    val charAt : string -> int -> char
 
     (*
      *  compare: This returns LESS, GREATER, or EQUAL by comparing
      *  each character of the given strings.
      *
      *  Ex:
-     *      compare ("ponyo.org", "qq.com")     = GREATER
-     *      compare ("ponyo.org", "reddit.com") = LESS
-     *      compare ("ponyo.org", "ponyo.org")  = EQUAL
+     *      compare "ponyo.org" "qq.com"     = GREATER
+     *      compare "ponyo.org" "reddit.com" = LESS
+     *      compare "ponyo.org" "ponyo.org"  = EQUAL
      *)
-    val compare : string * string -> order
+    val compare : string -> string -> order
 
     (*
      *  count: This returns the number of times the given substring
      *  occurs in the given string.
      *
      *  Ex:
-     *      count ("http://ponyo.org", ":")   = 1
-     *      count ("http://ponyo.org", "//")  = 1
-     *      count ("http://ponyo.org", "org") = 1
+     *      count "http://ponyo.org" ":"   = 1
+     *      count "http://ponyo.org" "//"  = 1
+     *      count "http://ponyo.org" "org" = 1
      *)
-    val count : string * string -> int
+    val count : string -> string -> int
 
     (*
      *  explode: This converts a string to a list of characters.
@@ -84,29 +84,29 @@ sig
      *  begins with the given substring.
      *
      *  Ex:
-     *      hasPrefix ("http://www.google.com", "http://") = true
-     *      hasPrefix ("http://www.google.com", "www")     = false
+     *      hasPrefix "http://www.google.com" "http://" = true
+     *      hasPrefix "http://www.google.com" "www"     = false
      *)
-    val hasPrefix : string * string -> bool
+    val hasPrefix : string -> string -> bool
 
     (*
      *  hasSubstring: This returns true if the given string
      *  contains the given substring.
      *
      *  Ex:
-     *      hasSubstring ("foobar", "oba") = true
+     *      hasSubstring "foobar" "oba" = true
      *)
-    val hasSubstring : string * string -> bool
+    val hasSubstring : string -> string -> bool
 
     (*
      *  hasSuffix: This returns true if the given string ends with
      *  the given substring.
      *
      *  Ex:
-     *      hasSuffix ("http://www.google.com", ".com") = true
-     *      hasSuffix ("http://ponyo.org", ".com")      = false
+     *      hasSuffix "http://www.google.com" ".com" = true
+     *      hasSuffix "http://ponyo.org" ".com"      = false
      *)
-    val hasSuffix : string * string -> bool
+    val hasSuffix : string -> string -> bool
 
     (*
      *  implode: This converts a list of characters to a string.
@@ -122,10 +122,10 @@ sig
      *  not exist.
      *
      *  Ex:
-     *      indexOf ("http://google.com", ":")  = 4
-     *      indexOf ("http://ponyo.org", "com") = ~1
+     *      indexOf "http://google.com" ":"  = 4
+     *      indexOf "http://ponyo.org" "com" = ~1
      *)
-    val indexOf : string * string -> int
+    val indexOf : string -> string -> int
 
     (*
      *  indexOfFrom: This returns the first index of the given substring
@@ -133,10 +133,10 @@ sig
      *  exist and starts at the given index.
      *
      *  Ex:
-     *      indexOfFrom ("http://google.com:80", ":", 5) = 17
-     *      indexOfFrom ("http://google.com", "com", 14) = ~1
+     *      indexOfFrom "http://google.com:80" ":" 5 = 17
+     *      indexOfFrom "http://google.com" "com" 14 = ~1
      *)
-    val indexOfFrom : string * string * int -> int
+    val indexOfFrom : string -> string -> int -> int
 
     (*
      *  isAlphaNum: This returns true if all characters within the
@@ -172,13 +172,19 @@ sig
     val isUpper : string -> bool
 
     (*
+     *  iterate: This calls the passed function for each character in
+     *  the string.
+     *)
+    val iterate : string -> (char -> unit) -> unit
+
+    (*
      *  join: This concatenates each string in the given list by the
      *  given glue.
      *
      *  Ex:
      *      join (["ponyo", ".", "org"], "") = "ponyo.org"
      *)
-    val join : string list * string -> string
+    val join : string list -> string -> string
 
     (*
      *  length: This returns the number of characters in the string.
@@ -201,9 +207,9 @@ sig
      *  the second.
      *
      *  Ex:
-     *      replace ("structure C =\nstruct\end", "\n", " ") = "structure C = struct end"
+     *      replace "structure C =\nstruct\end" "\n" " " = "structure C = struct end"
      *)
-    val replace : string * string * string -> string
+    val replace : string -> string -> string -> string
 
     val reverse : string -> string
 
@@ -212,55 +218,55 @@ sig
      *  n times.
      *
      *  Ex:
-     *      splitN ("http://www.ponyo.org", ".", 1) = ["http://www", "ponyo.org"]
-     *      splitN ("http://www.ponyo.org", ".", 3) = ["http://www", "ponyo", "org"]
+     *      splitN "http://www.ponyo.org" "." 1 = ["http://www", "ponyo.org"]
+     *      splitN "http://www.ponyo.org" "." 3 = ["http://www", "ponyo", "org"]
      *)
-    val splitN : string * string * int -> string list
+    val splitN : string -> string -> int -> string list
 
     (*
      *  split: This splits the first string by the second as many
      *  times as possible.
      *
      *  Ex:
-     *      split ("ponyo.org", ".") = ["ponyo", "org"]
+     *      split "ponyo.org" "." = ["ponyo", "org"]
      *)
-    val split : string * string -> string list
+    val split : string -> string -> string list
 
     (*
      *  stripLeft: This removes all occurences of the second string
      *  in the first string on the left-hand side.
      *
      *  Ex:
-     *      stripLeft ("  ponyo.org  ", " ") = "ponyo.org  "
+     *      stripLeft "  ponyo.org  " " " = "ponyo.org  "
      *)
-    val stripLeft : string * string -> string
+    val stripLeft : string -> string -> string
 
     (*
      *  stripRight: This removes all occurences of the second string
      *  in the first string on the right-hand side.
      *
      *  Ex:
-     *      stripRight ("  ponyo.org  ", " ") = "  ponyo.org"
+     *      stripRight "  ponyo.org  " " " = "  ponyo.org"
      *)
-    val stripRight : string * string -> string
+    val stripRight : string -> string -> string
 
     (*
      *  strip: This removes all occurences of the second string in
      *  the first string on both sides.
      *
      *  Ex:
-     *      strip ("  ponyo.org  ", " ") = "ponyo.org"
+     *      strip "  ponyo.org  " " " = "ponyo.org"
      *)
-    val strip : string * string -> string
+    val strip : string -> string -> string
 
     (*
      *  stripAll: This removes all occurences of any of the given substrings
      *  in the given string as many times as possible.
      *
      *  Ex:
-     *      stripAll ("  \t ponyo.org \n", [" ", "\t", "\n"]) = "ponyo.org"
+     *      stripAll "  \t ponyo.org \n" [" ", "\t", "\n"] = "ponyo.org"
      *)
-    val stripAll : string * (string list) -> string
+    val stripAll : string -> string list -> string
 
     (*
      *  stripWhitespace: This removes all occurences of white space from
@@ -274,10 +280,10 @@ sig
      *  starting with the first index and includes the next n characters.
      *
      *  Ex:
-     *      substring ("ponyo.org", 0, 1) = "p"
-     *      substring ("ponyo.org", 2, 3) = "nyo"
+     *      substring "ponyo.org" 0 1 = "p"
+     *      substring "ponyo.org" 2 3 = "nyo"
      *)
-    val substring : string * int * int -> string
+    val substring : string -> int -> int -> string
 
     (*
      *  substringToEnd: This returns the section of the given string
@@ -285,9 +291,9 @@ sig
      *  string.
      *
      *  Ex:
-     *      substringToEnd ("ponyo.org", 5) = ".org")
+     *      substringToEnd "ponyo.org" 5 = ".org")
      *)
-    val substringToEnd : string * int -> string
+    val substringToEnd : string -> int -> string
 
     (*
      *  toChar: This returns the first character of the string.
@@ -318,6 +324,6 @@ sig
     val toUpper : string -> string
 
     val hash : string -> Word64.word
-    val unitialized : string
+    val uninitialized : string
     val toString : string -> string
 end

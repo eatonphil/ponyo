@@ -40,7 +40,7 @@ struct
         end
 
     fun parseFirstLine (line: string) (request: Connection.t) : t =
-        case String.split (line, " ") of
+        case String.split line " " of
             [] => raise MalformedRequest (line)
           | list => if length (list) <> 3
                   then raise MalformedRequest (line)
@@ -59,22 +59,22 @@ struct
             parseFirstLine (#firstLine request) request
         end
 
-    fun marshall (request: t) : string =
+    fun marshal (request: t) : string =
         let
 	    val method = Method.toString (#method request)
 	    val path = #path request
 	    val intro = method ^ " " ^ path ^ " HTTP/1.1\r\n"
-	    val marshalled = map Header.marshall (Headers.toList (#headers request))
-	    val headers = foldl (fn (a, b) => String.join ([a, b], "\r\n")) "" marshalled
+	    val marshaled = map Header.marshal (Headers.toList (#headers request))
+	    val headers = foldl (fn (a, b) => String.join [a, b] "\r\n") "" marshaled
 	    val body = #body request
 	in
 	    intro ^ headers ^ "\r\n" ^ body
         end
 
     fun write (socket: socket) (request: t) : unit =
-        Connection.write (socket, marshall request)
+        Connection.write (socket, marshal request)
 
-    val toString = marshall
+    val toString = marshal
 
     end
 end

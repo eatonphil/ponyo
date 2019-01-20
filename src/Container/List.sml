@@ -4,8 +4,6 @@ functor Ponyo_Container_List (
 struct
     type element = D.t
 
-    local val compare = D.compare in
-
     open List
 
     fun get (list: element list, index: int) : element option =
@@ -34,6 +32,4 @@ struct
     (* TODO: implement stub *)
     fun sort (list: element list) : element list =
         list
-
-    end
 end

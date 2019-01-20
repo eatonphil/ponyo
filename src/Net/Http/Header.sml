@@ -5,8 +5,8 @@ struct
     exception MalformedHeader of string
     type t = string * string
 
-    fun unmarshall (line: string) : string * string =
-        case String.splitN (line, ":", 1) of
+    fun unmarshal (line: string) : string * string =
+        case String.splitN line ":" 1 of
 	    [] => raise MalformedHeader ("no header present: " ^ line)
 	  | badValue :: [] => raise MalformedHeader (line)
 	  | field :: (value :: _) => let
@@ -15,7 +15,7 @@ struct
 	          (String.toLower field, cleanValue)
 	      end
 
-    fun marshall (header: string, value: string) : string =
+    fun marshal (header: string, value: string) : string =
         header ^ ": " ^ String.stripWhitespace (value) 
 
     end

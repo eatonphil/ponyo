@@ -3,6 +3,11 @@ struct
     type t = char
     open Char
 
-    val hash = fn (i) => Word64.fromInt (ord i)
-    val unitialized = chr (0)
+    fun compare (l: char) (r: char) =
+        Char.compare (l, r)
+
+    fun hash (c: char) =
+        Word64.fromInt (ord c)
+
+    val uninitialized = chr (0)
 end

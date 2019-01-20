@@ -8,7 +8,7 @@ all:
 	$(MAKE) reference
 
 static:
-	(cd $$(pwd)/static && ./node_modules/.bin/gulp)
+	(cd $$(pwd)/static && yarn && yarn build)
 
 $(OUTPUT_DIR)/server: server/server.sml
 	@mkdir -p $(OUTPUT_DIR)

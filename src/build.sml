@@ -5,6 +5,7 @@ use "src/String/build.sml";
 use "src/Format/build.sml";
 use "src/Os/build.sml";
 use "src/Int/build.sml";
+use "src/Real/build.sml";
 use "src/Char/build.sml";
 use "src/Encoding/build.sml";
 use "src/Thread/build.sml";

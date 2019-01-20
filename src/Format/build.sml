@@ -1,2 +1,7 @@
-use "src/Format/Format.sig";
-use "src/Format/Format.sml";
+use "src/Format/String.sig";
+use "src/Format/String.sml";
+
+use "src/Format/Template.sig";
+use "src/Format/Template.sml";
+
+use "src/Format/Format_export.sml";

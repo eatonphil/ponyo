@@ -2,7 +2,7 @@ functor Ponyo_Net_Http_Response (Socket: PONYO_NET_SOCKET) : PONYO_NET_HTTP_RESP
 struct
     local
         structure String = Ponyo_String
-        structure Format = Ponyo_Format
+        structure Format = Ponyo_Format_String
 
         structure Header     = Ponyo_Net_Http_Header
         structure Headers    = String.Dict
@@ -66,7 +66,7 @@ struct
     val GatewayTimeout = makeGenericResponse 504 "Gateway Timeout"
 
     fun parseFirstLine (line: string) (response: Connection.t) : t =
-        case String.splitN (line, " ", 2) of
+        case String.splitN line " " 2 of
             [version, status, reason] =>
               {
                   version = version,
@@ -84,25 +84,25 @@ struct
             parseFirstLine (#firstLine response) response
         end
 
-    fun marshall (response: t) : string =
+    fun marshal (response: t) : string =
         let
             val version = #version response
             val status = Int.toString (#status response)
             val reason = #reason response
             val intro = Format.sprintf "% % %\r\n" [version, status, reason]
-            val marshalled = map Header.marshall (Headers.toList (#headers response))
-            val headers = if length marshalled > 1
-                    then foldl (fn (a, b) => String.join ([a, b], "\r\n")) "" marshalled
-                else hd marshalled
+            val marshaled = map Header.marshal (Headers.toList (#headers response))
+            val headers = if length marshaled > 1
+                    then foldl (fn (a, b) => String.join [a, b] "\r\n") "" marshaled
+                else hd marshaled
             val body = #body response
         in
             intro ^ headers ^ "\r\n\r\n" ^ body
         end
 
     fun write (conn: socket) (response: t) : unit =
-        Connection.write (conn, marshall response)
+        Connection.write (conn, marshal response)
 
-    val toString = marshall
+    val toString = marshal
 
     end
 end

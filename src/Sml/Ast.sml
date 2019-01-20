@@ -2,7 +2,7 @@ structure Ponyo_Sml_Ast =
 struct
     local
         structure Token = Ponyo_Sml_Token
-        structure Format = Ponyo_Format
+        structure Format = Ponyo_Format_String
         structure String = Ponyo_String
     in
 
@@ -48,7 +48,7 @@ struct
         let
             fun parenWrap (ty: string, depth: int) : string =
                 if depth < 2 then ty
-                else String.join (["(", ty, ")"], "")
+                else String.join ["(", ty, ")"] ""
 
             and childrenToString (children: ty list, depth: int) : string list =
                 map (fn ty => doTyToString (ty, depth + 1)) children
@@ -56,12 +56,12 @@ struct
             and doTyToString (ty: ty, depth: int) =
                 case ty of
                     IdentType ident => Token.toString ident
-                  | ProductType tys => parenWrap (String.join (childrenToString (tys, depth), " * "), depth)
+                  | ProductType tys => parenWrap ((String.join (childrenToString (tys, depth)) " * "), depth)
                   | FunctionType (inTy, outTy) => parenWrap (Format.sprintf "% -> %" (childrenToString ([inTy, outTy], depth)), depth)
                   | ConstructedType (tys, ty) => (
                       case tys of
                           [ty] => tyToString ty
-                        | _    => String.join (map tyToString tys, ", ")
+                        | _    => String.join (map tyToString tys) ", "
                   ) ^ " " ^ (tyToString ty)
                   | NoType => "unknown"
                   | _ => " "

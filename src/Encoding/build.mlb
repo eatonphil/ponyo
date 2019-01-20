@@ -3,8 +3,11 @@ $(SML_LIB)/basis/basis.mlb
 ../Container/build.mlb
 ../String/build.mlb
 ../Char/build.mlb
+../Int/build.mlb
+../Real/build.mlb
 ../Format/build.mlb
 
+Json.sig
 Json.sml
 Base64.sml
 Encoding_export.sml

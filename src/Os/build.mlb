@@ -3,6 +3,8 @@ $(SML_LIB)/basis/basis.mlb
 
 Path.sig
 Path.sml
+Terminal.sig
+Terminal.sml
 Cli/build.mlb
 Filesystem/build.mlb
 Os_export.sml

@@ -4,6 +4,7 @@ struct
         open Ponyo
 
         structure Cli        = Os.Cli
+	    structure Format     = Format.String
         structure Filesystem = Os.Filesystem
         structure File       = Filesystem.File
         structure Path       = Os.Path
@@ -25,10 +26,10 @@ struct
 
     (* TODO: crash on failure *)
     fun exec (program: string) (args: string list) : Basis.OS.Process.status =
-        Basis.OS.Process.system (program ^ " " ^ String.join(args, " "));
+        Basis.OS.Process.system (String.join (program :: args) " ");
 
     fun findFiles (currentPath: string) (foundFiles: string list) : string list =
-        if String.hasSuffix (currentPath, "_Test.sml")
+        if String.hasSuffix currentPath "_Test.sml"
             then currentPath :: foundFiles
         else foundFiles
 
@@ -40,7 +41,7 @@ struct
             fun generateRun (file: string) : string =
                 Format.sprintf "test \"%\" (%.run ())" [Path.filename file, Path.filename file]
         in
-            String.join (map generateRun files, ",\n")
+            String.join (map generateRun files) ",\n"
         end
 
     fun generateFile (files: string list, backend: string) : string =
@@ -48,11 +49,11 @@ struct
         ("local open Ponyo; val test = Test.test in\n" ^
         "fun main () =\n" ^
         "    let\n" ^
-        "        val _ = Format.println [\"Beginning tests with %.\"]\n" ^
-        "        val tests = test \"All\" [%] handle e => (Format.println [exnName e, exnMessage e]; false)\n" ^
+        "        val _ = Format.String.println [\"Beginning tests with %.\\n\"]\n" ^
+        "        val tests = test \"All\" [%] handle e => (Format.String.println [exnName e, exnMessage e]; false)\n" ^
         "    in\n" ^
-        "        if tests then Format.println [\"All tests passed!\"]\n" ^
-        "        else (Format.println [\"Tests failed.\"]; Basis.OS.Process.exit (Basis.OS.Process.failure); ())\n" ^
+        "        if tests then Format.String.println [\"All tests passed!\"]\n" ^
+        "        else (Format.String.println [Os.Terminal.colorize \"Tests failed.\" Os.Terminal.Red]; Basis.OS.Process.exit (Basis.OS.Process.failure); ())\n" ^
         "    end\n" ^
         "end") (backend :: [generateTests files])
 
@@ -79,14 +80,21 @@ struct
 
             fun makeAbsolutePath (test) =
                 Os.Path.join [Basis.OS.FileSys.getDir (), test]
+
+            val testFileName = "/tmp/test.sml"
+            val testProgramName = "/tmp/test"
+
+            fun cleanup () =
+                List.map Filesystem.remove [testFileName, testProgramName]
+
             val tests = map makeAbsolutePath (testFiles "test")
             val testFile = generateFile (tests, backend)
-            val testFileName = "/tmp/test.sml"
         in
+            cleanup ();
             writeFile testFileName testFile;
-            exec "ponyo-make" ([testFileName, "-I"] @ tests @ ["-b", backend, "-o", "/tmp/test"]);
-            (* TODO: delete tmp files on success *)
-            exec "/tmp/test" [];
+            exec "ponyo-make" ([testFileName, "-I"] @ tests @ ["-b", backend, "-o", testProgramName]);
+            exec testProgramName [];
+            cleanup ();
             ()
         end
 
