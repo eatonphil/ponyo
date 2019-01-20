@@ -25,7 +25,7 @@ struct
             in [
                 e (Json.Object [("foo", Json.True)]) = "{\"foo\":true}",
                 e (Json.Object [("foo", Json.False)]) = "{\"foo\":false}",
-                e (Json.Object [("foo", Json.Real 1.0)]) = "{\"foo\":1.0}",
+                e (Json.Object [("foo", Json.Real 1.1)]) = "{\"foo\":1.1}",
                 e (Json.Object [("foo", Json.Int 12)]) = "{\"foo\":12}",
                 e (Json.Object [("foo", Json.Object [("bar", Json.True)])]) = "{\"foo\":{\"bar\":true}}",
                 e (Json.Object [("foo", Json.List [Json.True])]) = "{\"foo\":[true]}",

@@ -4,7 +4,7 @@ $(SML_LIB)/basis/basis.mlb
 String.sig
 String.sml
 
-Format.sig
-Format.sml
+Template.sig
+Template.sml
 
 Format_export.sml

@@ -6,6 +6,7 @@ Container/build.mlb
 String/build.mlb
 Int/build.mlb
 Char/build.mlb
+Real/build.mlb
 Format/build.mlb
 Os/build.mlb
 Encoding/build.mlb
