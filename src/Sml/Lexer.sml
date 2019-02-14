@@ -7,11 +7,15 @@ struct
         structure StringList = Ponyo_Container_List (String)
     in
 
+    val debug = ref false
+
     type stream = unit -> char option
 
     type reader = {
-        stream : stream,
-        store  : string
+        stream: stream,
+        store: string,
+        line: int,
+        col: int
     }
 
     type tokens = Token.t list
@@ -19,11 +23,11 @@ struct
     type readerReadOpt = reader * string option
     type readerTokenOpt = reader * Token.t option
 
-    infix 6 >>=;
-    fun (reader, string) >>= f : readerTokenOpt =
-        case string of
+    infix >>=;
+    fun (reader, s) >>= f : readerTokenOpt =
+        case s of
             NONE        => (reader, NONE)
-          | SOME string => f (reader, string)
+          | SOME s => f (reader, s)
 
     fun sListLongest (sList: string list) : string =
         foldl (fn (s, longest) => if (String.length longest) > (String.length s)
@@ -64,31 +68,34 @@ struct
         "_", "|", "=", "=>", "->", "#"
     ]
 
-    val debug = ref false
-
     fun readChars (reader: reader, guard: char -> bool) : readerReadOpt =
         let
             (* Adds stored characters to the stream as if they weren't read. *)
             val reader = {
                 stream = stringBeforeStream (#store reader, #stream reader),
-                store  = ""
+                store  = "",
+                line = #line reader,
+                col = #col reader
             }
 
-            fun doRead (state as {stream, store}: reader, chars: string) : readerReadOpt =
+            fun doRead (state as {stream, store, col, line}: reader, chars: string) : readerReadOpt =
                 case stream () of
                     NONE => (state, if chars = "" then NONE else SOME (String.reverse chars))
                   | SOME c =>
-                      if guard (c) then (
-                          doRead (state, charToString (c) ^ chars)
-                      )
-                      else if chars = "" then (
-                          {stream=stream, store=charToString(c) ^ store},
-                          NONE
-                      )
-                      else (
-                          ({stream=stream, store=charToString (c)},
-                          SOME (String.reverse (chars ^ store)))
-                      )
+                let
+                    val isNewline = c = #"\n"
+                in
+                    if guard (c) then
+                        doRead (state, charToString (c) ^ chars)
+                    else if chars = "" then (
+                        {stream=stream, store=charToString(c) ^ store, line=line, col=col},
+                        NONE
+                    )
+                    else (
+                        ({stream=stream, store=charToString (c), col=col, line=line},
+                        SOME (String.reverse (chars ^ store)))
+                    )
+                end
         in
             doRead (reader, "")
         end
@@ -100,9 +107,11 @@ struct
                 Option.isSome (Int.fromString number)
         in
             readChars (reader, Char.contains "~.Ee0123456789abcdef") >>=
-            (fn (reader as {stream, store}, number) =>
-                if isNumber (number) then (reader, SOME (Token.Number number))
-                else ({stream=stream, store=number ^ store}, NONE))
+            (fn (reader as {stream, store, line, col}, number) =>
+                if isNumber (number) then
+                    (reader, SOME ({ token = Token.Number number, line = line, col = col }))
+                else
+                    ({stream=stream, store=number ^ store, line=col, col=col}, NONE))
         end
 
     fun readString (reader: reader) : readerTokenOpt =
@@ -122,7 +131,7 @@ struct
                       if !seen = "\"" then true
                       else if lastChar () = #"\\" then true
                       else false (* Final quote must be eaten manually below. *)
-                  | c     => true
+                  | c => true
                 else false
             )
 
@@ -130,9 +139,9 @@ struct
                 String.substring (!seen) 1 (String.length (!seen) - 2)
         in
             readChars (reader, isString) >>=
-            (fn (reader as {stream, store}, string) =>
+            (fn (reader as {stream, store, line, col}, _) =>
                 (* Eat final quote stored in store. *)
-                ({stream=stream, store=""},
+                ({stream=stream, store="", line=col, col=col},
                  SOME (Token.String (stringMinusMarkers ()))))
         end
 
@@ -166,12 +175,12 @@ struct
 
         in
             readChars (reader, isSymbol) >>=
-            (fn (reader1 as {stream, store=store}, ident) =>
+            (fn (reader1 as {stream, store, line, col}, ident) =>
                 if StringList.contains (reservedWords, !seen)
-                    then ({stream=stream, store=""}, SOME (Token.Symbol (!seen)))
+                    then ({stream=stream, store="", line=line, col=col}, SOME (Token.Symbol (!seen)))
                 else if StringList.contains (reservedWords, ident)
-                    then ({stream=stream, store=store}, SOME (Token.Symbol ident))
-                else ({stream=stream, store=ident ^ store}, NONE))
+                    then ({stream=stream, store=store, line=line, col=col}, SOME (Token.Symbol ident))
+                else ({stream=stream, store=ident ^ store, line=line, col=col}, NONE))
         end
 
     fun readIdent (reader: reader) : readerTokenOpt =
@@ -218,13 +227,13 @@ struct
                 String.substring (!seen) 2 (seenLen () - 4)
         in
             readChars (reader, isComment) >>=
-            (fn (reader as {stream, store}, comment) =>
+            (fn (reader as {stream, store, line, col}, comment) =>
                 (* Eat final paren stored in store. *)
                 if secondChar () = #"*"
-                    then ({stream=stream, store=""},
+                    then ({stream=stream, store="", line=line, col=col},
                           SOME (Token.Comment (commentsMinusMarkers ())))
                 else
-                     ({stream=stream, store=comment ^ store}, NONE))
+                     ({stream=stream, store=comment ^ store, line=line, col=col}, NONE))
         end
 
     fun readWhitespace (reader: reader) : reader =
@@ -278,7 +287,7 @@ struct
                 foldl doLex rt lexers
 
             val (reader, tokens) =
-                doLexAll ({stream=stream, store=""}, [])
+                doLexAll ({stream=stream, store="", line=0, col=0}, [])
         in
             case (#stream reader) () of
                 SOME c => raise Fail "Invalid lexical construct 1"

@@ -1,3 +1,4 @@
+use "src/Sml/Token.sig";
 use "src/Sml/Token.sml";
 use "src/Sml/Ast.sml";
 use "src/Sml/Lexer.sml";

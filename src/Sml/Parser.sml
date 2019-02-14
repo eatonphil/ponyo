@@ -1,12 +1,13 @@
 structure Ponyo_Sml_Parser =
 struct
     local
+        open Token
+
         structure Format = Ponyo_Format_String
         structure Ast = Ponyo_Sml_Ast
         structure Token = Ponyo_Sml_Token
         structure Symbol =
         struct
-            local open Token in
             val Colon      = Symbol ":"
             val Comma      = Symbol ","
             val Asterisk   = Ident "*"
@@ -28,7 +29,6 @@ struct
             val Eqtype     = Symbol "eqtype"
             val Exception  = Symbol "exception"
             val Of         = Symbol "of"
-            end
         end
     in
 
@@ -45,7 +45,7 @@ struct
 
 
     fun filterComments (tokens: tokens) : tokens =
-        foldl (fn (t, tokens) => case t of
+        foldl (fn (t, tokens) => case #token t of
             Token.Comment _ => tokens
           | t => t :: tokens) [] (List.rev tokens)
 
@@ -67,7 +67,7 @@ struct
 
     fun readIdent (reader: reader) : reader * Token.t option =
         readToken (reader) >>= (fn (reader, token) =>
-        case token of
+        case #token token of
             Token.Ident ident => (reader, SOME token)
           | t                 => ({tokens=(#tokens reader), store=t :: (#store reader)}, NONE))
 
@@ -108,7 +108,7 @@ struct
 
     and parseExp (reader: reader) : reader * Ast.t option =
         readToken (reader) >>= (fn (reader as {tokens, store}, token) =>
-        case token of
+        case #token token of
             Token.String s => (reader, SOME (Ast.Expression (Ast.StringExp token)))
           | Token.Number n => (reader, SOME (Ast.Expression (Ast.NumberExp token)))
           | Token.Ident i  => (reader, SOME (Ast.Expression (Ast.ValueExp token)))
@@ -129,7 +129,7 @@ struct
 
             fun parseBasic (reader: reader) : reader * Ast.ty =
                 case readToken (reader) of
-                    (reader, SOME (Token.Symbol "(")) =>
+                    (reader, SOME ({ Token.Symbol "(", line = 0, col = 0 })) =>
                         let
                             val (reader, tys) = parseList (reader)
                             val ty = case tys of
@@ -141,12 +141,12 @@ struct
                                 (reader, SOME _) => (reader, ty)
                               | _ => raise Fail "Expected closing paren."
                         end
-                    | (reader, SOME (Token.Symbol "{")) =>
+                    | (reader, SOME ({ Token.Symbol "{", col=0, line=0 })) =>
                         let
                         in
                             (reader, Ast.NoType)
                         end
-                    | (reader, SOME (token as (Token.Ident ident))) =>
+                    | (reader, SOME (token as ({ token = Token.Ident ident, ... }))) =>
                         (reader, Ast.IdentType token)
                     | (reader as {tokens, store}, SOME token) =>
                         ({tokens=tokens, store=token :: store}, Ast.NoType)

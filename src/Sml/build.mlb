@@ -3,6 +3,7 @@ $(SML_LIB)/basis/basis.mlb
 ../Format/build.mlb
 ../Os/build.mlb
 
+Token.sig
 Token.sml
 Ast.sml
 Lexer.sml
